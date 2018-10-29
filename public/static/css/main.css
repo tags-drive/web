@@ -1,0 +1,42 @@
+:root {
+    --primary-color: white;
+    --secondary-color: #f7f7f7;
+    --primary-border-color: rgba(0, 0, 0, 0.3);
+    --secondary-border-color: rgba(0, 0, 0, 0.1);
+    --primary-element-color: rgba(0, 0, 0, 0.3);
+    --secondary-element-color: rgba(0, 0, 0, 0.1);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.vertically {
+    margin-bottom: auto;
+    margin-top: auto;
+}
+
+.material-icons {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    vertical-align: middle;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
