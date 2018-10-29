@@ -8,8 +8,8 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
-        allFiles: [],
-        allTags: []
+        allFiles: {},
+        allTags: {}
     },
     mutations: {
         updateFiles(state) {

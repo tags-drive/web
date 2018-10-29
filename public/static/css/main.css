@@ -24,6 +24,29 @@ body {
     vertical-align: middle;
 }
 
+.tag {
+    border: 1px rgba(66, 64, 64, 0.2) solid;
+    border-radius: 7px;
+    cursor: default;
+    display: flex;
+    height: 20px;
+    line-height: 20px;
+    margin-right: 5px;
+    padding: 2px;
+    vertical-align: middle;
+}
+
+.btn {
+    background-color: white;
+    border: 1px solid var(--primary-border-color);
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: var(--secondary-element-color);
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
     width: 10px;
