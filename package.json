@@ -10,6 +10,7 @@
   "dependencies": {
     "dateformat": "^3.0.3",
     "vue": "^2.5.17",
+    "vue-clickaway2": "^2.3.1",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
