@@ -6,6 +6,18 @@
 	</div>
 </template>
 
+<style scoped>
+.suggestion-tag {
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.suggestion-tag:hover {
+    background-color: var(--secondary-element-color);
+}
+</style>
+
 <script>
 export default {
     props: {
@@ -18,15 +30,3 @@ export default {
     }
 };
 </script>
-
-<style>
-.suggestion-tag {
-    border-radius: 5px;
-    cursor: pointer;
-    padding: 4px;
-}
-
-.suggestion-tag:hover {
-    background-color: var(--secondary-element-color);
-}
-</style>

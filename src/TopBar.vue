@@ -84,6 +84,106 @@
 </div>
 </template>
 
+<style scoped>
+#top-bar {
+    background-color: var(--primary-color);
+    border-bottom: 1px var(--primary-border-color) solid;
+    display: flex;
+    justify-content: center;
+    height: 50px;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 1;
+}
+
+#logo {
+    cursor: default;
+    font-size: 25px;
+    height: 50px;
+    line-height: 50px;
+    margin: 0 10px 0 10px;
+    vertical-align: middle;
+}
+
+#search {
+    background-color: var(--primary-color);
+    border: 1px var(--secondary-border-color) solid;
+    border-radius: 5px;
+    display: flex;
+    height: 80%;
+    margin-bottom: auto;
+    margin-top: auto;
+    position: relative;
+    width: 75%;
+    justify-content: space-between;
+}
+
+#search__tags {
+    display: flex;
+    height: 25px;
+    margin-bottom: auto;
+    margin-right: 5px;
+    margin-top: auto;
+    padding: 5px;
+    position: relative;
+}
+
+#unpicked-tags {
+    background-color: var(--secondary-color);
+    border: 1px solid var(--primary-border-color);
+    border-radius: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    min-height: 20px;
+    padding: 5px;
+    position: absolute;
+    top: 35px;
+    width: 400px;
+}
+
+.suggestion-tag {
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.suggestion-tag:hover {
+    background-color: var(--secondary-element-color);
+}
+
+#advanced-menu {
+    display: flex;
+    height: 25px;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+#tag-editing-button {
+    cursor: pointer;
+    height: 80%;
+    margin-left: 10px;
+    position: relative;
+    width: 30px;
+    margin-right: 5px;
+}
+
+#tag-editing-button > img {
+    /* middle */
+    bottom: 0;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+#logout {
+    margin-left: 5px;
+    cursor: pointer;
+    width: 35px;
+}
+</style>
+
 <script>
 // Mixin
 import VueClickaway from "vue-clickaway2";
@@ -272,103 +372,3 @@ export default {
     }
 };
 </script>
-
-<style>
-#top-bar {
-    background-color: var(--primary-color);
-    border-bottom: 1px var(--primary-border-color) solid;
-    display: flex;
-    justify-content: center;
-    height: 50px;
-    position: sticky;
-    top: 0;
-    width: 100%;
-    z-index: 1;
-}
-
-#logo {
-    cursor: default;
-    font-size: 25px;
-    height: 50px;
-    line-height: 50px;
-    margin: 0 10px 0 10px;
-    vertical-align: middle;
-}
-
-#search {
-    background-color: var(--primary-color);
-    border: 1px var(--secondary-border-color) solid;
-    border-radius: 5px;
-    display: flex;
-    height: 80%;
-    margin-bottom: auto;
-    margin-top: auto;
-    position: relative;
-    width: 75%;
-    justify-content: space-between;
-}
-
-#search__tags {
-    display: flex;
-    height: 25px;
-    margin-bottom: auto;
-    margin-right: 5px;
-    margin-top: auto;
-    padding: 5px;
-    position: relative;
-}
-
-#unpicked-tags {
-    background-color: var(--secondary-color);
-    border: 1px solid var(--primary-border-color);
-    border-radius: 5px;
-    display: flex;
-    flex-wrap: wrap;
-    min-height: 20px;
-    padding: 5px;
-    position: absolute;
-    top: 35px;
-    width: 400px;
-}
-
-.suggestion-tag {
-    border-radius: 5px;
-    cursor: pointer;
-    padding: 4px;
-}
-
-.suggestion-tag:hover {
-    background-color: var(--secondary-element-color);
-}
-
-#advanced-menu {
-    display: flex;
-    height: 25px;
-    margin-top: auto;
-    margin-bottom: auto;
-}
-
-#tag-editing-button {
-    cursor: pointer;
-    height: 80%;
-    margin-left: 10px;
-    position: relative;
-    width: 30px;
-    margin-right: 5px;
-}
-
-#tag-editing-button > img {
-    /* middle */
-    bottom: 0;
-    margin: auto;
-    position: absolute;
-    top: 0;
-    width: 100%;
-}
-
-#logout {
-    margin-left: 5px;
-    cursor: pointer;
-    width: 35px;
-}
-</style>

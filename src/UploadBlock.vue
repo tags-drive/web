@@ -17,7 +17,7 @@
 	</div>
 </template>
 
-<style>
+<style scoped>
 #upload-text {
     border: 2px #888888 dotted;
     border-radius: 15px;
