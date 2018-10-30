@@ -14,7 +14,10 @@
 			>
 				add_circle_outline
 			</i>
-			<search-tag v-for="tag in pickedTags" :tag="tag"></search-tag>
+			<search-tag
+				v-for="(tag, index) in pickedTags"
+				:key="index"
+				:tag="tag"></search-tag>
 
 			<!-- List of unpicked tags-->
 			<div
@@ -27,7 +30,10 @@
 					v-if="unusedTags.length == 0"
 				>Empty</div>
 
-				<suggestion-tag v-for="tag in unusedTags" :tag="tag"></suggestion-tag>
+				<suggestion-tag
+					v-for="(tag, index) in unusedTags"
+					:key="index"
+					:tag="tag"></suggestion-tag>
 			</div>
 		</div>
 
@@ -146,9 +152,10 @@ export default {
                     })
                         .then(data => data.json())
                         .then(files => {
-                            GlobalStore.setFiles(files);
+                            this.SharedStore.commit("setFiles", files);
+                            // TODO
                             // Reset sortParams
-                            mainBlock.sort().reset();
+                            // mainBlock.sort().reset();
                         });
                 },
                 advanced: (sType, sOrder) => {
@@ -235,16 +242,16 @@ export default {
                         credentials: "same-origin"
                     })
                         .then(resp => {
-                            if (isErrorStatusCode(resp.status)) {
+                            if (this.isErrorStatusCode(resp.status)) {
                                 resp.text().then(text => {
-                                    logError(text);
+                                    this.logError(text);
                                 });
                                 return;
                             }
 
                             location.reload(true);
                         })
-                        .catch(err => logError(err));
+                        .catch(err => this.logError(err));
                 }
             };
         }

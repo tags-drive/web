@@ -8,6 +8,22 @@ Vue.prototype.SharedState = SharedState; // It is undefined inside Vue component
 Vue.prototype.SharedStore = SharedStore;
 Vue.prototype.Params = Params;
 Vue.prototype.Const = Const;
+Vue.mixin({
+    methods: {
+        isErrorStatusCode: function(statusCode) {
+            if (400 <= statusCode && statusCode < 600) {
+                return true;
+            }
+            return false;
+        },
+        logInfo: function(msg) {
+            console.info(msg);
+        },
+        logError: function(msg) {
+            console.error(msg);
+        }
+    }
+});
 
 window.onload = function() {
     SharedStore.commit("updateFiles");
