@@ -28,7 +28,7 @@
 				v-if="!SharedState.state.selectMode"
 				@click="hideMenu"
 			>
-				<a class="btn--href" download :href="file.origin">Download</a>
+				<a class="btn--href" download :href="Params.Host + '/' + file.origin">Download</a>
 			</div>
 			<div v-else>
 				<input type="button" class="btn" @click="selectMode().downloadFiles()" value="Download selected files">
@@ -89,7 +89,6 @@
 <script>
 import VueClickaway from "vue-clickaway2";
 //
-import { Params } from "./global";
 import { Events, EventBus } from "./eventBus";
 
 export default {
@@ -185,7 +184,7 @@ export default {
                         params.append("file", file.origin);
                     }
 
-                    fetch(Params.Host + "/api/files/download?" + params, {
+                    fetch(this.Params.Host + "/api/files/download?" + params, {
                         method: "GET",
                         credentials: "same-origin"
                     }).then(resp => {

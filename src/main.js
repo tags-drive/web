@@ -8,6 +8,7 @@ Vue.prototype.SharedState = SharedState; // It is undefined inside Vue component
 Vue.prototype.SharedStore = SharedStore;
 Vue.prototype.Params = Params;
 Vue.prototype.Const = Const;
+
 Vue.mixin({
     methods: {
         isErrorStatusCode: function(statusCode) {

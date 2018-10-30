@@ -191,7 +191,6 @@ import VueClickaway from "vue-clickaway2";
 import SearchTag from "./components/SearchTag.vue";
 import SuggestionTag from "./components/SuggestionTag.vue";
 //
-import { Params } from "./global";
 import { Events, EventBus } from "./eventBus";
 
 export default {
@@ -260,7 +259,7 @@ export default {
                     params.append("mode", this.selectedMode.toLowerCase());
                     // Can skip sort and order, because server will use default values
 
-                    fetch(Params.Host + "/api/files?" + params, {
+                    fetch(this.Params.Host + "/api/files?" + params, {
                         method: "GET",
                         credentials: "same-origin"
                     })
@@ -293,7 +292,7 @@ export default {
                     // mode
                     params.append("mode", this.selectedMode.toLowerCase());
 
-                    fetch(Params.Host + "/api/files?" + params, {
+                    fetch(this.Params.Host + "/api/files?" + params, {
                         method: "GET",
                         credentials: "same-origin"
                     })
@@ -351,7 +350,7 @@ export default {
                         return;
                     }
 
-                    fetch(Params.Host + "/logout", {
+                    fetch(this.Params.Host + "/logout", {
                         method: "POST",
                         credentials: "same-origin"
                     })

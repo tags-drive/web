@@ -180,7 +180,7 @@ export default {
                 }
             }
         },
-        unselectAllFile: function() {
+        unselectAllFiles: function() {
             for (let i in this.$children) {
                 this.$children[i].unselect();
             }

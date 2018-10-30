@@ -35,8 +35,6 @@
 </style>
 
 <script>
-import { Params } from "./global";
-
 export default {
     data: function() {
         return {
@@ -76,7 +74,7 @@ export default {
                 formData.append("files", file, file.name);
             }
 
-            fetch(Params.Host + "/api/files", {
+            fetch(this.Params.Host + "/api/files", {
                 body: formData,
                 method: "POST",
                 credentials: "same-origin"
