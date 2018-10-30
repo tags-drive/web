@@ -2,7 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 import dateformat from "dateformat";
 
-import Params from "../params";
+import { Params } from "../global";
 
 Vue.use(Vuex);
 
