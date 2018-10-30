@@ -140,23 +140,19 @@ export default {
             return {
                 changeName: () => {
                     this.show = false;
-                    // TODO
-                    // modalWindow.showWindow().regularRenaming(this.file);
+                    EventBus.$emit(Events.RegularFileRenaming, { file: this.file });
                 },
                 changeTags: () => {
                     this.show = false;
-                    // TODO
-                    // modalWindow.showWindow().regularFileTagsUpdating(this.file);
+                    EventBus.$emit(Events.RegularTagsChanging, { file: this.file });
                 },
                 changeDescription: () => {
                     this.show = false;
-                    // TODO
-                    // modalWindow.showWindow().regularDescriptionChanging(this.file);
+                    EventBus.$emit(Events.RegularDescriptionChanging, { file: this.file });
                 },
                 deleteFile: () => {
                     this.show = false;
-                    // TODO
-                    // modalWindow.showWindow().regularDeleting(this.file);
+                    EventBus.$emit(Events.RegularFileDeleting, { file: this.file });
                 }
             };
         },

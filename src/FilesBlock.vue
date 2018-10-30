@@ -107,6 +107,11 @@ export default {
     components: {
         files: Files
     },
+    mounted: function() {
+        EventBus.$on(Events.UnselectAllFiles, () => {
+            this.unselectAllFiles();
+        });
+    },
     methods: {
         // Sorts
         sort: function() {

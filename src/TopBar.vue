@@ -212,6 +212,10 @@ export default {
         };
     },
     mounted: function() {
+        EventBus.$on(Events.UsualSearch, () => {
+            this.search().usual();
+        });
+
         EventBus.$on(Events.AdvancedSearch, payload => {
             if (payload.type == undefined || payload.order == undefined) {
                 console.error("Payload hasn't order or type fields:", payload);
@@ -343,8 +347,9 @@ export default {
         },
         settings: function() {
             return {
-                // TODO: event bue
-                // tags: () => modalWindow.showWindow().globalTagsUpdating(),
+                tags: () => {
+                    EventBus.$emit(Events.GlobalTagsChanging);
+                },
                 logout: () => {
                     if (!confirm("Are you sure you want log out?")) {
                         return;

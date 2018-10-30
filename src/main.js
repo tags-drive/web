@@ -35,6 +35,7 @@ import TopBar from "./TopBar.vue";
 import FilesBlock from "./FilesBlock.vue";
 import UploadBlock from "./UploadBlock.vue";
 import ContextMenu from "./ContextMenu.vue";
+import ModalWindow from "./ModalWindow.vue";
 
 var topBar = new Vue({
     el: "#top-bar",
@@ -54,4 +55,9 @@ var uploadBlock = new Vue({
 var contextMenu = new Vue({
     el: "#context-menu",
     render: h => h(ContextMenu)
+});
+
+var modalWindow = new Vue({
+    el: "#modal-window",
+    render: h => h(ModalWindow)
 });
