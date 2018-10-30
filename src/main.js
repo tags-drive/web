@@ -32,6 +32,7 @@ window.onload = function() {
 
 import TopBar from "./TopBar.vue";
 import FilesBlock from "./FilesBlock.vue";
+import UploadBlock from "./UploadBlock.vue";
 
 var topBar = new Vue({
     el: "#top-bar",
@@ -41,4 +42,9 @@ var topBar = new Vue({
 var filesBlock = new Vue({
     el: "#files-block",
     render: h => h(FilesBlock)
+});
+
+var uploadBlock = new Vue({
+    el: "#upload-block",
+    render: h => h(UploadBlock)
 });
