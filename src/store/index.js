@@ -41,7 +41,7 @@ export default new Vuex.Store({
             for (let i in files) {
                 files[i].addTime = dateformat(new Date(files[i].addTime), "dd-mm-yyyy HH:MM");
             }
-            this.data.allFiles = files;
+            state.allFiles = files;
         }
     }
 });

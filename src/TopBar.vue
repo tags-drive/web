@@ -146,7 +146,7 @@ export default {
                     params.append("mode", this.selectedMode.toLowerCase());
                     // Can skip sort and order, because server will use default values
 
-                    fetch("/api/files?" + params, {
+                    fetch(Params.Host + "/api/files?" + params, {
                         method: "GET",
                         credentials: "same-origin"
                     })
@@ -179,7 +179,7 @@ export default {
                     // mode
                     params.append("mode", this.selectedMode.toLowerCase());
 
-                    fetch("/api/files?" + params, {
+                    fetch(Params.Host + "/api/files?" + params, {
                         method: "GET",
                         credentials: "same-origin"
                     })
@@ -237,7 +237,7 @@ export default {
                         return;
                     }
 
-                    fetch("/logout", {
+                    fetch(Params.Host + "/logout", {
                         method: "POST",
                         credentials: "same-origin"
                     })
