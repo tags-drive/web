@@ -47,6 +47,8 @@
 </template>
 
 <script>
+import { Events, EventBus } from "../eventBus";
+
 export default {
     props: {
         file: Object,
@@ -60,10 +62,7 @@ export default {
     },
     methods: {
         showContextMenu: function(event) {
-            console.log("Context menu");
-            // TODO
-            // contextMenu.setFile(this.file);
-            // contextMenu.showMenu(event.x, event.y);
+            EventBus.$emit(Events.ShowContextMenu, { file: this.file, x: event.x, y: event.y });
         },
         toggleSelect: function() {
             // We can skip changing this.selected, because a checkbox is bound to this.selected
