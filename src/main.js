@@ -31,8 +31,14 @@ window.onload = function() {
 };
 
 import TopBar from "./TopBar.vue";
+import FilesBlock from "./FilesBlock.vue";
 
 var topBar = new Vue({
     el: "#top-bar",
     render: h => h(TopBar)
+});
+
+var filesBlock = new Vue({
+    el: "#files-block",
+    render: h => h(FilesBlock)
 });
