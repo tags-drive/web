@@ -87,7 +87,10 @@ th {
 
 
 <script>
+// Components
 import Files from "./components/Files.vue";
+//
+import { Events, EventBus } from "./eventBus";
 
 export default {
     data: function() {
@@ -120,8 +123,7 @@ export default {
                     let type = this.Const.sortType.name,
                         order = this.sortByNameModeAsc ? this.Const.sortOrder.asc : this.Const.sortOrder.desc;
 
-                    // TODO
-                    // topBar.search().advanced(type, order);
+                    EventBus.$emit(Events.AdvancedSearch, { type: type, order: order });
                 },
                 bySize: () => {
                     if (this.lastSortType == this.Const.sortType.size) {
@@ -135,8 +137,7 @@ export default {
                     let type = this.Const.sortType.size,
                         order = this.sortBySizeModeAsc ? this.Const.sortOrder.asc : this.Const.sortOrder.desc;
 
-                    // TODO
-                    // topBar.search().advanced(type, order);
+                    EventBus.$emit(Events.AdvancedSearch, { type: type, order: order });
                 },
                 byTime: () => {
                     if (this.lastSortType == this.Const.sortType.time) {
@@ -150,8 +151,7 @@ export default {
                     let type = this.Const.sortType.time,
                         order = this.sortByTimeModeAsc ? this.Const.sortOrder.asc : this.Const.sortOrder.desc;
 
-                    // TODO
-                    // topBar.search().advanced(type, order);
+                    EventBus.$emit(Events.AdvancedSearch, { type: type, order: order });
                 },
                 reset: () => {
                     this.sortByNameModeAsc = true;

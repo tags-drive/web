@@ -85,9 +85,14 @@
 </template>
 
 <script>
+// Mixin
 import VueClickaway from "vue-clickaway2";
+// Components
 import SearchTag from "./components/SearchTag.vue";
 import SuggestionTag from "./components/SuggestionTag.vue";
+//
+import { Params } from "./global";
+import { Events, EventBus } from "./eventBus";
 
 export default {
     mixins: [VueClickaway.mixin],
@@ -106,6 +111,15 @@ export default {
             text: "",
             selectedMode: "And"
         };
+    },
+    mounted: function() {
+        EventBus.$on(Events.AdvancedSearch, payload => {
+            if (payload.type == undefined || payload.order == undefined) {
+                console.error("Payload hasn't order or type fields:", payload);
+                return;
+            }
+            this.search().advanced(payload.type, payload.order);
+        });
     },
     methods: {
         tagsMenu: function() {
