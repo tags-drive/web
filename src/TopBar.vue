@@ -215,7 +215,6 @@ export default {
         EventBus.$on(Events.UsualSearch, () => {
             this.search().usual();
         });
-
         EventBus.$on(Events.AdvancedSearch, payload => {
             if (payload.type == undefined || payload.order == undefined) {
                 console.error("Payload hasn't order or type fields:", payload);
@@ -246,6 +245,8 @@ export default {
         search: function() {
             return {
                 usual: () => {
+                    EventBus.$emit(Events.UnselectAllFiles);
+
                     let params = new URLSearchParams();
                     // tags
                     if (this.pickedTags.length != 0) {
@@ -270,12 +271,12 @@ export default {
                         .then(data => data.json())
                         .then(files => {
                             this.SharedStore.commit("setFiles", files);
-                            // TODO
-                            // Reset sortParams
-                            // mainBlock.sort().reset();
+                            EventBus.$emit(Events.ResetSortParams);
                         });
                 },
                 advanced: (sType, sOrder) => {
+                    EventBus.$emit(Events.UnselectAllFiles);
+
                     let params = new URLSearchParams();
                     // tags
                     if (this.pickedTags.length != 0) {

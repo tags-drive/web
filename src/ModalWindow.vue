@@ -603,7 +603,7 @@ export default {
                             }
 
                             let params = new URLSearchParams();
-                            params.append("file", this.file.filename);
+                            params.append("file", file.filename);
                             params.append("tags", Array.from(tags).join(","));
 
                             await fetch(this.Params.Host + "/api/files/tags", {
