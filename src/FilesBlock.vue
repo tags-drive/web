@@ -111,6 +111,12 @@ export default {
         EventBus.$on(Events.UnselectAllFiles, () => {
             this.unselectAllFiles();
         });
+        EventBus.$on(Events.UpdateSelectedFiles, () => {
+            this.updateSelectedFiles();
+        });
+        EventBus.$on(Events.ResetSortParams, () => {
+            this.sort().reset();
+        });
     },
     methods: {
         // Sorts
@@ -193,14 +199,17 @@ export default {
             this.SharedState.commit("unsetSelectMode");
             this.selectCount = 0;
         },
-        getSelectedFiles: function() {
+        // updateSelectedFiles updates list of selectedFiles in SharedStore
+        updateSelectedFiles: function() {
             let files = [];
             for (let i in this.$children) {
                 if (this.$children[i].selected) {
-                    files.push(this.$children[i].file);
+                    if (this.$children[i].file != undefined) {
+                        files.push(this.$children[i].file);
+                    }
                 }
             }
-            return files;
+            this.SharedStore.commit("setSelectedFiles", files);
         },
         // For children
         selectFile: function() {

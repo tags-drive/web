@@ -260,7 +260,7 @@ export default {
         EventBus.$on(Events.GlobalTagsChanging, () => {
             this.showWindow().globalTagsUpdating();
         });
-
+        // Regular
         EventBus.$on(Events.RegularFileRenaming, payload => {
             this.showWindow().regularRenaming(payload.file);
         });
@@ -272,6 +272,16 @@ export default {
         });
         EventBus.$on(Events.RegularFileDeleting, payload => {
             this.showWindow().regularDeleting(payload.file);
+        });
+        // Selected
+        EventBus.$on(Events.SelectTagsAdding, payload => {
+            this.showWindow().selectFilesTagsAdding(payload.files);
+        });
+        EventBus.$on(Events.SelectTagsDeleting, payload => {
+            this.showWindow().selectFilesTagsDeleting(payload.files);
+        });
+        EventBus.$on(Events.SelectFilesDeleting, payload => {
+            this.showWindow().selectDeleting(payload.files);
         });
     },
     methods: {
@@ -511,7 +521,6 @@ export default {
                             if (log === undefined) {
                                 return;
                             }
-                            console.log(log);
                             /* Schema:
                             [
                                 {
@@ -646,7 +655,6 @@ export default {
                             if (log === undefined) {
                                 return;
                             }
-                            console.log(log);
                             /* Schema:
                             [
                                 {

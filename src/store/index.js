@@ -9,9 +9,11 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         allFiles: {},
-        allTags: {}
+        allTags: {},
+        selectedFiles: []
     },
     mutations: {
+        // allFiles
         updateFiles(state) {
             fetch(Params.Host + "/api/files", {
                 method: "GET",
@@ -27,6 +29,14 @@ export default new Vuex.Store({
                 })
                 .catch(err => console.error(err)); // user can live without this error, so we won't use logError() here
         },
+        setFiles(state, files) {
+            // Change time from "2018-08-23T22:48:59.0459184+03:00" to "23-08-2018 22:48"
+            for (let i in files) {
+                files[i].addTime = dateformat(new Date(files[i].addTime), "dd-mm-yyyy HH:MM");
+            }
+            state.allFiles = files;
+        },
+        // allTags
         updateTags(state) {
             fetch(Params.Host + "/api/tags", {
                 method: "GET",
@@ -36,12 +46,13 @@ export default new Vuex.Store({
                 .then(tags => (state.allTags = tags))
                 .catch(err => console.error(err)); // user can live without this error, so we won't use logError() here
         },
-        setFiles(state, files) {
-            // Change time from "2018-08-23T22:48:59.0459184+03:00" to "23-08-2018 22:48"
-            for (let i in files) {
-                files[i].addTime = dateformat(new Date(files[i].addTime), "dd-mm-yyyy HH:MM");
-            }
-            state.allFiles = files;
+        // selectedFiles
+        // clearSelectedFiles must be called before setSelectedFiles
+        clearSelectedFiles(state) {
+            state.selectedFiles = null;
+        },
+        setSelectedFiles(state, files) {
+            state.selectedFiles = files;
         }
     }
 });

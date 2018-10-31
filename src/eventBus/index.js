@@ -4,11 +4,8 @@ export const Events = {
     // Search
     UsualSearch: "usual-search",
     AdvancedSearch: "advanced-search",
-    // UI
-    ShowContextMenu: "show-context-menu",
-	UnselectAllFiles: "unselect-all-files",
-	//
-	GlobalTagsChanging: "global-tags-changing",
+    //
+    GlobalTagsChanging: "global-tags-changing",
     // Regular mode
     RegularFileRenaming: "regular-file-renaming",
     RegularDescriptionChanging: "regular-file-description-changing",
@@ -17,7 +14,12 @@ export const Events = {
     // Select mode
     SelectTagsAdding: "select-tags-adding",
     SelectTagsDeleting: "select-tags-deleting",
-    SelectFilesDeleting: "select-files-deleting"
+    SelectFilesDeleting: "select-files-deleting",
+    //
+    UpdateSelectedFiles: "update-selected-files",
+    ResetSortParams: "reset-sort-params",
+    ShowContextMenu: "show-context-menu",
+    UnselectAllFiles: "unselect-all-files"
 };
 
 export const EventBus = new Vue({});

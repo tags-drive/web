@@ -91,6 +91,16 @@ import VueClickaway from "vue-clickaway2";
 //
 import { Events, EventBus } from "./eventBus";
 
+function getSelectedFiles() {
+    this.SharedStore.commit("clearSelectedFiles");
+    EventBus.$emit(Events.UpdateSelectedFiles);
+
+    // Lock
+    while (this.SharedStore.state.selectedFiles == null);
+
+    return this.SharedStore.state.selectedFiles;
+}
+
 export default {
     mixins: [VueClickaway.mixin],
     data: function() {
@@ -161,19 +171,19 @@ export default {
             return {
                 addTags: () => {
                     this.show = false;
-                    // TODO
-                    // modalWindow.showWindow().selectFilesTagsAdding(mainBlock.getSelectedFiles());
+
+                    let files = getSelectedFiles.call(this);
+                    EventBus.$emit(Events.SelectTagsAdding, { files: files });
                 },
                 deleteTags: () => {
                     this.show = false;
-                    // TODO
-                    // modalWindow.showWindow().selectFilesTagsDeleting(mainBlock.getSelectedFiles());
+
+                    let files = getSelectedFiles.call(this);
+                    EventBus.$emit(Events.SelectTagsDeleting, { files: files });
                 },
                 downloadFiles: () => {
                     let params = new URLSearchParams();
-                    // TODO
-                    let files = null; //mainBlock.getSelectedFiles();
-                    return;
+                    let files = getSelectedFiles.call(this);
 
                     for (let file of files) {
                         // need to use link to a file, not filename
@@ -200,8 +210,8 @@ export default {
                 },
                 deleteFiles: () => {
                     this.show = false;
-                    // TODO
-                    // modalWindow.showWindow().selectDeleting(mainBlock.getSelectedFiles());
+                    let files = getSelectedFiles.call(this);
+                    EventBus.$emit(Events.SelectFilesDeleting, { files: files });
                 }
             };
         }
