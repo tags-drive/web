@@ -31,14 +31,16 @@ export default {
             selectedTags: []
         };
     },
-    labelTag: function(id) {
-        this.selectedTags.push(id);
-    },
     destroyed: function() {
         if (this.mode == "add") {
-            this.$parent.filesAPI().tagSelectedFiles(this.tagsForAdding);
+            this.$parent.filesAPI().tagSelectedFiles(this.selectedTags);
         } else {
-            this.$parent.filesAPI().untagSelectedFiles(this.tagsForAdding);
+            this.$parent.filesAPI().untagSelectedFiles(this.selectedTags);
+        }
+    },
+    methods: {
+        labelTag: function(id) {
+            this.selectedTags.push(id);
         }
     }
 };
