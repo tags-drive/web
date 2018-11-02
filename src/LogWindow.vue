@@ -75,7 +75,9 @@ export default {
     mounted: function() {
         EventBus.$on(Events.LogEvent, payload => {
             if (payload.type == undefined || payload.msg == undefined) {
-                console.error("Payload hasn't type or msg fields:", payload);
+				/* eslint-disable no-console */
+				console.error("Payload hasn't type or msg fields:", payload);
+				/* eslint-enable no-console */
                 return;
             }
 

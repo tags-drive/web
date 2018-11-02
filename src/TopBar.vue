@@ -217,7 +217,9 @@ export default {
         });
         EventBus.$on(Events.AdvancedSearch, payload => {
             if (payload.type == undefined || payload.order == undefined) {
+                /* eslint-disable no-console */
                 console.error("Payload hasn't order or type fields:", payload);
+                /* eslint-enable no-console */
                 return;
             }
             this.search().advanced(payload.type, payload.order);

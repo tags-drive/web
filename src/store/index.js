@@ -27,7 +27,7 @@ export default new Vuex.Store({
                     }
                     state.allFiles = files;
                 })
-                .catch(err => console.error(err)); // user can live without this error, so we won't use logError() here
+                .catch(err => this.logError(err));
         },
         setFiles(state, files) {
             // Change time from "2018-08-23T22:48:59.0459184+03:00" to "23-08-2018 22:48"
@@ -44,7 +44,7 @@ export default new Vuex.Store({
             })
                 .then(data => data.json())
                 .then(tags => (state.allTags = tags))
-                .catch(err => console.error(err)); // user can live without this error, so we won't use logError() here
+                .catch(err => this.logError(err));
         },
         // selectedFiles
         // clearSelectedFiles must be called before setSelectedFiles

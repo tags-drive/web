@@ -19,11 +19,15 @@ Vue.mixin({
             return false;
         },
         logInfo: function(msg) {
-            console.info(msg);
+			/* eslint-disable no-console */
+			console.info(msg);
+			/* eslint-enable no-console */
             EventBus.$emit(Events.LogEvent, { type: Const.logType.info, msg: msg });
         },
         logError: function(msg) {
-            console.error(msg);
+			/* eslint-disable no-console */
+			console.error(msg);
+			/* eslint-enable no-console */
             EventBus.$emit(Events.LogEvent, { type: Const.logType.error, msg: msg });
         }
     }
@@ -41,32 +45,38 @@ import ContextMenu from "./ContextMenu.vue";
 import ModalWindow from "./ModalWindow.vue";
 import LogWindow from "./LogWindow.vue";
 
-var topBar = new Vue({
+/* Top Bar */
+new Vue({
     el: "#top-bar",
     render: h => h(TopBar)
 });
 
-var filesBlock = new Vue({
+/* Files Block */
+new Vue({
     el: "#files-block",
     render: h => h(FilesBlock)
 });
 
-var uploadBlock = new Vue({
+/* Upload Block */
+new Vue({
     el: "#upload-block",
     render: h => h(UploadBlock)
 });
 
-var contextMenu = new Vue({
+/* Context menu */
+new Vue({
     el: "#context-menu",
     render: h => h(ContextMenu)
 });
 
-var modalWindow = new Vue({
+/* Modal Window */
+new Vue({
     el: "#modal-window",
     render: h => h(ModalWindow)
 });
 
-var logWindow = new Vue({
+/* Log Window */
+new Vue({
     el: "#log-window",
     render: h => h(LogWindow)
 });
