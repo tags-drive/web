@@ -2,7 +2,7 @@ import Vue from "vue";
 // Shared data
 import SharedStore from "./store";
 import SharedState from "./state";
-import { Params, Const } from "./global";
+import { Params, Const } from "../global";
 import { Events, EventBus } from "./eventBus";
 
 Vue.prototype.SharedState = SharedState; // It is undefined inside Vue components without it
@@ -19,15 +19,15 @@ Vue.mixin({
             return false;
         },
         logInfo: function(msg) {
-			/* eslint-disable no-console */
-			console.info(msg);
-			/* eslint-enable no-console */
+            /* eslint-disable no-console */
+            console.info(msg);
+            /* eslint-enable no-console */
             EventBus.$emit(Events.LogEvent, { type: Const.logType.info, msg: msg });
         },
         logError: function(msg) {
-			/* eslint-disable no-console */
-			console.error(msg);
-			/* eslint-enable no-console */
+            /* eslint-disable no-console */
+            console.error(msg);
+            /* eslint-enable no-console */
             EventBus.$emit(Events.LogEvent, { type: Const.logType.error, msg: msg });
         }
     }
