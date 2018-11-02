@@ -12,7 +12,7 @@ export const Const = {
         asc: "asc",
         desc: "desc"
     },
-    logTypes: {
+    logType: {
         info: "info",
         error: "error"
     }

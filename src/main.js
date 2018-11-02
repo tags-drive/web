@@ -3,6 +3,7 @@ import Vue from "vue";
 import SharedStore from "./store";
 import SharedState from "./state";
 import { Params, Const } from "./global";
+import { Events, EventBus } from "./eventBus";
 
 Vue.prototype.SharedState = SharedState; // It is undefined inside Vue components without it
 Vue.prototype.SharedStore = SharedStore;
@@ -19,9 +20,11 @@ Vue.mixin({
         },
         logInfo: function(msg) {
             console.info(msg);
+            EventBus.$emit(Events.LogEvent, { type: Const.logType.info, msg: msg });
         },
         logError: function(msg) {
             console.error(msg);
+            EventBus.$emit(Events.LogEvent, { type: Const.logType.error, msg: msg });
         }
     }
 });
@@ -36,6 +39,7 @@ import FilesBlock from "./FilesBlock.vue";
 import UploadBlock from "./UploadBlock.vue";
 import ContextMenu from "./ContextMenu.vue";
 import ModalWindow from "./ModalWindow.vue";
+import LogWindow from "./LogWindow.vue";
 
 var topBar = new Vue({
     el: "#top-bar",
@@ -60,4 +64,9 @@ var contextMenu = new Vue({
 var modalWindow = new Vue({
     el: "#modal-window",
     render: h => h(ModalWindow)
+});
+
+var logWindow = new Vue({
+    el: "#log-window",
+    render: h => h(LogWindow)
 });

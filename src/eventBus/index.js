@@ -19,7 +19,8 @@ export const Events = {
     UpdateSelectedFiles: "update-selected-files",
     ResetSortParams: "reset-sort-params",
     ShowContextMenu: "show-context-menu",
-    UnselectAllFiles: "unselect-all-files"
+	UnselectAllFiles: "unselect-all-files",
+	LogEvent: "log-event"
 };
 
 export const EventBus = new Vue({});
