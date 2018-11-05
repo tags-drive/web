@@ -3,11 +3,13 @@
 		id="preview-window"
 		@click.self="window().hide()"
 		v-if="show"
+		@keydown.right="nextPreview"
+		@keydown.left="previousPreview"
 	>
 		<!-- TODO -->
 		<!-- Title -->
 		<div
-			v-if="isTextFile(file.filename.split('.').pop())"
+			v-if="isTextFile()"
 			id="text-preview"
 		>
 			<pre>{{textFileContent}}</pre>
@@ -70,10 +72,12 @@
 </style>
 
 <script>
+let lastWindowOnkeydownHandler;
+
 export default {
     data: function() {
         return {
-            show: true,
+            show: false,
             // File
             fileIndex: 0,
             file: Object,
@@ -85,19 +89,67 @@ export default {
         window: function() {
             return {
                 show: () => {
+                    this.SharedState.commit("hideDropLayer");
+
+                    lastWindowOnkeydownHandler = window.onkeydown;
+                    window.onkeydown = event => {
+                        switch (event.key) {
+                            case "ArrowRight":
+                                this.nextPreview();
+                                break;
+                            case "ArrowLeft":
+                                this.previousPreview();
+                                break;
+                        }
+                    };
+
                     this.show = true;
                 },
                 hide: () => {
+                    this.SharedState.commit("showDropLayer");
+
+                    window.onkeydown = lastWindowOnkeydownHandler;
                     this.show = false;
                 }
             };
         },
-        isTextFile: function(ext) {
+        isTextFile: function() {
+            let ext = this.file.filename.split(".").pop();
             return ext == "txt";
         },
         isImage: function() {
             return this.file.type == "image";
             // return ext == "jpg" || ext == "jpeg" || ext == "png" || ext == "gif";
+        },
+        nextPreview: function() {
+            if (this.fileIndex < this.SharedStore.state.allFiles.length - 1) {
+                this.file = this.SharedStore.state.allFiles[++this.fileIndex];
+
+                if (this.isTextFile()) {
+                    fetch(this.Params.Host + "/" + this.file.origin, {
+                        method: "GET",
+                        credentials: "same-origin"
+                    })
+                        .then(resp => resp.text())
+                        .then(text => (this.textFileContent = text))
+                        .catch(err => this.logError(err));
+                }
+            }
+        },
+        previousPreview: function() {
+            if (this.fileIndex > 0) {
+                this.file = this.SharedStore.state.allFiles[--this.fileIndex];
+
+                if (this.isTextFile()) {
+                    fetch(this.Params.Host + "/" + this.file.origin, {
+                        method: "GET",
+                        credentials: "same-origin"
+                    })
+                        .then(resp => resp.text())
+                        .then(text => (this.textFileContent = text))
+                        .catch(err => this.logError(err));
+                }
+            }
         }
     }
 };
