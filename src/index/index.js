@@ -44,6 +44,7 @@ import UploadBlock from "./UploadBlock.vue";
 import ContextMenu from "./ContextMenu.vue";
 import ModalWindow from "./ModalWindow.vue";
 import LogWindow from "./LogWindow.vue";
+import PreviewWindow from "./PreviewWindow.vue";
 
 /* Top Bar */
 new Vue({
@@ -79,4 +80,10 @@ new Vue({
 new Vue({
     el: "#log-window",
     render: h => h(LogWindow)
+});
+
+/* Preview Window */
+new Vue({
+    el: "#preview-window",
+    render: h => h(PreviewWindow)
 });
