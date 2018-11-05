@@ -3,6 +3,7 @@
 		:style="[hover || selected ? {'background-color': 'rgba(0, 0, 0, 0.1)'} : {'background-color': 'white'} ]"
 		@mouseover="hover = true;"
 		@mouseleave="hover = false;"
+		@click="oneClick"
 		@click.right.prevent="showContextMenu($event, file);"
 	>
 		<td style="text-align: center;">
@@ -49,6 +50,8 @@
 <script>
 import { Events, EventBus } from "../eventBus";
 
+const doubleClickDelay = 500; // ms
+
 export default {
     props: {
         file: Object,
@@ -57,7 +60,10 @@ export default {
     data: function() {
         return {
             hover: false,
-            selected: false
+            selected: false,
+            // Double click
+            clicks: 0,
+            timer: null
         };
     },
     methods: {
@@ -80,6 +86,19 @@ export default {
         },
         unselect: function() {
             this.selected = false;
+        },
+        oneClick: function() {
+            this.clicks++;
+            if (this.clicks >= 2) {
+                this.clicks = 0;
+                // Open preview
+                EventBus.$emit(Events.ShowPreview, { file: this.file });
+                clearTimeout(this.timer);
+            } else {
+                this.timer = setTimeout(() => {
+                    this.clicks = 0;
+                }, doubleClickDelay);
+            }
         }
     }
 };

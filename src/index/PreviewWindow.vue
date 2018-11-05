@@ -72,6 +72,8 @@
 </style>
 
 <script>
+import { Events, EventBus } from "./eventBus";
+
 let lastWindowOnkeydownHandler;
 
 export default {
@@ -84,6 +86,31 @@ export default {
             // Data
             textFileContent: ""
         };
+    },
+    mounted: function() {
+        EventBus.$on(Events.ShowPreview, payload => {
+            this.file = payload.file;
+            // Define fileIndex
+            for (let i in this.SharedStore.state.allFiles) {
+                if (this.SharedStore.state.allFiles[i].filename == this.file.filename) {
+                    this.fileIndex = i;
+                    break;
+                }
+            }
+
+            this.textFileContent = "";
+            if (this.isTextFile()) {
+                fetch(this.Params.Host + "/" + this.file.origin, {
+                    method: "GET",
+                    credentials: "same-origin"
+                })
+                    .then(resp => resp.text())
+                    .then(text => (this.textFileContent = text))
+                    .catch(err => this.logError(err));
+            }
+
+            this.window().show();
+        });
     },
     methods: {
         window: function() {
