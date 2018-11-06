@@ -3,7 +3,6 @@
 		:style="[hover || selected ? {'background-color': 'rgba(0, 0, 0, 0.1)'} : {'background-color': 'white'} ]"
 		@mouseover="hover = true;"
 		@mouseleave="hover = false;"
-		@click="oneClick"
 		@click.right.prevent="showContextMenu($event, file);"
 	>
 		<td style="text-align: center;">
@@ -13,11 +12,25 @@
 				v-model="selected"
 				@change="toggleSelect">
 		</td>
-		<td style="width: 30px;" v-if="file.type == 'image'">
-			<img :src="Params.Host + '/' + file.preview" style="width: 30px;">
+		<td
+			v-if="file.type == 'image'"
+			title="Show preview"
+			style="width: 50px; text-align: center; cursor: pointer;"
+			@click="showPreview"
+		>
+			<img
+				style="display: inline-block; height: auto; max-height: 100%; max-width: 100%; width: auto;"	
+				:src="Params.Host + '/' + file.preview">
 		</td>
-		<td v-else style="width: 30px; text-align: center;">
-			<img :src="Params.Host + '/ext/' + file.filename.split('.').pop()" style="width: 30px;">
+		<td
+			v-else
+			style="width: 50px; text-align: center; cursor: pointer;"
+			title="Show preview"
+			@click="showPreview"
+		>
+			<img
+				style="width: 30px; cursor: pointer;"
+				:src="Params.Host + '/ext/' + file.filename.split('.').pop()">
 		</td>	
 		<td>
 			<div class="filename" :title="file.filename">
@@ -25,9 +38,10 @@
 			</div>
 		</td>
 		<td>
-			<div style="display: flex;">
+			<div style="display: flex; flex-wrap: wrap;">
 				<div
 					class="tag"
+					style="margin-top: 3px; margin-bottom: 3px;"
 					v-for="(id, index) in file.tags"
 					:key="index"
 					:style="{ 'background-color': allTags[id].color == undefined ? 'white' : allTags[id].color }"
@@ -50,8 +64,6 @@
 <script>
 import { Events, EventBus } from "../eventBus";
 
-const doubleClickDelay = 500; // ms
-
 export default {
     props: {
         file: Object,
@@ -61,9 +73,6 @@ export default {
         return {
             hover: false,
             selected: false,
-            // Double click
-            clicks: 0,
-            timer: null
         };
     },
     methods: {
@@ -87,18 +96,8 @@ export default {
         unselect: function() {
             this.selected = false;
         },
-        oneClick: function() {
-            this.clicks++;
-            if (this.clicks >= 2) {
-                this.clicks = 0;
-                // Open preview
-                EventBus.$emit(Events.ShowPreview, { file: this.file });
-                clearTimeout(this.timer);
-            } else {
-                this.timer = setTimeout(() => {
-                    this.clicks = 0;
-                }, doubleClickDelay);
-            }
+        showPreview: function() {
+            EventBus.$emit(Events.ShowPreview, { file: this.file });
         }
     }
 };
