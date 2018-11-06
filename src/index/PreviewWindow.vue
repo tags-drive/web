@@ -1,37 +1,77 @@
 <template>
 	<div
-		id="preview-window"
+		id="preview-background"
 		@click.self="window().hide()"
 		v-if="show"
 		@keydown.right="nextPreview"
 		@keydown.left="previousPreview"
 	>
-		<!-- TODO -->
-		<!-- Title -->
-		<div
-			v-if="isTextFile()"
-			id="text-preview"
-		>
-			<pre>{{textFileContent}}</pre>
-		</div>
-		<div
-			v-else-if="isImage()"
-			id="image-preview"
-		>
-			<img :src="Params.Host + '/' + file.origin">
-		</div>
-		<div
-			v-else
-			style="text-align: center;"
-		>
-			<h2>Preview for this file is unsupported</h2>
+		<div id="preview-window">
+			<!-- Preview -->
+			<div id="preview">
+				<!-- Text -->
+				<div
+					v-if="isTextFile()"
+					id="text-preview"
+				>
+					<pre>{{textFileContent}}</pre>
+				</div>
+				<!-- Image -->
+				<div
+					v-else-if="isImage()"
+					id="image-preview"
+				>
+					<span class="helper"></span>
+					<img :src="Params.Host + '/' + file.origin">
+				</div>
+				<!-- Unsopported format -->
+				<div
+					v-else
+					id="unsopported-format"
+				>
+					<br>
+					<span>Preview for this file is unsupported</span>
+				</div>
+			</div>
+
+			<!-- Info -->
+			<div id="info">
+				<!-- Filename -->
+				<div class="header" style="margin-top: 0; border-radius: inherit;">Filename</div>
+				<div class="content">
+					{{file.filename}}
+				</div>
+
+				<!-- Tags -->
+				<div class="header">Tags</div>
+				<div class="content" style="min-height: 30px;">
+					<div v-if="file.tags.length === 0">Empty</div>
+					<div v-else id="tags">
+						<div
+							class="tag"
+							style="margin-bottom: 3px;"
+							v-for="(id, index) in file.tags"
+							:key="index"
+							:style="{ 'background-color': SharedStore.state.allTags[id].color == undefined ? 'white' : SharedStore.state.allTags[id].color }"
+						>
+							<div>{{SharedStore.state.allTags[id].name}}</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Description -->
+				<div class="header">Description</div>
+				<div class="content">
+					{{file.description === "" ? 'Empty' : file.description}}
+				</div>
+			</div>
 		</div>
 	</div>
 </template>
 
 
-<style le scoped>
-#preview-window {
+<style scoped>
+#preview-background {
     background-color: #00000070;
     height: 100%;
     left: 0;
@@ -41,18 +81,35 @@
     z-index: 5;
 }
 
+#preview-window {
+    background-color: #00000080;
+    border-radius: 5px;
+    display: flex;
+    height: 80%;
+    justify-content: space-between;
+    margin: auto;
+    max-width: 1100px;
+    padding: 5px;
+    position: relative;
+    top: 70px;
+    width: 90%;
+}
+
+#preview {
+    height: 100%;
+    width: 75%;
+}
+
+/* Previews */
 #text-preview,
 #image-preview {
-    position: relative;
-    top: 10%;
-    width: 80%;
-    height: 80%;
-    margin: auto;
+    height: 100%;
+    width: 100%;
 }
 
 #text-preview {
     background-color: white;
-    padding: 5px;
+    border-radius: 5px;
 }
 
 #text-preview > pre {
@@ -60,14 +117,56 @@
     padding: 10px;
 }
 
+#image-preview {
+    text-align: center;
+}
+
 #image-preview > img {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+    display: inline-block;
+    height: auto;
     max-height: 100%;
     max-width: 100%;
-    height: auto;
+    vertical-align: middle;
     width: auto;
+}
+
+/* Help to center an image vertically */
+.helper {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+#unsopported-format {
+    background-color: white;
+    font-size: 30px;
+    height: 100%;
+    text-align: center;
+}
+
+/* Info block */
+#info {
+    background-color: white;
+    border-radius: 5px;
+    width: 24%;
+}
+
+#tags {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.header {
+    background-image: linear-gradient(white, #00000015, white);
+    font-size: 20px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.content {
+    font-size: 18px;
+    padding: 5px;
+    word-break: break-all;
 }
 </style>
 
