@@ -17,7 +17,7 @@
 			<img :src="Params.Host + '/' + file.preview" style="width: 30px;">
 		</td>
 		<td v-else style="width: 30px; text-align: center;">
-			<img :src="'/ext/' + file.filename.split('.').pop()" style="width: 30px;">
+			<img :src="Params.Host + '/ext/' + file.filename.split('.').pop()" style="width: 30px;">
 		</td>	
 		<td>
 			<div class="filename" :title="file.filename">
