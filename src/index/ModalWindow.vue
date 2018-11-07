@@ -102,9 +102,10 @@
 				<p></p>
 				<div style="margin-right: auto; margin-left: auto; width: 40%;">
 					<tags-manager
-						mode="add"
 						:tags="SharedStore.state.allTags"
 					></tags-manager>
+					<br>
+					<input class="btn" type="button" value="Add tags" @click="filesAPI().tagSelectedFiles()">
 				</div>
 			</div>
 			<!-- Select tags deleting -->
@@ -113,9 +114,10 @@
 				<p></p>
 				<div style="margin-right: auto; margin-left: auto; width: 40%;">
 					<tags-manager
-						mode="del"
 						:tags="SharedStore.state.allTags"
 					></tags-manager>
+					<br>
+					<input class="btn" type="button" value="Delete tags" @click="filesAPI().untagSelectedFiles()">
 				</div>
 			</div>
 			<!-- Select delete mode -->
@@ -549,7 +551,12 @@ export default {
                         .catch(err => this.logError(err));
                 },
                 // Select mode
-                tagSelectedFiles: tagIDs => {
+                tagSelectedFiles: () => {
+                    if (this.$children.length == 0 || this.$children[0].selectedTags === undefined) {
+                        return;
+                    }
+
+                    let tagIDs = this.$children[0].selectedTags;
                     if (tagIDs.length == 0) {
                         return;
                     }
@@ -589,7 +596,12 @@ export default {
                         })
                         .catch(err => this.logError(err));
                 },
-                untagSelectedFiles: tagIDs => {
+                untagSelectedFiles: () => {
+                    if (this.$children.length == 0 || this.$children[0].selectedTags === undefined) {
+                        return;
+                    }
+
+                    let tagIDs = this.$children[0].selectedTags;
                     if (tagIDs.length == 0) {
                         return;
                     }
