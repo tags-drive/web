@@ -20,7 +20,8 @@ export const Events = {
     ResetSortParams: "reset-sort-params",
     ShowContextMenu: "show-context-menu",
 	UnselectAllFiles: "unselect-all-files",
-	LogEvent: "log-event"
+	LogEvent: "log-event",
+	ShowPreview: "show-preview"
 };
 
 export const EventBus = new Vue({});

@@ -12,11 +12,25 @@
 				v-model="selected"
 				@change="toggleSelect">
 		</td>
-		<td style="width: 30px;" v-if="file.type == 'image'">
-			<img :src="Params.Host + '/' + file.preview" style="width: 30px;">
+		<td
+			v-if="file.type == 'image'"
+			title="Show preview"
+			style="width: 50px; text-align: center; cursor: pointer;"
+			@click="showPreview"
+		>
+			<img
+				style="display: inline-block; height: auto; max-height: 100%; max-width: 100%; width: auto;"	
+				:src="Params.Host + '/' + file.preview">
 		</td>
-		<td v-else style="width: 30px; text-align: center;">
-			<img :src="Params.Host + '/ext/' + file.filename.split('.').pop()" style="width: 30px;">
+		<td
+			v-else
+			style="width: 50px; text-align: center; cursor: pointer;"
+			title="Show preview"
+			@click="showPreview"
+		>
+			<img
+				style="width: 30px; cursor: pointer;"
+				:src="Params.Host + '/ext/' + file.filename.split('.').pop()">
 		</td>	
 		<td>
 			<div class="filename" :title="file.filename">
@@ -24,9 +38,10 @@
 			</div>
 		</td>
 		<td>
-			<div style="display: flex;">
+			<div style="display: flex; flex-wrap: wrap;">
 				<div
 					class="tag"
+					style="margin-top: 3px; margin-bottom: 3px;"
 					v-for="(id, index) in file.tags"
 					:key="index"
 					:style="{ 'background-color': allTags[id].color == undefined ? 'white' : allTags[id].color }"
@@ -57,7 +72,7 @@ export default {
     data: function() {
         return {
             hover: false,
-            selected: false
+            selected: false,
         };
     },
     methods: {
@@ -80,6 +95,9 @@ export default {
         },
         unselect: function() {
             this.selected = false;
+        },
+        showPreview: function() {
+            EventBus.$emit(Events.ShowPreview, { file: this.file });
         }
     }
 };
