@@ -9,6 +9,25 @@
 		<div id="preview-window">
 			<!-- Preview -->
 			<div id="preview">
+				<!-- Previous button -->
+				<div
+					v-if="fileIndex > 0"
+					class="switch-button"
+					style="left: 0;"
+					@click="previousPreview"
+				>
+					<i class="material-icons switch-button__arrow">keyboard_arrow_left</i>
+				</div>
+				<!-- Next button -->
+				<div
+					v-if="fileIndex < SharedStore.state.allFiles.length - 1"
+					class="switch-button"
+					style="right: 0;"
+					@click="nextPreview"
+				>
+					<i class="material-icons switch-button__arrow">keyboard_arrow_right</i>
+				</div>
+
 				<!-- Text -->
 				<div
 					v-if="isTextFile()"
@@ -97,10 +116,33 @@
 
 #preview {
     height: 100%;
+    position: relative;
     width: 75%;
 }
 
 /* Previews */
+.switch-button {
+    border-radius: 5px;
+    cursor: pointer;
+    height: 100%;
+    opacity: 0.3;
+    position: absolute;
+    width: 15%;
+}
+
+.switch-button:hover {
+    background-color: #00000020;
+    opacity: 0.8;
+}
+
+.switch-button__arrow {
+    font-size: 50px;
+    left: calc(50% - 25px);
+    opacity: inherit;
+    position: absolute;
+    top: calc(50% - 25px);
+}
+
 #text-preview,
 #image-preview {
     height: 100%;
@@ -108,6 +150,9 @@
 }
 
 #text-preview {
+    /* If width == 100%, buttons cover text */
+    width: 70%;
+    margin: auto;
     background-color: white;
     border-radius: 5px;
 }
