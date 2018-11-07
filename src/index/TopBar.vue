@@ -45,7 +45,12 @@
 			></div>
 
 			<div id="advanced-menu">
-				<input v-model="text" type="text" placeholder="Text for search" style="margin-right: 5px;">
+				<input
+					type="text"
+					style="margin-right: 5px;"
+					placeholder="Text for search"
+					v-model="text"
+					@keydown.enter="search().usual()">
 
 				<div class="vertically noselect" style="margin-right: 5px;">Mode</div>
 				<select
