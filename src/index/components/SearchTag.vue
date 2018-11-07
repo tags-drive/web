@@ -7,7 +7,7 @@
 	>
 		<div>{{tag.name}}</div>
 		<i
-			class="material-icons"
+			class="material-icons noselect"
 			style="cursor: pointer; font-size: 20px;"
 			v-show="show"
 			@click="deleteTagFromSearch();"

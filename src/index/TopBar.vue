@@ -1,13 +1,13 @@
 <template>
 <div id="top-bar">
 	<!-- Logo -->
-	<div id="logo"><span>Tags Drive</span></div>
+	<div id="logo"><span class="noselect">Tags Drive</span></div>
 
 	<!-- Search bar -->
 	<div id="search">
 		<div id="search__tags">
 			<i
-				class="material-icons"
+				class="material-icons noselect"
 				style="cursor: pointer; margin-right: 10px;"
 				title="Add tags for search"
 				@click="tagsMenu().show()"
@@ -47,7 +47,7 @@
 			<div id="advanced-menu">
 				<input v-model="text" type="text" placeholder="Text for search" style="margin-right: 5px;">
 
-				<div class="vertically" style="margin-right: 5px;">Mode</div>
+				<div class="vertically noselect" style="margin-right: 5px;">Mode</div>
 				<select
 					style="margin-right: 5px;"
 					v-model="selectedMode"
@@ -60,7 +60,7 @@
 
 			<div style="height: 100%;">
 				<i
-					class="material-icons"
+					class="material-icons noselect"
 					style="font-size: 37px; cursor: pointer;"
 					@click="search().usual()"
 				>search</i>
@@ -71,7 +71,7 @@
 	<!-- Settings -->
 	<div
 		id="tag-editing-button"
-		class="vertically"
+		class="vertically noselect"
 		@click="settings().tags()"
 	>
 		<img src="/static/icons/tag.png" title="Change tags">
@@ -79,7 +79,7 @@
 
 	<!-- Log out -->
 	<div id="logout" class="vertically">
-		<i class="material-icons" style="font-size: 30px;" title="Log out" @click="settings().logout()">exit_to_app</i>
+		<i class="material-icons noselect" style="font-size: 30px;" title="Log out" @click="settings().logout()">exit_to_app</i>
 	</div>
 </div>
 </template>

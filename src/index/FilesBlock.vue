@@ -4,7 +4,7 @@
 		:style="{'opacity': SharedState.state.mainBlockOpacity}"
 	>
 		<tr>
-			<th style="text-align: center; width: 30px;">
+			<th class="noselect" style="text-align: center; width: 30px;">
 				<input
 					type="checkbox"
 					style="height: 15px; width: 15px;"
@@ -18,33 +18,33 @@
 			<th>
 				<!-- Preview image -->
 			</th>
-			<th style="width: 210px;">
+			<th class="noselect" style="width: 210px;">
 				Filename
 				<i
 					id="sortByNameIcon"
-					class="material-icons"
+					class="material-icons noselect"
 					style="font-size: 20px; cursor: pointer;"
 					@click="sort().byName()"
 					:style="[sortByNameModeAsc ? {'transform': 'scale(1, 1)'} : {'transform': 'scale(1, -1)'}]"
 				>sort</i>
 			</th>
-			<th>Tags</th>
-			<th style="width: 20%;">Description</th>
-			<th style="width: 100px;">
+			<th class="noselect">Tags</th>
+			<th class="noselect" style="width: 20%;">Description</th>
+			<th class="noselect" style="width: 100px;">
 				Size (MB)
 				<i
 					id="sortByNameSize"
-					class="material-icons"
+					class="material-icons noselect"
 					style="transform: scale(1, 1); font-size: 20px; cursor: pointer;"
 					@click="sort().bySize()"
 					:style="[sortBySizeModeAsc ? {'transform': 'scale(1, 1)'} : {'transform': 'scale(1, -1)'}]"
 				>sort</i>
 			</th>
-			<th style="width: 150px;">
+			<th class="noselect" style="width: 150px;">
 				Time of adding
 				<i
 				id="sortByNameTime"
-				class="material-icons"
+				class="material-icons noselect"
 				style="transform: scale(1, 1); font-size: 20px; cursor: pointer;"
 				@click="sort().byTime()"
 				:style="[sortByTimeModeAsc ? {'transform': 'scale(1, 1)'} : {'transform': 'scale(1, -1)'}]"

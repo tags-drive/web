@@ -16,7 +16,7 @@
 					style="left: 0;"
 					@click="previousPreview"
 				>
-					<i class="material-icons switch-button__arrow">keyboard_arrow_left</i>
+					<i class="material-icons noselect switch-button__arrow">keyboard_arrow_left</i>
 				</div>
 				<!-- Next button -->
 				<div
@@ -25,7 +25,7 @@
 					style="right: 0;"
 					@click="nextPreview"
 				>
-					<i class="material-icons switch-button__arrow">keyboard_arrow_right</i>
+					<i class="material-icons noselect switch-button__arrow">keyboard_arrow_right</i>
 				</div>
 
 				<!-- Text -->
@@ -56,13 +56,13 @@
 			<!-- Info -->
 			<div id="info">
 				<!-- Filename -->
-				<div class="header" style="margin-top: 0; border-radius: inherit;">Filename</div>
+				<div class="header noselect" style="margin-top: 0; border-radius: inherit;">Filename</div>
 				<div class="content">
 					{{file.filename}}
 				</div>
 
 				<!-- Tags -->
-				<div class="header">Tags</div>
+				<div class="header noselect">Tags</div>
 				<div class="content" style="min-height: 30px;">
 					<div v-if="file.tags.length === 0">Empty</div>
 					<div v-else id="tags">
@@ -79,7 +79,7 @@
 				</div>
 
 				<!-- Description -->
-				<div class="header">Description</div>
+				<div class="header noselect">Description</div>
 				<div class="content">
 					{{file.description === "" ? 'Empty' : file.description}}
 				</div>

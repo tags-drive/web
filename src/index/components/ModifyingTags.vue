@@ -28,7 +28,7 @@
 			v-model="newColor">
 
 		<i
-			class="material-icons btn"
+			class="material-icons btn noselect"
 			style="margin-right: 10px;"
 			title="Generate a new color"
 			@click="generateRandomColor"
@@ -36,7 +36,7 @@
 
 		<div style="display: flex;">
 			<i
-			class="material-icons btn"
+			class="material-icons btn noselect"
 			style="margin-right: 5px;" 
 			title="Save"
 			@click="save"
@@ -44,14 +44,14 @@
 
 			<i
 				v-if="!isDeleted"
-				class="material-icons btn"
+				class="material-icons btn noselect"
 				title="Delete"
 				@click="del"
 				:style="[isDeleted ? {'opacity': '0.3', 'background-color': 'white', 'cursor': 'default'} : {'opacity': '1'}]"
 			>delete</i>
 			<i
 				v-else
-				class="material-icons btn"
+				class="material-icons btn noselect"
 				title="Undo"
 				@click="recover"
 			>undo</i>

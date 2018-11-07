@@ -8,7 +8,7 @@
 	>
 		<div style="float: right;">
 			<i
-				class="material-icons btn"
+				class="material-icons btn noselect"
 				@click="window().hide()"
 			>close</i>
 		</div>
