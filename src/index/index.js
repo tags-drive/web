@@ -2,8 +2,24 @@ import Vue from "vue";
 // Shared data
 import SharedStore from "./store";
 import SharedState from "./state";
-import { Params, Const } from "../global";
+import { Params } from "../global";
 import { Events, EventBus } from "./eventBus";
+
+const Const = {
+    sortType: {
+        name: "name",
+        size: "size",
+        time: "time"
+    },
+    sortOrder: {
+        asc: "asc",
+        desc: "desc"
+    },
+    logType: {
+        info: "info",
+        error: "error"
+    }
+};
 
 Vue.prototype.SharedState = SharedState; // It is undefined inside Vue components without it
 Vue.prototype.SharedStore = SharedStore;
