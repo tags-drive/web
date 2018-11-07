@@ -60,9 +60,9 @@ export default {
         };
         setInterval(() => {
             if (this.counter == 0) {
-                this.SharedState.commit("increaseMainBlockOpacity");
+                this.SharedState.commit("increaseFilesBlockOpacity");
             } else {
-                this.SharedState.commit("reduceMainBlockOpacity");
+                this.SharedState.commit("reduceFilesBlockOpacity");
             }
         }, 10);
     },

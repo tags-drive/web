@@ -1,7 +1,7 @@
 <template>
 	<table
 		id="file-table"
-		:style="{'opacity': SharedState.state.mainBlockOpacity}"
+		:style="{'opacity': SharedState.state.filesBlockOpacity}"
 	>
 		<tr>
 			<th class="noselect" style="text-align: center; width: 30px;">

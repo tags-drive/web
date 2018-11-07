@@ -5,16 +5,16 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
-        mainBlockOpacity: 1,
+        filesBlockOpacity: 1,
         showDropLayer: true, // when we show modal-window with tags showDropLayer is false
         selectMode: false
     },
     mutations: {
-        increaseMainBlockOpacity(state) {
-            state.mainBlockOpacity = 1;
+        increaseFilesBlockOpacity(state) {
+            state.filesBlockOpacity = 1;
         },
-        reduceMainBlockOpacity(state) {
-            state.mainBlockOpacity = 0.3;
+        reduceFilesBlockOpacity(state) {
+            state.filesBlockOpacity = 0.3;
         },
         showDropLayer(state) {
             state.showDropLayer = true;
