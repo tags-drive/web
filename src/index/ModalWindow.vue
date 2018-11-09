@@ -567,9 +567,12 @@ export default {
                             this.logError(err);
                         });
                 },
-                deleteFile: () => {
+                deleteFile: force => {
                     let params = new URLSearchParams();
                     params.append("file", this.file.filename);
+                    if (force === true) {
+                        params.append("force", "true");
+                    }
 
                     fetch(this.Params.Host + "/api/files?" + params, {
                         method: "DELETE",
@@ -619,8 +622,9 @@ export default {
                         })
                         .catch(err => this.logError(err));
                 },
+                // deleteFileForever is a wrapper over deleteFile
                 deleteFileForever: () => {
-                    console.log("Force deleting");
+                    this.filesAPI().deleteFile(true);
                 },
                 recoverFile: () => {
                     console.log("Regular recover");
@@ -715,10 +719,13 @@ export default {
                         })
                         .catch(err => this.logError(err));
                 },
-                deleteSelectedFiles: () => {
+                deleteSelectedFiles: force => {
                     let params = new URLSearchParams();
                     for (let f of this.selectedFiles) {
                         params.append("file", f.filename);
+                    }
+                    if (force === true) {
+                        params.append("force", "true");
                     }
 
                     fetch(this.Params.Host + "/api/files?" + params, {
@@ -772,8 +779,9 @@ export default {
                     // If we don't call this function, next files will become selected.
                     EventBus.$emit(Events.UnselectAllFiles);
                 },
+                // deleteSelectedFilesForever is a wrapper over deleteFile
                 deleteSelectedFilesForever: () => {
-                    console.log("Force selected deleting");
+                    this.filesAPI().deleteSelectedFiles(true);
                 },
                 recoverSelectedFiles: () => {
                     console.log("Selected recover");
