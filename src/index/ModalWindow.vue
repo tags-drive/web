@@ -627,7 +627,29 @@ export default {
                     this.filesAPI().deleteFile(true);
                 },
                 recoverFile: () => {
-                    console.log("Regular recover");
+                    let params = new URLSearchParams();
+                    params.append("file", this.file.filename);
+
+                    fetch(this.Params.Host + "/api/files/recover", {
+                        body: params,
+                        method: "POST",
+                        credentials: "same-origin"
+                    })
+                        .then(resp => {
+                            if (this.isErrorStatusCode(resp.status)) {
+                                resp.text().then(text => {
+                                    this.logError(text);
+                                });
+                                return;
+                            }
+
+                            // Refresh list of files
+                            this.SharedStore.commit("updateFiles");
+                            EventBus.$emit(Events.UnselectAllFiles);
+                            this.hideWindow();
+                        })
+                        .then(this.logInfo("File was recovered"))
+                        .catch(err => this.logError(err));
                 },
                 // Select mode
                 tagSelectedFiles: () => {
@@ -784,7 +806,31 @@ export default {
                     this.filesAPI().deleteSelectedFiles(true);
                 },
                 recoverSelectedFiles: () => {
-                    console.log("Selected recover");
+                    let params = new URLSearchParams();
+                    for (let f of this.selectedFiles) {
+                        params.append("file", f.filename);
+                    }
+
+                    fetch(this.Params.Host + "/api/files/recover", {
+                        body: params,
+                        method: "POST",
+                        credentials: "same-origin"
+                    })
+                        .then(resp => {
+                            if (this.isErrorStatusCode(resp.status)) {
+                                resp.text().then(text => {
+                                    this.logError(text);
+                                });
+                                return;
+                            }
+
+                            // Refresh list of files
+                            this.SharedStore.commit("updateFiles");
+                            EventBus.$emit(Events.UnselectAllFiles);
+                            this.hideWindow();
+                        })
+                        .then(this.logInfo("Files were recovered"))
+                        .catch(err => this.logError(err));
                 }
             };
         },
