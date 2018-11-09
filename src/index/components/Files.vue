@@ -83,7 +83,7 @@ export default {
                 bgColor = "rgba(0, 0, 0, 0.1)";
             }
             return {
-                opacity: this.file.deleted ? 0.4 : 1,
+                opacity: this.file.deleted && !this.selected ? 0.4 : 1,
                 "background-color": bgColor
             };
         },
