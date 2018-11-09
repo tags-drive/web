@@ -82,19 +82,33 @@
 			</div>
 			<!-- Regular delete mode -->
 			<div v-else-if="regularDeleteMode" class="modal-window__input">
-				<input
+				<!-- Delete -->
+				<input v-if="!file.deleted"
 					type="button"
 					class="btn deleteBtn"
-					style="height: 50px; width: 100px;"
-					value="Delete"
+					style="height: 50px; width: 120px;"
+					value="Add into Trash"
+					title="File will be deleted in 7 days"
 					@click="filesAPI().deleteFile()">
-				
+				<!-- Recover -->
+				<input v-else
+					type="button"
+					class="btn recoverBtn"
+					style="height: 50px; width: 120px;"
+					value="Recover"
+					title="File will be removed from Trash"
+					@click="filesAPI().recoverFile()">
+
+				<br>
+
+				<!--  Force delete -->
 				<input
 					type="button"
-					class="btn"
-					style="height: 50px; width: 100px;"
-					value="Cancel"
-					@click="hideWindow">
+					class="btn deleteForeverBtn"
+					style="height: 30px; width: 120px; margin-top: 20px; left: 5px;"
+					value="Delete file forever"
+					title="This action can not be undone"
+					@click="filesAPI().deleteFileForever()">
 			</div>
 			<!-- Select tags adding -->
 			<div v-else-if="selectFilesTagsAddMode" class="modal-window__input">
@@ -135,16 +149,29 @@
 				<input
 					type="button"
 					class="btn deleteBtn"
-					style="height: 50px; width: 100px;"
-					value="Delete"
+					style="height: 50px; width: 120px;"
+					value="Add into Trash"
+					title="Files will be deleted in 7 days"
 					@click="filesAPI().deleteSelectedFiles()">
 
 				<input
 					type="button"
-					class="btn"
-					style="height: 50px; width: 100px;"
-					value="Cancel"
-					@click="hideWindow">
+					class="btn recoverBtn"
+					style="height: 50px; width: 120px; margin-left: 10px;"
+					value="Recover"
+					title="Files will be removed from Trash"
+					@click="filesAPI().recoverSelectedFiles()">
+
+				<br>
+
+				<!--  Force delete -->
+				<input
+					type="button"
+					class="btn deleteForeverBtn"
+					style="height: 30px; width: 130px; margin-top: 20px;"
+					value="Delete files forever"
+					title="This action can not be undone"
+					@click="filesAPI().deleteSelectedFilesForever()">
 			</div>
 		</div>
 	</div>
@@ -209,11 +236,27 @@
 }
 
 .deleteBtn {
-    background-color: rgba(255, 0, 0, 0.65);
+    background-color: rgba(255, 0, 0, 0.6);
 }
 
 .deleteBtn:hover {
-    background-color: rgba(221, 3, 3, 0.8);
+    background-color: rgba(255, 0, 0, 0.7);
+}
+
+.deleteForeverBtn {
+    background-color: rgba(222, 0, 0, 0.2);
+}
+
+.deleteForeverBtn:hover {
+    background-color: rgba(222, 0, 0, 0.7);
+}
+
+.recoverBtn {
+    background-color: rgba(0, 200, 0, 0.6);
+}
+
+.recoverBtn:hover {
+    background-color: rgba(0, 200, 0, 0.7);
 }
 </style>
 
@@ -524,9 +567,12 @@ export default {
                             this.logError(err);
                         });
                 },
-                deleteFile: () => {
+                deleteFile: force => {
                     let params = new URLSearchParams();
                     params.append("file", this.file.filename);
+                    if (force === true) {
+                        params.append("force", "true");
+                    }
 
                     fetch(this.Params.Host + "/api/files?" + params, {
                         method: "DELETE",
@@ -574,6 +620,35 @@ export default {
                                 }
                             }
                         })
+                        .catch(err => this.logError(err));
+                },
+                // deleteFileForever is a wrapper over deleteFile
+                deleteFileForever: () => {
+                    this.filesAPI().deleteFile(true);
+                },
+                recoverFile: () => {
+                    let params = new URLSearchParams();
+                    params.append("file", this.file.filename);
+
+                    fetch(this.Params.Host + "/api/files/recover", {
+                        body: params,
+                        method: "POST",
+                        credentials: "same-origin"
+                    })
+                        .then(resp => {
+                            if (this.isErrorStatusCode(resp.status)) {
+                                resp.text().then(text => {
+                                    this.logError(text);
+                                });
+                                return;
+                            }
+
+                            // Refresh list of files
+                            this.SharedStore.commit("updateFiles");
+                            EventBus.$emit(Events.UnselectAllFiles);
+                            this.hideWindow();
+                        })
+                        .then(this.logInfo("File was recovered"))
                         .catch(err => this.logError(err));
                 },
                 // Select mode
@@ -666,10 +741,13 @@ export default {
                         })
                         .catch(err => this.logError(err));
                 },
-                deleteSelectedFiles: () => {
+                deleteSelectedFiles: force => {
                     let params = new URLSearchParams();
                     for (let f of this.selectedFiles) {
                         params.append("file", f.filename);
+                    }
+                    if (force === true) {
+                        params.append("force", "true");
                     }
 
                     fetch(this.Params.Host + "/api/files?" + params, {
@@ -722,6 +800,37 @@ export default {
 
                     // If we don't call this function, next files will become selected.
                     EventBus.$emit(Events.UnselectAllFiles);
+                },
+                // deleteSelectedFilesForever is a wrapper over deleteFile
+                deleteSelectedFilesForever: () => {
+                    this.filesAPI().deleteSelectedFiles(true);
+                },
+                recoverSelectedFiles: () => {
+                    let params = new URLSearchParams();
+                    for (let f of this.selectedFiles) {
+                        params.append("file", f.filename);
+                    }
+
+                    fetch(this.Params.Host + "/api/files/recover", {
+                        body: params,
+                        method: "POST",
+                        credentials: "same-origin"
+                    })
+                        .then(resp => {
+                            if (this.isErrorStatusCode(resp.status)) {
+                                resp.text().then(text => {
+                                    this.logError(text);
+                                });
+                                return;
+                            }
+
+                            // Refresh list of files
+                            this.SharedStore.commit("updateFiles");
+                            EventBus.$emit(Events.UnselectAllFiles);
+                            this.hideWindow();
+                        })
+                        .then(this.logInfo("Files were recovered"))
+                        .catch(err => this.logError(err));
                 }
             };
         },

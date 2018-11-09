@@ -58,7 +58,7 @@
 				<!-- Filename -->
 				<div class="header noselect" style="margin-top: 0; border-radius: inherit;">Filename</div>
 				<div class="content">
-					{{file.filename}}
+					{{file.filename}} <span v-if="file.deleted" style="color: red">(in Trash)</span>
 				</div>
 
 				<!-- Tags -->

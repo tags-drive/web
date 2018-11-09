@@ -1,6 +1,7 @@
 <template>
 	<tr
-		:style="[hover || selected ? {'background-color': 'rgba(0, 0, 0, 0.1)'} : {'background-color': 'white'} ]"
+		:style="stylesObject"
+		:title="titleMessage"
 		@mouseover="hover = true;"
 		@mouseleave="hover = false;"
 		@click.right.prevent="showContextMenu($event, file);"
@@ -72,8 +73,41 @@ export default {
     data: function() {
         return {
             hover: false,
-            selected: false,
+            selected: false
         };
+    },
+    computed: {
+        stylesObject: function() {
+            let bgColor = "white";
+            if (this.hover || this.selected) {
+                bgColor = "rgba(0, 0, 0, 0.1)";
+            }
+            return {
+                opacity: this.file.deleted && !this.selected ? 0.4 : 1,
+                "background-color": bgColor
+            };
+        },
+        titleMessage: function() {
+            if (!this.file.deleted) {
+                return "";
+            }
+            let date = new Date(this.file.timeToDelete),
+                now = new Date();
+
+            let leftHours = Math.round((date - now) / (1000 * 60 * 60)), // in hours
+                leftDays = 0;
+            if (leftHours < 1) {
+                // File should be already deleted or it's left less than 1 hour
+                return "File is in a Trash. It will be deleted soon";
+            }
+
+            if (leftHours > 24) {
+                leftDays = Math.round(leftHours / 24);
+                leftHours = leftHours % 24;
+            }
+
+            return `File is in a Trash. It will be deleted in ${leftDays} days ${leftHours} hours`;
+        }
     },
     methods: {
         showContextMenu: function(event) {
