@@ -168,7 +168,7 @@
 				<input
 					type="button"
 					class="btn deleteForeverBtn"
-					style="height: 30px; width: 120px; margin-top: 20px;"
+					style="height: 30px; width: 130px; margin-top: 20px;"
 					value="Delete files forever"
 					title="This action can not be undone"
 					@click="filesAPI().deleteSelectedFilesForever()">
