@@ -82,19 +82,33 @@
 			</div>
 			<!-- Regular delete mode -->
 			<div v-else-if="regularDeleteMode" class="modal-window__input">
-				<input
+				<!-- Delete -->
+				<input v-if="!file.deleted"
 					type="button"
 					class="btn deleteBtn"
-					style="height: 50px; width: 100px;"
-					value="Delete"
+					style="height: 50px; width: 120px;"
+					value="Add into Trash"
+					title="File will be deleted in 7 days"
 					@click="filesAPI().deleteFile()">
-				
+				<!-- Recover -->
+				<input v-else
+					type="button"
+					class="btn recoverBtn"
+					style="height: 50px; width: 120px;"
+					value="Recover"
+					title="File will be removed from Trash"
+					@click="filesAPI().recoverFile()">
+
+				<br>
+
+				<!--  Force delete -->
 				<input
 					type="button"
-					class="btn"
-					style="height: 50px; width: 100px;"
-					value="Cancel"
-					@click="hideWindow">
+					class="btn deleteForeverBtn"
+					style="height: 30px; width: 120px; margin-top: 20px; left: 5px;"
+					value="Delete file forever"
+					title="This action can not be undone"
+					@click="filesAPI().deleteFileForever()">
 			</div>
 			<!-- Select tags adding -->
 			<div v-else-if="selectFilesTagsAddMode" class="modal-window__input">
@@ -135,16 +149,29 @@
 				<input
 					type="button"
 					class="btn deleteBtn"
-					style="height: 50px; width: 100px;"
-					value="Delete"
+					style="height: 50px; width: 120px;"
+					value="Add into Trash"
+					title="Files will be deleted in 7 days"
 					@click="filesAPI().deleteSelectedFiles()">
 
 				<input
 					type="button"
-					class="btn"
-					style="height: 50px; width: 100px;"
-					value="Cancel"
-					@click="hideWindow">
+					class="btn recoverBtn"
+					style="height: 50px; width: 120px; margin-left: 10px;"
+					value="Recover"
+					title="Files will be removed from Trash"
+					@click="filesAPI().recoverSelectedFiles()">
+
+				<br>
+
+				<!--  Force delete -->
+				<input
+					type="button"
+					class="btn deleteForeverBtn"
+					style="height: 30px; width: 120px; margin-top: 20px;"
+					value="Delete files forever"
+					title="This action can not be undone"
+					@click="filesAPI().deleteSelectedFilesForever()">
 			</div>
 		</div>
 	</div>
@@ -209,11 +236,27 @@
 }
 
 .deleteBtn {
-    background-color: rgba(255, 0, 0, 0.65);
+    background-color: rgba(255, 0, 0, 0.6);
 }
 
 .deleteBtn:hover {
-    background-color: rgba(221, 3, 3, 0.8);
+    background-color: rgba(255, 0, 0, 0.7);
+}
+
+.deleteForeverBtn {
+    background-color: rgba(222, 0, 0, 0.2);
+}
+
+.deleteForeverBtn:hover {
+    background-color: rgba(222, 0, 0, 0.7);
+}
+
+.recoverBtn {
+    background-color: rgba(0, 200, 0, 0.6);
+}
+
+.recoverBtn:hover {
+    background-color: rgba(0, 200, 0, 0.7);
 }
 </style>
 
@@ -576,6 +619,12 @@ export default {
                         })
                         .catch(err => this.logError(err));
                 },
+                deleteFileForever: () => {
+                    console.log("Force deleting");
+                },
+                recoverFile: () => {
+                    console.log("Regular recover");
+                },
                 // Select mode
                 tagSelectedFiles: () => {
                     if (this.$children.length == 0 || this.$children[0].selectedTags === undefined) {
@@ -722,6 +771,12 @@ export default {
 
                     // If we don't call this function, next files will become selected.
                     EventBus.$emit(Events.UnselectAllFiles);
+                },
+                deleteSelectedFilesForever: () => {
+                    console.log("Force selected deleting");
+                },
+                recoverSelectedFiles: () => {
+                    console.log("Selected recover");
                 }
             };
         },

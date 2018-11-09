@@ -35,10 +35,10 @@
 			</div>
 			<!-- Delete -->
 			<div v-if="!SharedState.state.selectMode">
-				<input type="button" class="btn" @click="regularMode().deleteFile()" value="Delete" style="margin-bottom: 0px;">
+				<input type="button" class="btn" @click="regularMode().deleteFile()" value="Delete menu" style="margin-bottom: 0px;">
 			</div>
 			<div v-else>
-				<input type="button" class="btn" @click="selectMode().deleteFiles()" value="Delete" style="margin-bottom: 0px;">
+				<input type="button" class="btn" @click="selectMode().deleteFiles()" value="Delete menu" style="margin-bottom: 0px;">
 			</div>
 		</div>
 	</div>
