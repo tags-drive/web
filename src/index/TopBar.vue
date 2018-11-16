@@ -5,71 +5,30 @@
 
 	<!-- Search bar -->
 	<div id="search">
-		<div id="search__tags">
-			<i
-				class="material-icons noselect"
-				style="cursor: pointer; margin-right: 10px;"
-				title="Add tags for search"
-				@click="tagsMenu().show()"
-			>
-				add_circle_outline
-			</i>
-			<search-tag
-				v-for="(tag, index) in pickedTags"
-				:key="index"
-				:tag="tag"></search-tag>
-
-			<!-- List of unpicked tags-->
-			<div
-				id="unpicked-tags"
-				v-if="showTagsList"
-				v-on-clickaway="() => tagsMenu().hide()"
-			>
-				<div
-					style="cursor: default; margin: auto;"
-					v-if="unusedTags.length == 0"
-				>Empty</div>
-
-				<suggestion-tag
-					v-for="(tag, index) in unusedTags"
-					:key="index"
-					:tag="tag"></suggestion-tag>
-			</div>
+		<div id="expression">
+			<input
+				id="expression__input"
+				type="search"
+				placeholder="Logical expression"
+				v-model="expression">
 		</div>
 
-		<div style="display: flex;">
-			<!-- Separator -->
-			<div
-				class="vertically"
-				style="border-right: 1px solid black; height: 90%; margin-right: 5px;"
-			></div>
+		<!-- Separator -->
+		<div id="separator"	class="vertically"></div>
 
-			<div id="advanced-menu">
-				<input
-					type="text"
-					style="margin-right: 5px;"
-					placeholder="Text for search"
-					v-model="text"
-					@keydown.enter="search().usual()">
+		<div id="text-search">
+			<input
+				type="text"
+				placeholder="Text for search"
+				v-model="text"
+				@keydown.enter="search().usual()">
+		</div>
 
-				<div class="vertically noselect" style="margin-right: 5px;">Mode</div>
-				<select
-					style="margin-right: 5px;"
-					v-model="selectedMode"
-				>
-					<option>And</option>
-					<option>Or</option>
-					<option>Not</option>
-				</select>
-			</div>
-
-			<div style="height: 100%;">
-				<i
-					class="material-icons noselect"
-					style="font-size: 37px; cursor: pointer;"
-					@click="search().usual()"
-				>search</i>
-			</div>
+		<div id="search-button">
+			<i
+				class="material-icons noselect"
+				@click="search().usual()"
+			>search</i>
 		</div>
 	</div>
 
@@ -121,47 +80,41 @@
     margin-top: auto;
     position: relative;
     width: 75%;
-    justify-content: space-between;
+    justify-content: space-around;
 }
 
-#search__tags {
+div#expression {
     display: flex;
     height: 25px;
-    margin-bottom: auto;
-    margin-right: 5px;
-    margin-top: auto;
-    padding: 5px;
+    margin: auto 0;
     position: relative;
+    width: 60%;
 }
 
-#unpicked-tags {
-    background-color: var(--secondary-color);
-    border: 1px solid var(--primary-border-color);
-    border-radius: 5px;
-    display: flex;
-    flex-wrap: wrap;
-    min-height: 20px;
-    padding: 5px;
-    position: absolute;
-    top: 35px;
-    width: 400px;
+input#expression__input {
+    width: 100%;
 }
 
-.suggestion-tag {
-    border-radius: 5px;
-    cursor: pointer;
-    padding: 4px;
+div#separator {
+    border-right: 1px solid black;
+    height: 90%;
 }
 
-.suggestion-tag:hover {
-    background-color: var(--secondary-element-color);
-}
-
-#advanced-menu {
+div#text-search {
     display: flex;
     height: 25px;
     margin-top: auto;
     margin-bottom: auto;
+    width: 30%;
+}
+
+div#text-search > input {
+    width: 100%;
+}
+
+div#search-button > i {
+    font-size: 37px;
+    cursor: pointer;
 }
 
 #tag-editing-button {
@@ -206,14 +159,11 @@ export default {
     },
     data: function() {
         return {
-            // Tag search
-            tagPrefix: "",
+            // Expression
+            expression: "",
             showTagsList: false,
-            pickedTags: [],
-            unusedTags: [],
-            // Advanced search
-            text: "",
-            selectedMode: "And"
+            // Text search
+            text: ""
         };
     },
     mounted: function() {
@@ -231,44 +181,21 @@ export default {
         });
     },
     methods: {
-        tagsMenu: function() {
-            return {
-                show: () => {
-                    if (this.pickedTags.length == 0) {
-                        // Need to fill unusedTags
-                        this.unusedTags = [];
-                        for (let tag in this.SharedStore.state.allTags) {
-                            this.unusedTags.push(this.SharedStore.state.allTags[tag]);
-                        }
-                    }
-
-                    this.showTagsList = true;
-                },
-                hide: () => {
-                    this.showTagsList = false;
-                }
-            };
-        },
         search: function() {
             return {
                 usual: () => {
                     EventBus.$emit(Events.UnselectAllFiles);
 
                     let params = new URLSearchParams();
-                    // tags
-                    if (this.pickedTags.length != 0) {
-                        let tags = [];
-                        for (let tag of this.pickedTags) {
-                            tags.push(tag.id);
-                        }
-                        params.append("tags", tags.join(","));
+                    // Expression
+                    if (this.expression != "") {
+                        params.append("expr", this.expression);
                     }
                     // search
                     if (this.text != "") {
                         params.append("search", this.text);
                     }
-                    // mode
-                    params.append("mode", this.selectedMode.toLowerCase());
+
                     // Can skip sort and order, because server will use default values
 
                     fetch(this.Params.Host + "/api/files?" + params, {
@@ -285,13 +212,9 @@ export default {
                     EventBus.$emit(Events.UnselectAllFiles);
 
                     let params = new URLSearchParams();
-                    // tags
-                    if (this.pickedTags.length != 0) {
-                        let tags = [];
-                        for (let tag of this.pickedTags) {
-                            tags.push(tag.name);
-                        }
-                        params.append("tags", tags.join(","));
+                    // Expression
+                    if (this.expression != "") {
+                        params.append("expr", this.expression);
                     }
                     // search
                     if (this.text != "") {
@@ -301,8 +224,6 @@ export default {
                     params.append("sort", sType);
                     // order
                     params.append("order", sOrder);
-                    // mode
-                    params.append("mode", this.selectedMode.toLowerCase());
 
                     fetch(this.Params.Host + "/api/files?" + params, {
                         method: "GET",
@@ -310,46 +231,6 @@ export default {
                     })
                         .then(data => data.json())
                         .then(files => this.SharedStore.commit("setFiles", files));
-                }
-            };
-        },
-        input: function() {
-            return {
-                tags: {
-                    add: tagID => {
-                        let index = -1;
-                        for (let i in this.unusedTags) {
-                            if (this.unusedTags[i].id == tagID) {
-                                index = i;
-                                break;
-                            }
-                        }
-                        if (index == -1) {
-                            return;
-                        }
-
-                        // Add a tag into pickedTags
-                        this.pickedTags.push(this.unusedTags[index]);
-                        // Remove a tag
-                        this.unusedTags.splice(index, 1);
-                    },
-                    delete: tagID => {
-                        let index = -1;
-                        for (let i in this.pickedTags) {
-                            if (this.pickedTags[i].id == tagID) {
-                                index = i;
-                                break;
-                            }
-                        }
-                        if (index == -1) {
-                            return;
-                        }
-
-                        // Return a tag to unusedTags
-                        this.unusedTags.push(this.pickedTags[index]);
-                        // Remove an element
-                        this.pickedTags.splice(index, 1);
-                    }
                 }
             };
         },
