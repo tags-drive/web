@@ -342,13 +342,18 @@ export default {
 
                     this.onkeydownHandler = window.onkeyup;
                     window.onkeydown = ev => {
+                        if (ev.ctrlKey || ev.altKey) {
+                            return;
+                        }
+
                         if (
-                            hasPrefix(ev.code, "Key") ||
+                            ev.key.length == 1 &&
+                            (hasPrefix(ev.code, "Key") ||
                             ev.key == "(" ||
                             ev.key == ")" ||
                             ev.key == "|" ||
                             hasPrefix(ev.code, "Numpad") ||
-                            hasPrefix(ev.code, "Digit")
+                                hasPrefix(ev.code, "Digit"))
                         ) {
                             this.expression =
                                 this.expression.substr(0, this.position) +
@@ -382,6 +387,13 @@ export default {
                         } else if (ev.code == "End") {
                             this.position = this.expression.length;
                         }
+                    };
+
+                    document.getElementById("expression-input").onpaste = ev => {
+                        let text = ev.clipboardData.getData("Text");
+                        this.expression =
+                            this.expression.substr(0, this.position) + text + this.expression.substr(this.position);
+                        this.position += text.length;
                     };
                 },
                 del: () => {
