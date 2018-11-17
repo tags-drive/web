@@ -18,6 +18,7 @@
 					id="expression-input"
 					placeholder="Logical expression"
 					tabindex="0"
+					@keydown.enter="search().usual()"
 					@focus="() => { focused = true; handler().add(); }"
 					@blur="() => {focused = false; handler().del(); }"
 				>
@@ -236,11 +237,23 @@ export default {
                         method: "GET",
                         credentials: "same-origin"
                     })
-                        .then(data => data.json())
+                        .then(resp => {
+                            if (this.isErrorStatusCode(resp.status)) {
+                                resp.text().then(text => {
+                                    this.logError(text);
+                                });
+                                return;
+                            }
+                            return resp.json();
+                        })
                         .then(files => {
+                            if (files === undefined) {
+                                return;
+                            }
                             this.SharedStore.commit("setFiles", files);
                             EventBus.$emit(Events.ResetSortParams);
-                        });
+                        })
+                        .catch(err => this.logError(err));
                 },
                 advanced: (sType, sOrder) => {
                     EventBus.$emit(Events.UnselectAllFiles);
@@ -263,8 +276,23 @@ export default {
                         method: "GET",
                         credentials: "same-origin"
                     })
-                        .then(data => data.json())
-                        .then(files => this.SharedStore.commit("setFiles", files));
+                        .then(resp => {
+                            if (this.isErrorStatusCode(resp.status)) {
+                                resp.text().then(text => {
+                                    this.logError(text);
+                                });
+                                return;
+                            }
+                            return resp.json();
+                        })
+                        .then(files => {
+                            if (files === undefined) {
+                                return;
+                            }
+                            this.SharedStore.commit("setFiles", files);
+                            EventBus.$emit(Events.ResetSortParams);
+                        })
+                        .catch(err => this.logError(err));
                 }
             };
         },
