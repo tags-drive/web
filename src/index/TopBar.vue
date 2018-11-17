@@ -20,11 +20,19 @@
 					tabindex="0"
 					@keydown.enter="search().usual()"
 					@focus="() => { focused = true; handler().add(); }"
-					@blur="() => {focused = false; handler().del(); }"
+					@blur="() => { focused = false; handler().del(); render() }"
 				>
-					<span style="line-height: 25px;">
+					<!--
+						We use v-show because we call document.getElementByID("expression-render") 
+						If it is v-if, <span id="expression-render"> doesn't exist
+					-->
+					<span v-show="focused" style=" line-height: 25px;">
 						{{expression}}
 					</span>
+					<div v-show="!focused"
+						id="expression-render"
+						style="line-height: 25px; margin: auto 0; height: 100%;"
+					></div>
 				</div>
 			</div>
 		</div>
@@ -90,7 +98,7 @@
     background-color: var(--primary-color);
     border: 1px var(--secondary-border-color) solid;
     border-radius: 5px;
-	display: flex;
+    display: flex;
     font: 16px "Courier New", Courier, monospace;
     height: 80%;
     margin-bottom: auto;
@@ -108,12 +116,17 @@ div#expression {
 }
 
 div#expression-input {
-	border: 1px solid black;
-	height: 100%;
+	cursor: text;
+    border: 1px solid black;
+    height: 100%;
     margin: auto 0;
     padding-left: 3px;
     position: absolute;
     width: 100%;
+}
+
+div#expression-render {
+    display: flex;
 }
 
 div#cursor {
@@ -138,8 +151,8 @@ div#text-search {
 
 div#text-search > input {
     border: 1px solid black;
-	height: 100%;
-	padding: 0;
+    height: 100%;
+    padding: 0;
     width: 100%;
 }
 
@@ -349,10 +362,10 @@ export default {
                         if (
                             ev.key.length == 1 &&
                             (hasPrefix(ev.code, "Key") ||
-                            ev.key == "(" ||
-                            ev.key == ")" ||
-                            ev.key == "|" ||
-                            hasPrefix(ev.code, "Numpad") ||
+                                ev.key == "(" ||
+                                ev.key == ")" ||
+                                ev.key == "|" ||
+                                hasPrefix(ev.code, "Numpad") ||
                                 hasPrefix(ev.code, "Digit"))
                         ) {
                             this.expression =
@@ -401,6 +414,45 @@ export default {
                     this.onkeydownHandler = null;
                 }
             };
+        },
+        render: function() {
+            let regex = /(\d+)(?=&|\)|\||!| )/;
+            // If there's no space at the end of string, while won't stop
+            let renderText = this.expression + " ";
+            while (regex.exec(renderText) != null) {
+                let name = "Undefined",
+                    color = "white",
+                    tag;
+
+                let id = regex.exec(renderText);
+                tag = this.SharedStore.state.allTags[Number(id[1])];
+                if (tag !== undefined) {
+                    color = tag.color == undefined ? "white" : tag.color;
+                    name = tag.name;
+                }
+
+                /* HTML code:
+				<div
+					class="tag"
+					style="height: 16px; line-height: 16px; margin: auto 0; background-color: {{color}}"
+				>
+					<div>{{name}}</div>
+				</div>
+				*/
+                let replaceStr =
+                    `<div
+						class="tag"
+						style="height: 16px; line-height: 16px; margin: auto 0; background-color: ` +
+                    color +
+                    `;"><div>` +
+                    name +
+                    `</div></div>`;
+
+                renderText = renderText.replace(regex, replaceStr);
+            }
+            // Remove last space
+            renderText = renderText.slice(0, -1);
+            document.getElementById("expression-render").innerHTML = renderText;
         }
     }
 };
