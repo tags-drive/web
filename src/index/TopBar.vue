@@ -6,11 +6,26 @@
 	<!-- Search bar -->
 	<div id="search">
 		<div id="expression">
-			<input
-				id="expression__input"
-				type="search"
-				placeholder="Logical expression"
-				v-model="expression">
+			<div style="position: relative; width: 100%; height: 100%;">
+				<div
+					v-if="focused"
+					id="cursor"
+					:style="{'left': position * 0.6 + 'em'}"
+				>
+				</div>
+
+				<div
+					id="expression-input"
+					placeholder="Logical expression"
+					tabindex="0"
+					@focus="() => { focused = true; handler().add(); }"
+					@blur="() => {focused = false; handler().del(); }"
+				>
+					<span style="line-height: 25px;">
+						{{expression}}
+					</span>
+				</div>
+			</div>
 		</div>
 
 		<!-- Separator -->
@@ -74,7 +89,8 @@
     background-color: var(--primary-color);
     border: 1px var(--secondary-border-color) solid;
     border-radius: 5px;
-    display: flex;
+	display: flex;
+    font: 16px "Courier New", Courier, monospace;
     height: 80%;
     margin-bottom: auto;
     margin-top: auto;
@@ -84,15 +100,28 @@
 }
 
 div#expression {
-    display: flex;
     height: 25px;
     margin: auto 0;
     position: relative;
     width: 60%;
 }
 
-input#expression__input {
+div#expression-input {
+	border: 1px solid black;
+	height: 100%;
+    margin: auto 0;
+    padding-left: 3px;
+    position: absolute;
     width: 100%;
+}
+
+div#cursor {
+    border-right: 1.5px solid black;
+    height: 75%; /* addition 5% for padding of div#expression-input */
+    left: 0;
+    margin: auto 0px auto 3px;
+    position: absolute;
+    top: 15%;
 }
 
 div#separator {
@@ -101,14 +130,15 @@ div#separator {
 }
 
 div#text-search {
-    display: flex;
     height: 25px;
-    margin-top: auto;
-    margin-bottom: auto;
+    margin: auto 0px;
     width: 30%;
 }
 
 div#text-search > input {
+    border: 1px solid black;
+	height: 100%;
+	padding: 0;
     width: 100%;
 }
 
@@ -161,9 +191,13 @@ export default {
         return {
             // Expression
             expression: "",
+            position: 0,
             showTagsList: false,
+            focused: false,
             // Text search
-            text: ""
+            text: "",
+            //
+            onkeydownHandler: null
         };
     },
     mounted: function() {
@@ -259,6 +293,72 @@ export default {
                             location.reload(true);
                         })
                         .catch(err => this.logError(err));
+                }
+            };
+        },
+        handler: function() {
+            return {
+                add: () => {
+                    let hasPrefix = (str, prefix) => {
+                        if (str.length < prefix.length) {
+                            return false;
+                        }
+
+                        for (let i = 0; i < prefix.length; i++) {
+                            if (str[i] != prefix[i]) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    };
+
+                    this.onkeydownHandler = window.onkeyup;
+                    window.onkeydown = ev => {
+                        if (
+                            hasPrefix(ev.code, "Key") ||
+                            ev.key == "(" ||
+                            ev.key == ")" ||
+                            ev.key == "|" ||
+                            hasPrefix(ev.code, "Numpad") ||
+                            hasPrefix(ev.code, "Digit")
+                        ) {
+                            this.expression =
+                                this.expression.substr(0, this.position) +
+                                ev.key +
+                                this.expression.substr(this.position);
+
+                            this.position++;
+                        } else if (hasPrefix(ev.code, "Arrow")) {
+                            // Arrow
+                            if (hasPrefix(ev.code, "ArrowLeft")) {
+                                if (this.position > 0) {
+                                    this.position--;
+                                }
+                            } else if (hasPrefix(ev.code, "ArrowRight")) {
+                                if (this.position < this.expression.length) {
+                                    this.position++;
+                                }
+                            }
+                        } else if (hasPrefix(ev.code, "Backspace")) {
+                            if (this.position == 0) {
+                                return;
+                            }
+                            this.expression =
+                                this.expression.substr(0, this.position - 1) + this.expression.substr(this.position);
+                            this.position--;
+                        } else if (hasPrefix(ev.code, "Delete")) {
+                            this.expression =
+                                this.expression.substr(0, this.position) + this.expression.substr(this.position + 1);
+                        } else if (ev.code == "Home") {
+                            this.position = 0;
+                        } else if (ev.code == "End") {
+                            this.position = this.expression.length;
+                        }
+                    };
+                },
+                del: () => {
+                    window.onkeydown = this.onkeydownHandler;
+                    this.onkeydownHandler = null;
                 }
             };
         }
