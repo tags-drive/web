@@ -20,7 +20,7 @@
 					tabindex="0"
 					@keydown.enter="search().usual()"
 					@focus="() => { focused = true; handler().add(); }"
-					@blur="() => { focused = false; handler().del(); render() }"
+					v-on-clickaway="blur"
 				>
 					<!--
 						We use v-show because we call document.getElementByID("expression-render") 
@@ -37,7 +37,8 @@
 
 				<div
 					v-show="focused"
-					id="tags-list">
+					id="tags-list"
+				>
 					<div
 						v-for="(tag, index) in SharedStore.state.allTags"
 						style="display: flex; margin: 5px; vertical-align: center"
@@ -45,8 +46,13 @@
 					>
 						<div
 							class="tag noselect"
+							style="cursor: pointer;"
+							title="Paste tag"
 							:style="{ 'background-color': tag.color }"
-						>{{tag.name}}</div>
+							@click="addTagID(tag.id)"
+						>
+							{{tag.name}}
+						</div>
 						<i style="line-height: 26px;">id: {{tag.id}}</i>
 					</div>
 				</div>
@@ -429,6 +435,7 @@ export default {
                         }
                     };
 
+                    // Paste event
                     document.getElementById("expression-input").onpaste = ev => {
                         let text = ev.clipboardData.getData("Text");
                         this.expression =
@@ -480,6 +487,25 @@ export default {
             // Remove last space
             renderText = renderText.slice(0, -1);
             document.getElementById("expression-render").innerHTML = renderText;
+        },
+        addTagID: function(id) {
+            let text = String(id);
+            this.expression = this.expression.substr(0, this.position) + text + this.expression.substr(this.position);
+            this.position += text.length;
+        },
+        blur: function(event) {
+            // Cross browser way to get path
+            let path = event.path || (event.composedPath && event.composedPath());
+            for (let i in path) {
+                // It prevents blur if it was click on #tags-list
+                if (path[i].id == "expression") {
+                    return;
+                }
+            }
+
+            this.focused = false;
+            this.handler().del();
+            this.render();
         }
     }
 };
