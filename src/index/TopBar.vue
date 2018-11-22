@@ -34,6 +34,22 @@
 						style="line-height: 25px; margin: auto 0; height: 100%;"
 					></div>
 				</div>
+
+				<div
+					v-show="focused"
+					id="tags-list">
+					<div
+						v-for="(tag, index) in SharedStore.state.allTags"
+						style="display: flex; margin: 5px; vertical-align: center"
+						:key="index"
+					>
+						<div
+							class="tag noselect"
+							:style="{ 'background-color': tag.color }"
+						>{{tag.name}}</div>
+						<i style="line-height: 26px;">id: {{tag.id}}</i>
+					</div>
+				</div>
 			</div>
 		</div>
 
@@ -116,7 +132,7 @@ div#expression {
 }
 
 div#expression-input {
-	cursor: text;
+    cursor: text;
     border: 1px solid black;
     height: 100%;
     margin: auto 0;
@@ -127,6 +143,17 @@ div#expression-input {
 
 div#expression-render {
     display: flex;
+}
+
+div#tags-list {
+    background-color: white;
+    border: 1px solid black;
+    height: auto;
+    max-height: 500px;
+    overflow-y: auto;
+    position: absolute;
+    top: 30px;
+    width: 250px;
 }
 
 div#cursor {
