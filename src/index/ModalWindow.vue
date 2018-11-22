@@ -182,6 +182,8 @@
     background-color: rgba(0, 0, 0, 0.3);
     height: 100vh;
     left: 0;
+	margin-bottom: 100px;
+	overflow-y: auto;
     position: fixed;
     top: 0;
     width: 100vw;
@@ -191,6 +193,7 @@
 #modal-window {
     background-color: var(--primary-color);
     border-radius: 5px;
+	margin-bottom: 100px;
     margin-left: auto;
     margin-right: auto;
     padding: 10px;
