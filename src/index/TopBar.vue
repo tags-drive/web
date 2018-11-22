@@ -19,6 +19,9 @@
 					placeholder="Logical expression"
 					tabindex="0"
 					@keydown.enter="search().usual()"
+
+					@click="changeCursorPosition"
+
 					@focus="() => { focused = true; handler().add(); }"
 					v-on-clickaway="blur"
 				>
@@ -227,6 +230,8 @@ import SearchTag from "./components/SearchTag.vue";
 import SuggestionTag from "./components/SuggestionTag.vue";
 //
 import { Events, EventBus } from "./eventBus";
+
+const fontWidth = 16 * 0.6; // px * em
 
 export default {
     mixins: [VueClickaway.mixin],
@@ -487,6 +492,11 @@ export default {
             // Remove last space
             renderText = renderText.slice(0, -1);
             document.getElementById("expression-render").innerHTML = renderText;
+        },
+        changeCursorPosition: function(event) {
+            let x = event.offsetX > 0 ? event.offsetX : 0;
+            let pos = Math.round(x / fontWidth);
+            this.position = pos < this.expression.length ? pos : this.expression.length;
         },
         addTagID: function(id) {
             let text = String(id);
