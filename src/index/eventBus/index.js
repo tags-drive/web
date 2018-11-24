@@ -4,7 +4,9 @@ export const Events = {
     // Search
     UsualSearch: "usual-search",
     AdvancedSearch: "advanced-search",
-    //
+	//
+	SettingsMenu: "settings-menu",
+	//
     GlobalTagsChanging: "global-tags-changing",
     // Regular mode
     RegularFileRenaming: "regular-file-renaming",

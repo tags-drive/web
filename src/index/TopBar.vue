@@ -375,7 +375,7 @@ export default {
                     EventBus.$emit(Events.GlobalTagsChanging);
                 },
                 settings: () => {
-                    alert("Settings");
+                    EventBus.$emit(Events.SettingsMenu);
                 },
                 logout: () => {
                     if (!confirm("Are you sure you want log out?")) {
