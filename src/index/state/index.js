@@ -46,11 +46,11 @@ export default new Vuex.Store({
             // Cope defined settings into state
             Object.assign(state.settings, settings);
         },
+        applySettings(state, payload) {
+            Object.assign(state.settings, payload);
+        },
         saveSettings(state) {
             localStorage.setItem(settingsKey, JSON.stringify(state.settings));
-        },
-        changeSettings(state, payload) {
-            Object.assign(state.settings, payload);
         }
     }
 });
