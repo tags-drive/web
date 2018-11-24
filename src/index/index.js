@@ -54,6 +54,7 @@ window.onload = function() {
     SharedStore.commit("updateTags");
 };
 
+import TagsDrive from "./TagsDrive.vue";
 import TopBar from "./TopBar.vue";
 import FilesBlock from "./FilesBlock.vue";
 import UploadBlock from "./UploadBlock.vue";
@@ -61,6 +62,12 @@ import ContextMenu from "./ContextMenu.vue";
 import ModalWindow from "./ModalWindow.vue";
 import LogWindow from "./LogWindow.vue";
 import PreviewWindow from "./PreviewWindow.vue";
+
+/* Tags Drive (main instance) */
+new Vue({
+    el: "#tags-drive",
+    render: h => h(TagsDrive)
+});
 
 /* Top Bar */
 new Vue({

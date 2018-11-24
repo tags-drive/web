@@ -1,3 +1,24 @@
+<template>
+	<div>
+		<div id="top-bar"></div>
+
+		<div style="height: 93vh; overflow: auto; width: 100%;">
+			<div id="files-block"></div>
+		</div>
+
+		<div id="upload-block"></div>
+
+		<div id="context-menu"></div>
+
+		<div id="modal-window"></div>
+
+		<div id="log-window"></div>
+
+		<div id="preview-window"></div>
+	</div>
+</template>
+
+<style>
 :root {
     --primary-color: white;
     --secondary-color: #f7f7f7;
@@ -72,3 +93,5 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 0, 0, 0.3);
 }
+</style>
+
