@@ -81,18 +81,34 @@
 		</div>
 	</div>
 
-	<!-- Settings -->
+	<!-- Global Tag editing -->
 	<div
 		id="tag-editing-button"
 		class="vertically noselect"
-		@click="settings().tags()"
+		title="Change tags"
+		@click="management().globalTags()"
 	>
-		<img src="/static/icons/tag.png" title="Change tags">
+		<img src="/static/icons/tag.png">
+	</div>
+
+	<!-- Settings -->
+	<div
+		id="settings-button"
+		class="vertically noselect"
+		title="Settings"
+		@click="management().settings()"
+	>
+		<i style="font-size: 30px;" class="material-icons">settings</i>
 	</div>
 
 	<!-- Log out -->
-	<div id="logout" class="vertically">
-		<i class="material-icons noselect" style="font-size: 30px;" title="Log out" @click="settings().logout()">exit_to_app</i>
+	<div
+		id="logout"
+		class="vertically noselect"
+		title="Log out"
+		@click="management().logout()"
+	>
+		<i class="material-icons" style="font-size: 30px;">exit_to_app</i>
 	</div>
 </div>
 </template>
@@ -129,7 +145,7 @@
     margin-bottom: auto;
     margin-top: auto;
     position: relative;
-    width: 75%;
+    width: 70%;
     justify-content: space-around;
 }
 
@@ -141,8 +157,9 @@ div#expression {
 }
 
 div#expression-input {
-    cursor: text;
+    box-sizing: border-box;
     border: 1px solid black;
+    cursor: text;
     height: 100%;
     margin: auto 0;
     padding-left: 3px;
@@ -187,6 +204,7 @@ div#text-search {
 
 div#text-search > input {
     border: 1px solid black;
+    box-sizing: border-box;
     height: 100%;
     padding: 0;
     width: 100%;
@@ -213,6 +231,10 @@ div#search-button > i {
     position: absolute;
     top: 0;
     width: 100%;
+}
+
+#settings-button {
+    cursor: pointer;
 }
 
 #logout {
@@ -347,10 +369,13 @@ export default {
                 }
             };
         },
-        settings: function() {
+        management: function() {
             return {
-                tags: () => {
+                globalTags: () => {
                     EventBus.$emit(Events.GlobalTagsChanging);
+                },
+                settings: () => {
+                    alert("Settings");
                 },
                 logout: () => {
                     if (!confirm("Are you sure you want log out?")) {
