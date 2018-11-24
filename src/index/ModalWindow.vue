@@ -5,8 +5,12 @@
 		@click.self="hideWindow"
 	>
 		<div id="modal-window">
+			<!-- Settings -->
+			<div v-if="settingsMode" class="modal-window__input">
+				<settings-menu></settings-menu>
+			</div>
 			<!-- Global tags mode -->
-			<div v-if="globalTagsMode" id="global-tags" class="modal-window__input">
+			<div v-else-if="globalTagsMode" class="modal-window__input">
 				<!-- Existed tags -->
 				<modifying-tags
 					v-for="(tag, index) in SharedStore.state.allTags"
@@ -182,8 +186,8 @@
     background-color: rgba(0, 0, 0, 0.3);
     height: 100vh;
     left: 0;
-	margin-bottom: 100px;
-	overflow-y: auto;
+    margin-bottom: 100px;
+    overflow-y: auto;
     position: fixed;
     top: 0;
     width: 100vw;
@@ -193,7 +197,7 @@
 #modal-window {
     background-color: var(--primary-color);
     border-radius: 5px;
-	margin-bottom: 100px;
+    margin-bottom: 100px;
     margin-left: auto;
     margin-right: auto;
     padding: 10px;
@@ -268,6 +272,7 @@
 import TagsInput from "./components/TagsInput.vue";
 import TagsManager from "./components/TagsManager.vue";
 import ModifyingTags from "./components/ModifyingTags.vue";
+import Settings from "./components/Settings.vue";
 //
 import { Events, EventBus } from "./eventBus";
 
@@ -294,6 +299,8 @@ export default {
             show: false,
             selectedFiles: [],
             // Modes
+            settingsMode: false,
+            //
             globalTagsMode: false,
             //
             regularRenameMode: false,
@@ -318,9 +325,13 @@ export default {
     components: {
         "tags-input": TagsInput,
         "tags-manager": TagsManager,
-        "modifying-tags": ModifyingTags
+        "modifying-tags": ModifyingTags,
+        "settings-menu": Settings
     },
     mounted: function() {
+        EventBus.$on(Events.SettingsMenu, () => {
+            this.showWindow().settings();
+        });
         EventBus.$on(Events.GlobalTagsChanging, () => {
             this.showWindow().globalTagsUpdating();
         });
@@ -352,6 +363,13 @@ export default {
         // UI
         showWindow: function() {
             return {
+                settings: () => {
+                    this.SharedState.commit("hideDropLayer");
+
+                    this.settingsMode = true;
+
+                    this.show = true;
+                },
                 globalTagsUpdating: () => {
                     addOnkeydownHandler(this);
                     this.SharedState.commit("hideDropLayer");
@@ -442,7 +460,7 @@ export default {
         },
         hideWindow: function() {
             removeOnkeydownHandler();
-
+            this.settingsMode = false;
             this.globalTagsMode = false;
             this.regularRenameMode = false;
             this.regularFileTagsMode = false;

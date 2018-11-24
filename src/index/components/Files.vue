@@ -1,5 +1,6 @@
 <template>
 	<tr
+		v-show="!file.deleted || SharedState.state.settings.showDeletedFiles"
 		class="file-info"
 		:style="stylesObject"
 		:title="titleMessage"

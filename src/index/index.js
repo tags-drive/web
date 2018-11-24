@@ -50,6 +50,7 @@ Vue.mixin({
 });
 
 window.onload = function() {
+    SharedState.commit("readSettings");
     SharedStore.commit("updateFiles");
     SharedStore.commit("updateTags");
 };
