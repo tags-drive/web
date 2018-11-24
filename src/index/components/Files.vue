@@ -1,5 +1,6 @@
 <template>
 	<tr
+		class="file-info"
 		:style="stylesObject"
 		:title="titleMessage"
 		@mouseover="hover = true;"
@@ -61,6 +62,17 @@
 		<td>{{file.addTime}}</td>
 	</tr>
 </template>
+
+<style scoped>
+.filename {
+    -o-text-overflow: ellipsis;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 200px;
+}
+</style>
+
 
 <script>
 import { Events, EventBus } from "../eventBus";

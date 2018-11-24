@@ -66,6 +66,17 @@ body {
     vertical-align: middle;
 }
 
+/* Files in table */
+.file-info > td,
+th {
+	border-bottom: 1px solid #dddddd;
+	border-collapse: collapse;
+    font-family: arial, sans-serif;
+    height: 40px;
+    padding: 4px;
+    text-align: left;
+}
+
 .btn {
     background-color: white;
     border: 1px solid var(--primary-border-color);

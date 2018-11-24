@@ -177,7 +177,7 @@
 	</div>
 </template>
 
-<style>
+<style scoped>
 #background {
     background-color: rgba(0, 0, 0, 0.3);
     height: 100vh;

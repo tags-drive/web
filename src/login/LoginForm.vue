@@ -14,7 +14,7 @@
 	</div>
 </template>
 
-<style>
+<style scoped>
 input {
     font-size: 16px;
     outline-color: #88888888;

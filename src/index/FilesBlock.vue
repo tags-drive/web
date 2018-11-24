@@ -1,9 +1,10 @@
 <template>
 	<table
 		id="file-table"
+		style="border-collapse: collapse; width: 100%;"
 		:style="{'opacity': SharedState.state.filesBlockOpacity}"
 	>
-		<tr>
+		<tr class="file-info">
 			<th class="noselect" style="text-align: center; width: 30px;">
 				<input
 					type="checkbox"
@@ -60,31 +61,6 @@
 		></files>
 	</table>
 </template>
-
-<style>
-#file-table {
-    border-collapse: collapse;
-    font-family: arial, sans-serif;
-    width: 100%;
-}
-
-#file-table > tr > td,
-th {
-    border-bottom: 1px solid #dddddd;
-    height: 40px;
-    padding: 4px;
-    text-align: left;
-}
-
-.filename {
-    -o-text-overflow: ellipsis;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    width: 200px;
-}
-</style>
-
 
 <script>
 // Components
