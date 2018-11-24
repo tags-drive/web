@@ -5,71 +5,79 @@
 
 	<!-- Search bar -->
 	<div id="search">
-		<div id="search__tags">
-			<i
-				class="material-icons noselect"
-				style="cursor: pointer; margin-right: 10px;"
-				title="Add tags for search"
-				@click="tagsMenu().show()"
-			>
-				add_circle_outline
-			</i>
-			<search-tag
-				v-for="(tag, index) in pickedTags"
-				:key="index"
-				:tag="tag"></search-tag>
-
-			<!-- List of unpicked tags-->
-			<div
-				id="unpicked-tags"
-				v-if="showTagsList"
-				v-on-clickaway="() => tagsMenu().hide()"
-			>
+		<div id="expression">
+			<div style="position: relative; width: 100%; height: 100%;">
 				<div
-					style="cursor: default; margin: auto;"
-					v-if="unusedTags.length == 0"
-				>Empty</div>
+					v-if="focused"
+					id="cursor"
+					:style="{'left': position * 0.6 + 'em'}"
+				>
+				</div>
 
-				<suggestion-tag
-					v-for="(tag, index) in unusedTags"
-					:key="index"
-					:tag="tag"></suggestion-tag>
+				<div
+					id="expression-input"
+					placeholder="Logical expression"
+					tabindex="0"
+					@keydown.enter="search().usual()"
+
+					@click="changeCursorPosition"
+
+					@focus="() => { focused = true; handler().add(); }"
+					v-on-clickaway="blur"
+				>
+					<!--
+						We use v-show because we call document.getElementByID("expression-render") 
+						If it is v-if, <span id="expression-render"> doesn't exist
+					-->
+					<span v-show="focused" style=" line-height: 25px;">
+						{{expression}}
+					</span>
+					<div v-show="!focused"
+						id="expression-render"
+						style="line-height: 25px; margin: auto 0; height: 100%;"
+					></div>
+				</div>
+
+				<div
+					v-show="focused"
+					id="tags-list"
+				>
+					<div
+						v-for="(tag, index) in SharedStore.state.allTags"
+						style="display: flex; margin: 5px; vertical-align: center"
+						:key="index"
+					>
+						<div
+							class="tag noselect"
+							style="cursor: pointer;"
+							title="Paste tag"
+							:style="{ 'background-color': tag.color }"
+							@click="addTagID(tag.id)"
+						>
+							{{tag.name}}
+						</div>
+						<i style="line-height: 26px;">id: {{tag.id}}</i>
+					</div>
+				</div>
 			</div>
 		</div>
 
-		<div style="display: flex;">
-			<!-- Separator -->
-			<div
-				class="vertically"
-				style="border-right: 1px solid black; height: 90%; margin-right: 5px;"
-			></div>
+		<!-- Separator -->
+		<div id="separator"	class="vertically"></div>
 
-			<div id="advanced-menu">
-				<input
-					type="text"
-					style="margin-right: 5px;"
-					placeholder="Text for search"
-					v-model="text"
-					@keydown.enter="search().usual()">
+		<div id="text-search">
+			<input
+				type="text"
+				placeholder="Text for search"
+				v-model="text"
+				@keydown.enter="search().usual()">
+		</div>
 
-				<div class="vertically noselect" style="margin-right: 5px;">Mode</div>
-				<select
-					style="margin-right: 5px;"
-					v-model="selectedMode"
-				>
-					<option>And</option>
-					<option>Or</option>
-					<option>Not</option>
-				</select>
-			</div>
-
-			<div style="height: 100%;">
-				<i
-					class="material-icons noselect"
-					style="font-size: 37px; cursor: pointer;"
-					@click="search().usual()"
-				>search</i>
-			</div>
+		<div id="search-button">
+			<i
+				class="material-icons noselect"
+				@click="search().usual()"
+			>search</i>
 		</div>
 	</div>
 
@@ -116,52 +124,77 @@
     border: 1px var(--secondary-border-color) solid;
     border-radius: 5px;
     display: flex;
+    font: 16px "Courier New", Courier, monospace;
     height: 80%;
     margin-bottom: auto;
     margin-top: auto;
     position: relative;
     width: 75%;
-    justify-content: space-between;
+    justify-content: space-around;
 }
 
-#search__tags {
-    display: flex;
+div#expression {
     height: 25px;
-    margin-bottom: auto;
-    margin-right: 5px;
-    margin-top: auto;
-    padding: 5px;
+    margin: auto 0;
     position: relative;
+    width: 60%;
 }
 
-#unpicked-tags {
-    background-color: var(--secondary-color);
-    border: 1px solid var(--primary-border-color);
-    border-radius: 5px;
-    display: flex;
-    flex-wrap: wrap;
-    min-height: 20px;
-    padding: 5px;
+div#expression-input {
+    cursor: text;
+    border: 1px solid black;
+    height: 100%;
+    margin: auto 0;
+    padding-left: 3px;
     position: absolute;
-    top: 35px;
-    width: 400px;
+    width: 100%;
 }
 
-.suggestion-tag {
-    border-radius: 5px;
-    cursor: pointer;
-    padding: 4px;
-}
-
-.suggestion-tag:hover {
-    background-color: var(--secondary-element-color);
-}
-
-#advanced-menu {
+div#expression-render {
     display: flex;
+}
+
+div#tags-list {
+    background-color: white;
+    border: 1px solid black;
+    height: auto;
+    max-height: 500px;
+    overflow-y: auto;
+    position: absolute;
+    top: 30px;
+    width: 250px;
+}
+
+div#cursor {
+    border-right: 1.5px solid black;
+    height: 75%; /* addition 5% for padding of div#expression-input */
+    left: 0;
+    margin: auto 0px auto 3px;
+    position: absolute;
+    top: 15%;
+}
+
+div#separator {
+    border-right: 1px solid black;
+    height: 90%;
+}
+
+div#text-search {
     height: 25px;
-    margin-top: auto;
-    margin-bottom: auto;
+    margin: auto 0px;
+    width: 30%;
+}
+
+div#text-search > input {
+    border: 1px solid black;
+    height: 100%;
+    padding: 0;
+    width: 100%;
+}
+
+div#search-button > i {
+    font-size: 37px;
+    cursor: pointer;
 }
 
 #tag-editing-button {
@@ -198,6 +231,8 @@ import SuggestionTag from "./components/SuggestionTag.vue";
 //
 import { Events, EventBus } from "./eventBus";
 
+const fontWidth = 16 * 0.6; // px * em
+
 export default {
     mixins: [VueClickaway.mixin],
     components: {
@@ -206,14 +241,15 @@ export default {
     },
     data: function() {
         return {
-            // Tag search
-            tagPrefix: "",
+            // Expression
+            expression: "",
+            position: 0,
             showTagsList: false,
-            pickedTags: [],
-            unusedTags: [],
-            // Advanced search
+            focused: false,
+            // Text search
             text: "",
-            selectedMode: "And"
+            //
+            onkeydownHandler: null
         };
     },
     mounted: function() {
@@ -231,67 +267,52 @@ export default {
         });
     },
     methods: {
-        tagsMenu: function() {
-            return {
-                show: () => {
-                    if (this.pickedTags.length == 0) {
-                        // Need to fill unusedTags
-                        this.unusedTags = [];
-                        for (let tag in this.SharedStore.state.allTags) {
-                            this.unusedTags.push(this.SharedStore.state.allTags[tag]);
-                        }
-                    }
-
-                    this.showTagsList = true;
-                },
-                hide: () => {
-                    this.showTagsList = false;
-                }
-            };
-        },
         search: function() {
             return {
                 usual: () => {
                     EventBus.$emit(Events.UnselectAllFiles);
 
                     let params = new URLSearchParams();
-                    // tags
-                    if (this.pickedTags.length != 0) {
-                        let tags = [];
-                        for (let tag of this.pickedTags) {
-                            tags.push(tag.id);
-                        }
-                        params.append("tags", tags.join(","));
+                    // Expression
+                    if (this.expression != "") {
+                        params.append("expr", this.expression);
                     }
                     // search
                     if (this.text != "") {
                         params.append("search", this.text);
                     }
-                    // mode
-                    params.append("mode", this.selectedMode.toLowerCase());
+
                     // Can skip sort and order, because server will use default values
 
                     fetch(this.Params.Host + "/api/files?" + params, {
                         method: "GET",
                         credentials: "same-origin"
                     })
-                        .then(data => data.json())
+                        .then(resp => {
+                            if (this.isErrorStatusCode(resp.status)) {
+                                resp.text().then(text => {
+                                    this.logError(text);
+                                });
+                                return;
+                            }
+                            return resp.json();
+                        })
                         .then(files => {
+                            if (files === undefined) {
+                                return;
+                            }
                             this.SharedStore.commit("setFiles", files);
                             EventBus.$emit(Events.ResetSortParams);
-                        });
+                        })
+                        .catch(err => this.logError(err));
                 },
                 advanced: (sType, sOrder) => {
                     EventBus.$emit(Events.UnselectAllFiles);
 
                     let params = new URLSearchParams();
-                    // tags
-                    if (this.pickedTags.length != 0) {
-                        let tags = [];
-                        for (let tag of this.pickedTags) {
-                            tags.push(tag.name);
-                        }
-                        params.append("tags", tags.join(","));
+                    // Expression
+                    if (this.expression != "") {
+                        params.append("expr", this.expression);
                     }
                     // search
                     if (this.text != "") {
@@ -301,55 +322,28 @@ export default {
                     params.append("sort", sType);
                     // order
                     params.append("order", sOrder);
-                    // mode
-                    params.append("mode", this.selectedMode.toLowerCase());
 
                     fetch(this.Params.Host + "/api/files?" + params, {
                         method: "GET",
                         credentials: "same-origin"
                     })
-                        .then(data => data.json())
-                        .then(files => this.SharedStore.commit("setFiles", files));
-                }
-            };
-        },
-        input: function() {
-            return {
-                tags: {
-                    add: tagID => {
-                        let index = -1;
-                        for (let i in this.unusedTags) {
-                            if (this.unusedTags[i].id == tagID) {
-                                index = i;
-                                break;
+                        .then(resp => {
+                            if (this.isErrorStatusCode(resp.status)) {
+                                resp.text().then(text => {
+                                    this.logError(text);
+                                });
+                                return;
                             }
-                        }
-                        if (index == -1) {
-                            return;
-                        }
-
-                        // Add a tag into pickedTags
-                        this.pickedTags.push(this.unusedTags[index]);
-                        // Remove a tag
-                        this.unusedTags.splice(index, 1);
-                    },
-                    delete: tagID => {
-                        let index = -1;
-                        for (let i in this.pickedTags) {
-                            if (this.pickedTags[i].id == tagID) {
-                                index = i;
-                                break;
+                            return resp.json();
+                        })
+                        .then(files => {
+                            if (files === undefined) {
+                                return;
                             }
-                        }
-                        if (index == -1) {
-                            return;
-                        }
-
-                        // Return a tag to unusedTags
-                        this.unusedTags.push(this.pickedTags[index]);
-                        // Remove an element
-                        this.pickedTags.splice(index, 1);
-                    }
+                            this.SharedStore.commit("setFiles", files);
+                            EventBus.$emit(Events.ResetSortParams);
+                        })
+                        .catch(err => this.logError(err));
                 }
             };
         },
@@ -380,6 +374,148 @@ export default {
                         .catch(err => this.logError(err));
                 }
             };
+        },
+        handler: function() {
+            return {
+                add: () => {
+                    let hasPrefix = (str, prefix) => {
+                        if (str.length < prefix.length) {
+                            return false;
+                        }
+
+                        for (let i = 0; i < prefix.length; i++) {
+                            if (str[i] != prefix[i]) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    };
+
+                    this.onkeydownHandler = window.onkeyup;
+                    window.onkeydown = ev => {
+                        if (ev.ctrlKey || ev.altKey) {
+                            return;
+                        }
+
+                        if (
+                            ev.key.length == 1 &&
+                            (hasPrefix(ev.code, "Key") ||
+                                ev.key == "(" ||
+                                ev.key == ")" ||
+                                ev.key == "|" ||
+                                hasPrefix(ev.code, "Numpad") ||
+                                hasPrefix(ev.code, "Digit"))
+                        ) {
+                            this.expression =
+                                this.expression.substr(0, this.position) +
+                                ev.key +
+                                this.expression.substr(this.position);
+
+                            this.position++;
+                        } else if (hasPrefix(ev.code, "Arrow")) {
+                            // Arrow
+                            if (hasPrefix(ev.code, "ArrowLeft")) {
+                                if (this.position > 0) {
+                                    this.position--;
+                                }
+                            } else if (hasPrefix(ev.code, "ArrowRight")) {
+                                if (this.position < this.expression.length) {
+                                    this.position++;
+                                }
+                            }
+                        } else if (hasPrefix(ev.code, "Backspace")) {
+                            if (this.position == 0) {
+                                return;
+                            }
+                            this.expression =
+                                this.expression.substr(0, this.position - 1) + this.expression.substr(this.position);
+                            this.position--;
+                        } else if (hasPrefix(ev.code, "Delete")) {
+                            this.expression =
+                                this.expression.substr(0, this.position) + this.expression.substr(this.position + 1);
+                        } else if (ev.code == "Home") {
+                            this.position = 0;
+                        } else if (ev.code == "End") {
+                            this.position = this.expression.length;
+                        }
+                    };
+
+                    // Paste event
+                    document.getElementById("expression-input").onpaste = ev => {
+                        let text = ev.clipboardData.getData("Text");
+                        this.expression =
+                            this.expression.substr(0, this.position) + text + this.expression.substr(this.position);
+                        this.position += text.length;
+                    };
+                },
+                del: () => {
+                    window.onkeydown = this.onkeydownHandler;
+                    this.onkeydownHandler = null;
+                }
+            };
+        },
+        render: function() {
+            let regex = /(\d+)(?=&|\)|\||!| )/;
+            // If there's no space at the end of string, while won't stop
+            let renderText = this.expression + " ";
+            while (regex.exec(renderText) != null) {
+                let name = "Undefined",
+                    color = "white",
+                    tag;
+
+                let id = regex.exec(renderText);
+                tag = this.SharedStore.state.allTags[Number(id[1])];
+                if (tag !== undefined) {
+                    color = tag.color == undefined ? "white" : tag.color;
+                    name = tag.name;
+                }
+
+                /* HTML code:
+				<div
+					class="tag"
+					style="height: 16px; line-height: 16px; margin: auto 0; background-color: {{color}}"
+				>
+					<div>{{name}}</div>
+				</div>
+				*/
+                let replaceStr =
+                    `<div
+						class="tag"
+						style="height: 16px; line-height: 16px; margin: auto 0; background-color: ` +
+                    color +
+                    `;"><div>` +
+                    name +
+                    `</div></div>`;
+
+                renderText = renderText.replace(regex, replaceStr);
+            }
+            // Remove last space
+            renderText = renderText.slice(0, -1);
+            document.getElementById("expression-render").innerHTML = renderText;
+        },
+        changeCursorPosition: function(event) {
+            let x = event.offsetX > 0 ? event.offsetX : 0;
+            let pos = Math.round(x / fontWidth);
+            this.position = pos < this.expression.length ? pos : this.expression.length;
+        },
+        addTagID: function(id) {
+            let text = String(id);
+            this.expression = this.expression.substr(0, this.position) + text + this.expression.substr(this.position);
+            this.position += text.length;
+        },
+        blur: function(event) {
+            // Cross browser way to get path
+            let path = event.path || (event.composedPath && event.composedPath());
+            for (let i in path) {
+                // It prevents blur if it was click on #tags-list
+                if (path[i].id == "expression") {
+                    return;
+                }
+            }
+
+            this.focused = false;
+            this.handler().del();
+            this.render();
         }
     }
 };
