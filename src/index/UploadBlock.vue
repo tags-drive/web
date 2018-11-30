@@ -32,14 +32,35 @@
 					:key="index"
 				>
 					<div class="file-preview">
-						<img
-							:id="'preview-for-file-' + file.name"
-							style="display: inline-block; height: auto; max-height: 100%; max-width: 100%; width: auto;">
+						<img :id="'preview-for-file-' + file.name">
 						<br>
 						<!-- Just trigger preview loading -->
 						{{ addFileSource(file) }}
 						<span>{{ file.name }}</span>
 					</div>
+				</div>
+			</div>
+
+			<!-- Tags -->
+			<div id="tags-list">
+				<div
+					v-for="(tag, index) in SharedStore.state.allTags"
+					:key="index"
+					style="display: flex; margin-bottom: 5px;"
+				>
+					<div style="width: 200px; display: flex; ">
+						<div
+							class="tag noselect"
+							:style="{ 'background-color': tag.color }"
+						>{{tag.name}}</div>
+					</div>
+					<div style="font-size: 20px;">
+						<input
+							type="checkbox"
+							style="transform: scale(1.4);"
+							@click="updateTags(tag.id)">
+					</div>
+					
 				</div>
 			</div>
 
@@ -57,6 +78,10 @@
 </template>
 
 <style scoped>
+input[type="checkbox"] {
+	vertical-align: middle;
+}
+
 #background {
 	background-color: rgba(0, 0, 0, 0.3);
     height: 100vh;
@@ -103,17 +128,28 @@
 }
 
 #files-list {
-	height: 200px;
+	height: auto;
 	overflow-x: auto;
 	display: flex;
 }
 
 .file-preview {
-	height: 100px;
 	margin: 0 10px;
 	overflow-wrap: break-word;
 	text-align: center;
-	width: 100px;
+}
+
+.file-preview > img {
+	display: inline-block;
+	height: auto;
+	max-height: 100px;
+	max-width: 100px;
+	width: auto;
+}
+
+#tags-list {
+	display: inline-block;
+	margin-top: 10px;
 }
 </style>
 
@@ -123,7 +159,8 @@ export default {
         return {
             counter: 0, // for definition did user drag file into div. If counter > 0, user dragged file.
             showChosenFiles: false,
-            files: []
+            files: [],
+            tags: {}
         };
     },
     created() {
@@ -168,7 +205,9 @@ export default {
                 formData.append("files", file, file.name);
             }
 
-            fetch(this.Params.Host + "/api/files", {
+            let tags = Object.keys(this.tags).join(",");
+
+            fetch(this.Params.Host + "/api/files?tags=" + tags, {
                 body: formData,
                 method: "POST",
                 credentials: "same-origin"
@@ -215,6 +254,9 @@ export default {
                 })
                 .catch(err => this.logError(err));
 
+            // Reset vars
+            this.tags = {};
+            this.files = [];
             // Hide window
             this.showChosenFiles = false;
         },
@@ -245,6 +287,13 @@ export default {
                 };
 
                 f();
+            }
+        },
+        updateTags: function(id) {
+            if (this.tags[id] === undefined) {
+                this.tags[id] = true;
+            } else {
+                delete this.tags[id];
             }
         }
     }
