@@ -7,7 +7,6 @@ const settingsKey = "settings";
 
 export default new Vuex.Store({
     state: {
-        filesBlockOpacity: 1,
         showDropLayer: true, // when we show modal-window with tags showDropLayer is false
         selectMode: false,
         // settings
@@ -16,12 +15,6 @@ export default new Vuex.Store({
         }
     },
     mutations: {
-        increaseFilesBlockOpacity(state) {
-            state.filesBlockOpacity = 1;
-        },
-        reduceFilesBlockOpacity(state) {
-            state.filesBlockOpacity = 0.3;
-        },
         showDropLayer(state) {
             state.showDropLayer = true;
         },

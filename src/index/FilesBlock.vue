@@ -2,7 +2,6 @@
 	<table
 		id="file-table"
 		style="border-collapse: collapse; width: 100%;"
-		:style="{'opacity': SharedState.state.filesBlockOpacity}"
 	>
 		<tr class="file-info">
 			<th class="noselect" style="text-align: center; width: 30px;">

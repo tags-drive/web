@@ -182,14 +182,6 @@ export default {
                 this.counter = 0;
             }
         };
-
-        setInterval(() => {
-            if (this.counter == 0) {
-                // this.SharedState.commit("increaseFilesBlockOpacity");
-            } else {
-                // this.SharedState.commit("reduceFilesBlockOpacity");
-            }
-        }, 10);
     },
     methods: {
         showFilesMenu: function(event) {
