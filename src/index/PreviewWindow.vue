@@ -315,6 +315,9 @@ export default {
                 case "ArrowLeft":
                     this.previousPreview();
                     break;
+                case "Escape":
+                    this.window().hide();
+                    break;
             }
         }
     }
