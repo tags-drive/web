@@ -115,7 +115,11 @@ export default {
             }
             this.isChanged = true;
             this.isError = false; // we can't generate an invalid color
-            this.newColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
+            this.newColor =
+                "#" +
+                Math.floor(Math.random() * 256).toString(16) +
+                Math.floor(Math.random() * 256).toString(16) +
+                Math.floor(Math.random() * 256).toString(16);
         },
         // API
         save: function() {
