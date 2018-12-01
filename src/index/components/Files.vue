@@ -75,7 +75,7 @@
 <script>
 import TagComponent from "./Tag.vue";
 //
-import { Events, EventBus } from "../eventBus";
+import { Events, EventBus } from "../eventBus/eventBus";
 
 export default {
     props: {

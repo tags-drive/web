@@ -89,7 +89,7 @@
 <script>
 import VueClickaway from "vue-clickaway2";
 //
-import { Events, EventBus } from "./eventBus";
+import { Events, EventBus } from "./eventBus/eventBus";
 
 function getSelectedFiles() {
     this.SharedStore.commit("clearSelectedFiles");

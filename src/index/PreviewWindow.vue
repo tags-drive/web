@@ -37,6 +37,7 @@
 				<div
 					v-else-if="isImage()"
 					id="image-preview"
+					class="noselect"
 				>
 					<span class="helper"></span>
 					<img :src="Params.Host + '/' + file.origin">
@@ -82,7 +83,6 @@
 		</div>
 	</div>
 </template>
-
 
 <style scoped>
 #preview-background {
@@ -213,7 +213,7 @@
 <script>
 import TagComponent from "./components/Tag.vue";
 //
-import { Events, EventBus } from "./eventBus";
+import { Events, EventBus } from "./eventBus/eventBus";
 
 export default {
     data: function() {

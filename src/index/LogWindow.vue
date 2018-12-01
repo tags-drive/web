@@ -46,7 +46,7 @@
 <script>
 import dateformat from "dateformat";
 //
-import { Events, EventBus } from "./eventBus";
+import { Events, EventBus } from "./eventBus/eventBus";
 
 const hideTimeout = 5 * 1000; // 5s in milliseconds
 const msTimeout = 50; // 50ms is good enough. When 100, FPS is too low
@@ -75,9 +75,9 @@ export default {
     mounted: function() {
         EventBus.$on(Events.LogEvent, payload => {
             if (payload.type == undefined || payload.msg == undefined) {
-				/* eslint-disable no-console */
-				console.error("Payload hasn't type or msg fields:", payload);
-				/* eslint-enable no-console */
+                /* eslint-disable no-console */
+                console.error("Payload hasn't type or msg fields:", payload);
+                /* eslint-enable no-console */
                 return;
             }
 

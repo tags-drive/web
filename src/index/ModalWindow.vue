@@ -274,7 +274,7 @@ import TagsManager from "./components/TagsManager.vue";
 import ModifyingTags from "./components/ModifyingTags.vue";
 import Settings from "./components/Settings.vue";
 //
-import { Events, EventBus } from "./eventBus";
+import { Events, EventBus } from "./eventBus/eventBus";
 
 export default {
     data: function() {

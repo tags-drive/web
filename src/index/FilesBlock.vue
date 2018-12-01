@@ -65,7 +65,7 @@
 // Components
 import Files from "./components/Files.vue";
 //
-import { Events, EventBus } from "./eventBus";
+import { Events, EventBus } from "./eventBus/eventBus";
 
 export default {
     data: function() {

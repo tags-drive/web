@@ -1,9 +1,9 @@
 import Vue from "vue";
 // Shared data
-import SharedStore from "./store";
-import SharedState from "./state";
+import SharedStore from "./store/store";
+import SharedState from "./state/state";
 import { Params } from "../global";
-import { Events, EventBus } from "./eventBus";
+import { Events, EventBus } from "./eventBus/eventBus";
 
 const Const = {
     sortType: {

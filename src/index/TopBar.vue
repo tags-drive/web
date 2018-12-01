@@ -249,7 +249,7 @@ import RenderTagsInput from "./components/RenderTagsInput.vue";
 // Mixin
 import VueClickaway from "vue-clickaway2";
 //
-import { Events, EventBus } from "./eventBus";
+import { Events, EventBus } from "./eventBus/eventBus";
 
 const fontWidth = 18 * 0.6; // px * em
 
