@@ -22,7 +22,7 @@
 
 					@click="changeCursorPosition"
 
-					@focus="() => { focused = true; handler().add(); }"
+					@focus="() => { focused = true; addListener(); }"
 					v-on-clickaway="blur"
 				>
 					<span
@@ -263,9 +263,7 @@ export default {
             showTagsList: false,
             focused: false,
             // Text search
-            text: "",
-            //
-            onkeydownHandler: null
+            text: ""
         };
     },
     components: {
@@ -398,85 +396,6 @@ export default {
                 }
             };
         },
-        handler: function() {
-            return {
-                add: () => {
-                    let hasPrefix = (str, prefix) => {
-                        if (str.length < prefix.length) {
-                            return false;
-                        }
-
-                        for (let i = 0; i < prefix.length; i++) {
-                            if (str[i] != prefix[i]) {
-                                return false;
-                            }
-                        }
-                        return true;
-                    };
-
-                    this.onkeydownHandler = window.onkeyup;
-                    window.onkeydown = ev => {
-                        if (ev.ctrlKey || ev.altKey) {
-                            return;
-                        }
-
-                        if (
-                            ev.key.length == 1 &&
-                            (hasPrefix(ev.code, "Key") ||
-                                ev.key == "(" ||
-                                ev.key == ")" ||
-                                ev.key == "|" ||
-                                hasPrefix(ev.code, "Numpad") ||
-                                hasPrefix(ev.code, "Digit"))
-                        ) {
-                            this.expression =
-                                this.expression.substr(0, this.position) +
-                                ev.key +
-                                this.expression.substr(this.position);
-
-                            this.position++;
-                        } else if (hasPrefix(ev.code, "Arrow")) {
-                            // Arrow
-                            if (hasPrefix(ev.code, "ArrowLeft")) {
-                                if (this.position > 0) {
-                                    this.position--;
-                                }
-                            } else if (hasPrefix(ev.code, "ArrowRight")) {
-                                if (this.position < this.expression.length) {
-                                    this.position++;
-                                }
-                            }
-                        } else if (hasPrefix(ev.code, "Backspace")) {
-                            if (this.position == 0) {
-                                return;
-                            }
-                            this.expression =
-                                this.expression.substr(0, this.position - 1) + this.expression.substr(this.position);
-                            this.position--;
-                        } else if (hasPrefix(ev.code, "Delete")) {
-                            this.expression =
-                                this.expression.substr(0, this.position) + this.expression.substr(this.position + 1);
-                        } else if (ev.code == "Home") {
-                            this.position = 0;
-                        } else if (ev.code == "End") {
-                            this.position = this.expression.length;
-                        }
-                    };
-
-                    // Paste event
-                    document.getElementById("expression-input").onpaste = ev => {
-                        let text = ev.clipboardData.getData("Text");
-                        this.expression =
-                            this.expression.substr(0, this.position) + text + this.expression.substr(this.position);
-                        this.position += text.length;
-                    };
-                },
-                del: () => {
-                    window.onkeydown = this.onkeydownHandler;
-                    this.onkeydownHandler = null;
-                }
-            };
-        },
         changeCursorPosition: function(event) {
             let x = event.offsetX > 0 ? event.offsetX : 0;
             let pos = Math.round(x / fontWidth);
@@ -498,7 +417,77 @@ export default {
             }
 
             this.focused = false;
-            this.handler().del();
+            this.removeListener();
+        },
+        addListener: function() {
+            document.addEventListener("keydown", this.onkeydownListener);
+
+            // Paste event
+            document.getElementById("expression-input").onpaste = ev => {
+                let text = ev.clipboardData.getData("Text");
+                this.expression =
+                    this.expression.substr(0, this.position) + text + this.expression.substr(this.position);
+                this.position += text.length;
+            };
+        },
+        removeListener: function() {
+            document.removeEventListener("keydown", this.onkeydownListener);
+        },
+        onkeydownListener: function(ev) {
+            let hasPrefix = (str, prefix) => {
+                if (str.length < prefix.length) {
+                    return false;
+                }
+
+                for (let i = 0; i < prefix.length; i++) {
+                    if (str[i] != prefix[i]) {
+                        return false;
+                    }
+                }
+                return true;
+            };
+
+            if (ev.ctrlKey || ev.altKey) {
+                return;
+            }
+
+            if (
+                ev.key.length == 1 &&
+                (hasPrefix(ev.code, "Key") ||
+                    ev.key == "(" ||
+                    ev.key == ")" ||
+                    ev.key == "|" ||
+                    hasPrefix(ev.code, "Numpad") ||
+                    hasPrefix(ev.code, "Digit"))
+            ) {
+                this.expression =
+                    this.expression.substr(0, this.position) + ev.key + this.expression.substr(this.position);
+
+                this.position++;
+            } else if (hasPrefix(ev.code, "Arrow")) {
+                // Arrow
+                if (hasPrefix(ev.code, "ArrowLeft")) {
+                    if (this.position > 0) {
+                        this.position--;
+                    }
+                } else if (hasPrefix(ev.code, "ArrowRight")) {
+                    if (this.position < this.expression.length) {
+                        this.position++;
+                    }
+                }
+            } else if (hasPrefix(ev.code, "Backspace")) {
+                if (this.position == 0) {
+                    return;
+                }
+                this.expression = this.expression.substr(0, this.position - 1) + this.expression.substr(this.position);
+                this.position--;
+            } else if (hasPrefix(ev.code, "Delete")) {
+                this.expression = this.expression.substr(0, this.position) + this.expression.substr(this.position + 1);
+            } else if (ev.code == "Home") {
+                this.position = 0;
+            } else if (ev.code == "End") {
+                this.position = this.expression.length;
+            }
         }
     }
 };

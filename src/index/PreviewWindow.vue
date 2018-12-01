@@ -3,8 +3,6 @@
 		id="preview-background"
 		@click.self="window().hide()"
 		v-if="show"
-		@keydown.right="nextPreview"
-		@keydown.left="previousPreview"
 	>
 		<div id="preview-window">
 			<!-- Preview -->
@@ -217,8 +215,6 @@ import TagComponent from "./components/Tag.vue";
 //
 import { Events, EventBus } from "./eventBus";
 
-let lastWindowOnkeydownHandler;
-
 export default {
     data: function() {
         return {
@@ -263,25 +259,12 @@ export default {
             return {
                 show: () => {
                     this.SharedState.commit("hideDropLayer");
-
-                    lastWindowOnkeydownHandler = window.onkeydown;
-                    window.onkeydown = event => {
-                        switch (event.key) {
-                            case "ArrowRight":
-                                this.nextPreview();
-                                break;
-                            case "ArrowLeft":
-                                this.previousPreview();
-                                break;
-                        }
-                    };
-
+                    document.addEventListener("keydown", this.onkeydownListener);
                     this.show = true;
                 },
                 hide: () => {
                     this.SharedState.commit("showDropLayer");
-
-                    window.onkeydown = lastWindowOnkeydownHandler;
+                    document.removeEventListener("keydown", this.onkeydownListener);
                     this.show = false;
                 }
             };
@@ -322,6 +305,16 @@ export default {
                         .then(text => (this.textFileContent = text))
                         .catch(err => this.logError(err));
                 }
+            }
+        },
+        onkeydownListener: function(event) {
+            switch (event.key) {
+                case "ArrowRight":
+                    this.nextPreview();
+                    break;
+                case "ArrowLeft":
+                    this.previousPreview();
+                    break;
             }
         }
     }

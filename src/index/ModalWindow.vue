@@ -276,22 +276,6 @@ import Settings from "./components/Settings.vue";
 //
 import { Events, EventBus } from "./eventBus";
 
-let lastWindowOnkeydownHandler;
-
-function addOnkeydownHandler(that) {
-    lastWindowOnkeydownHandler = window.onkeydown;
-
-    window.onkeydown = event => {
-        if (event.key == "Escape") {
-            that.hideWindow();
-        }
-    };
-}
-
-function removeOnkeydownHandler() {
-    window.onkeydown = lastWindowOnkeydownHandler;
-}
-
 export default {
     data: function() {
         return {
@@ -364,6 +348,7 @@ export default {
         showWindow: function() {
             return {
                 settings: () => {
+                    this.addListener();
                     this.SharedState.commit("hideDropLayer");
 
                     this.settingsMode = true;
@@ -371,7 +356,7 @@ export default {
                     this.show = true;
                 },
                 globalTagsUpdating: () => {
-                    addOnkeydownHandler(this);
+                    this.addListener();
                     this.SharedState.commit("hideDropLayer");
 
                     this.globalTagsMode = true;
@@ -380,7 +365,7 @@ export default {
                 },
                 // Regular mode
                 regularRenaming: file => {
-                    addOnkeydownHandler(this);
+                    this.addListener();
                     this.SharedState.commit("hideDropLayer");
 
                     this.file = file;
@@ -390,7 +375,7 @@ export default {
                     this.show = true;
                 },
                 regularFileTagsUpdating: file => {
-                    addOnkeydownHandler(this);
+                    this.addListener();
                     this.SharedState.commit("hideDropLayer");
 
                     this.fileNewData.newTags = [];
@@ -410,7 +395,7 @@ export default {
                     this.show = true;
                 },
                 regularDescriptionChanging: file => {
-                    addOnkeydownHandler(this);
+                    this.addListener();
                     this.SharedState.commit("hideDropLayer");
 
                     this.file = file;
@@ -420,7 +405,7 @@ export default {
                     this.show = true;
                 },
                 regularDeleting: file => {
-                    addOnkeydownHandler(this);
+                    this.addListener();
                     this.SharedState.commit("hideDropLayer");
 
                     this.file = file;
@@ -430,7 +415,7 @@ export default {
                 },
                 // Select mode
                 selectFilesTagsAdding: files => {
-                    addOnkeydownHandler(this);
+                    this.addListener();
                     this.SharedState.commit("hideDropLayer");
 
                     this.selectedFiles = files;
@@ -439,7 +424,7 @@ export default {
                     this.show = true;
                 },
                 selectFilesTagsDeleting: files => {
-                    addOnkeydownHandler(this);
+                    this.addListener();
                     this.SharedState.commit("hideDropLayer");
 
                     this.selectedFiles = files;
@@ -448,7 +433,7 @@ export default {
                     this.show = true;
                 },
                 selectDeleting: files => {
-                    addOnkeydownHandler(this);
+                    this.addListener();
                     this.SharedState.commit("hideDropLayer");
 
                     this.selectedFiles = files;
@@ -459,7 +444,7 @@ export default {
             };
         },
         hideWindow: function() {
-            removeOnkeydownHandler();
+            this.removeListener();
             this.settingsMode = false;
             this.globalTagsMode = false;
             this.regularRenameMode = false;
@@ -939,6 +924,17 @@ export default {
                     this.newTag = {};
                 }
             };
+        },
+        addListener: function() {
+            document.addEventListener("keydown", this.onkeydownListener);
+        },
+        removeListener: function() {
+            document.removeEventListener("keydown", this.onkeydownListener);
+        },
+        onkeydownListener: function(event) {
+            if (event.key == "Escape") {
+                this.hideWindow();
+            }
         }
     }
 };
