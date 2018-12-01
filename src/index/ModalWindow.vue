@@ -593,7 +593,7 @@ export default {
                             }
 
                             // Refresh list of files
-                            this.SharedStore.commit("updateFiles");
+                            EventBus.$emit(Events.UsualSearch);
                             this.hideWindow();
                             return resp.json();
                         })
@@ -650,7 +650,7 @@ export default {
                             }
 
                             // Refresh list of files
-                            this.SharedStore.commit("updateFiles");
+                            EventBus.$emit(Events.UsualSearch);
                             EventBus.$emit(Events.UnselectAllFiles);
                             this.hideWindow();
                         })
@@ -769,7 +769,7 @@ export default {
                             }
 
                             // Refresh list of files
-                            this.SharedStore.commit("updateFiles");
+                            EventBus.$emit(Events.UsualSearch);
                             this.hideWindow();
                             return resp.json();
                         })
@@ -831,7 +831,7 @@ export default {
                             }
 
                             // Refresh list of files
-                            this.SharedStore.commit("updateFiles");
+                            EventBus.$emit(Events.UsualSearch);
                             EventBus.$emit(Events.UnselectAllFiles);
                             this.hideWindow();
                         })
