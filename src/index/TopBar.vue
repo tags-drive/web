@@ -10,7 +10,7 @@
 				<div
 					v-if="focused"
 					id="cursor"
-					:style="{'left': position * 0.6 + 'em'}"
+					:style="{'left': position * 18 * 0.6 + 'px'}"
 				>
 				</div>
 
@@ -25,17 +25,21 @@
 					@focus="() => { focused = true; handler().add(); }"
 					v-on-clickaway="blur"
 				>
-					<!--
-						We use v-show because we call document.getElementByID("expression-render") 
-						If it is v-if, <span id="expression-render"> doesn't exist
-					-->
-					<span v-show="focused" style=" line-height: 25px;">
+					<span
+						v-if="focused"
+						style="line-height: 25px; font-size: 18px;"
+					>
 						{{expression}}
 					</span>
-					<div v-show="!focused"
-						id="expression-render"
-						style="line-height: 25px; margin: auto 0; height: 100%;"
-					></div>
+					<div
+						v-if="!focused"
+						style="height: inherit;"
+					>
+						<render-tags-input
+							:expression="expression"
+							style="line-height: 25px; margin: auto 0; height: 100%;"
+						></render-tags-input>
+					</div>
 				</div>
 
 				<div
@@ -166,10 +170,6 @@ div#expression-input {
     width: 100%;
 }
 
-div#expression-render {
-    display: flex;
-}
-
 div#tags-list {
     background-color: white;
     border: 1px solid black;
@@ -245,12 +245,13 @@ div#search-button > i {
 
 <script>
 import TagComponent from "./components/Tag.vue";
+import RenderTagsInput from "./components/RenderTagsInput.vue";
 // Mixin
 import VueClickaway from "vue-clickaway2";
 //
 import { Events, EventBus } from "./eventBus";
 
-const fontWidth = 16 * 0.6; // px * em
+const fontWidth = 18 * 0.6; // px * em
 
 export default {
     mixins: [VueClickaway.mixin],
@@ -268,7 +269,8 @@ export default {
         };
     },
     components: {
-        tag: TagComponent
+        tag: TagComponent,
+        "render-tags-input": RenderTagsInput
     },
     mounted: function() {
         EventBus.$on(Events.UsualSearch, () => {
@@ -475,45 +477,6 @@ export default {
                 }
             };
         },
-        render: function() {
-            let regex = /(\d+)(?=&|\)|\||!| )/;
-            // If there's no space at the end of string, while won't stop
-            let renderText = this.expression + " ";
-            while (regex.exec(renderText) != null) {
-                let name = "Undefined",
-                    color = "white",
-                    tag;
-
-                let id = regex.exec(renderText);
-                tag = this.SharedStore.state.allTags[Number(id[1])];
-                if (tag !== undefined) {
-                    color = tag.color == undefined ? "white" : tag.color;
-                    name = tag.name;
-                }
-
-                /* HTML code:
-				<div
-					class="tag"
-					style="height: 16px; line-height: 16px; margin: auto 0; background-color: {{color}}"
-				>
-					<div>{{name}}</div>
-				</div>
-				*/
-                let replaceStr =
-                    `<div
-						class="tag"
-						style="height: 16px; line-height: 16px; margin: auto 0; background-color: ` +
-                    color +
-                    `;"><div>` +
-                    name +
-                    `</div></div>`;
-
-                renderText = renderText.replace(regex, replaceStr);
-            }
-            // Remove last space
-            renderText = renderText.slice(0, -1);
-            document.getElementById("expression-render").innerHTML = renderText;
-        },
         changeCursorPosition: function(event) {
             let x = event.offsetX > 0 ? event.offsetX : 0;
             let pos = Math.round(x / fontWidth);
@@ -536,7 +499,6 @@ export default {
 
             this.focused = false;
             this.handler().del();
-            this.render();
         }
     }
 };
