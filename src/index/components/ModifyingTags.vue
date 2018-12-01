@@ -7,9 +7,7 @@
 		</div>
 
 		<div style="width: 35%; display: flex;">
-			<div :style="{ 'background-color': newColor }" class="tag">
-				<div>{{newName}}</div>
-			</div>
+			<tag :tag="{ name: newName, color: newColor }"></tag>
 		</div>
 
 		<input
@@ -60,6 +58,8 @@
 </template>
 
 <script>
+import TagComponent from "./Tag.vue";
+
 const validTagName = /^[\w\d- ]{1,20}$/;
 const validColor = /^#[\dabcdef]{6}$/;
 
@@ -76,6 +76,9 @@ export default {
             isError: false,
             isDeleted: false
         };
+    },
+    components: {
+        tag: TagComponent
     },
     destroyed: function() {
         // Called, when window is closed

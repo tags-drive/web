@@ -54,23 +54,11 @@ body {
     vertical-align: middle;
 }
 
-.tag {
-    border: 1px rgba(66, 64, 64, 0.2) solid;
-    border-radius: 7px;
-    cursor: default;
-    display: flex;
-    height: 20px;
-    line-height: 20px;
-    margin-right: 5px;
-    padding: 2px;
-    vertical-align: middle;
-}
-
 /* Files in table */
 .file-info > td,
 th {
-	border-bottom: 1px solid #dddddd;
-	border-collapse: collapse;
+    border-bottom: 1px solid #dddddd;
+    border-collapse: collapse;
     font-family: arial, sans-serif;
     height: 40px;
     padding: 4px;

@@ -47,14 +47,13 @@
 						style="display: flex; margin: 5px; vertical-align: center"
 						:key="index"
 					>
-						<div
-							class="tag noselect"
+						<!-- @click in tag component doesn't work, so we need a wrapper -->
+						<div @click="addTagID(tag.id)">
+							<tag
 							style="cursor: pointer;"
 							title="Paste tag"
-							:style="{ 'background-color': tag.color }"
-							@click="addTagID(tag.id)"
-						>
-							{{tag.name}}
+								:tag="tag"
+							></tag>
 						</div>
 						<i style="line-height: 26px;">id: {{tag.id}}</i>
 					</div>
@@ -245,11 +244,9 @@ div#search-button > i {
 </style>
 
 <script>
+import TagComponent from "./components/Tag.vue";
 // Mixin
 import VueClickaway from "vue-clickaway2";
-// Components
-import SearchTag from "./components/SearchTag.vue";
-import SuggestionTag from "./components/SuggestionTag.vue";
 //
 import { Events, EventBus } from "./eventBus";
 
@@ -257,10 +254,6 @@ const fontWidth = 16 * 0.6; // px * em
 
 export default {
     mixins: [VueClickaway.mixin],
-    components: {
-        "search-tag": SearchTag,
-        "suggestion-tag": SuggestionTag
-    },
     data: function() {
         return {
             // Expression
@@ -273,6 +266,9 @@ export default {
             //
             onkeydownHandler: null
         };
+    },
+    components: {
+        tag: TagComponent
     },
     mounted: function() {
         EventBus.$on(Events.UsualSearch, () => {

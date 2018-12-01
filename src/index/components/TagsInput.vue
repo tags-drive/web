@@ -1,19 +1,26 @@
 <template>
 	<div
-		class="tag vertically"
-		style="margin-bottom: 5px; margin-top: 5px;"
+		class="vertically"
+		style="background-color: #ffffff00; margin-right: 5px;"
 		draggable="true"
-		:style="{ 'background-color': tag.color }"
 		@dragstart="startDrag"
 	>
-		<div>{{tag.name}}</div>
+		<tag
+			:tag="tag"
+			style="margin: 0;"
+		></tag>
 	</div>
 </template>
 
 <script>
+import TagComponent from "./Tag.vue";
+
 export default {
     props: {
         tag: Object
+    },
+    components: {
+        tag: TagComponent
     },
     methods: {
         startDrag: function(ev) {

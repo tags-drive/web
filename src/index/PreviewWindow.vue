@@ -66,15 +66,12 @@
 				<div class="content" style="min-height: 30px;">
 					<div v-if="file.tags.length === 0">Empty</div>
 					<div v-else id="tags">
-						<div
-							class="tag"
-							style="margin-bottom: 3px;"
+						<tag
 							v-for="(id, index) in file.tags"
 							:key="index"
-							:style="{ 'background-color': SharedStore.state.allTags[id].color == undefined ? 'white' : SharedStore.state.allTags[id].color }"
-						>
-							<div>{{SharedStore.state.allTags[id].name}}</div>
-						</div>
+							:tag="SharedStore.state.allTags[id]"
+							style="margin-bottom: 3px;"
+						></tag>
 					</div>
 				</div>
 
@@ -216,6 +213,8 @@
 </style>
 
 <script>
+import TagComponent from "./components/Tag.vue";
+//
 import { Events, EventBus } from "./eventBus";
 
 let lastWindowOnkeydownHandler;
@@ -230,6 +229,9 @@ export default {
             // Data
             textFileContent: ""
         };
+    },
+    components: {
+        tag: TagComponent
     },
     mounted: function() {
         EventBus.$on(Events.ShowPreview, payload => {

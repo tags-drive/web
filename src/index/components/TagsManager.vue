@@ -3,9 +3,7 @@
 	<div v-for="(tag, index) in tags" :key="index">
 		<div style="display: flex; margin-right: auto; margin-left: auto; margin-bottom: 5px; position: relative;">
 			<div style="width: 200px; display: flex">
-				<div :style="{ 'background-color': tag.color }" class="tag" style="margin: 0;">
-					<div>{{tag.name}}</div>
-				</div>
+				<tag :tag="tag" style="margin: 0;"></tag>
 			</div>
 			<div style="position: absolute; right: 0;">
 				<input
@@ -20,6 +18,8 @@
 </template>
 
 <script>
+import TagComponent from "./Tag.vue";
+
 export default {
     props: {
         tags: Object
@@ -28,6 +28,9 @@ export default {
         return {
             selectedTags: []
         };
+    },
+    components: {
+        tag: TagComponent
     },
     methods: {
         labelTag: function(id) {

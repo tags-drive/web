@@ -42,15 +42,12 @@
 		</td>
 		<td>
 			<div style="display: flex; flex-wrap: wrap;">
-				<div
-					class="tag"
-					style="margin-top: 3px; margin-bottom: 3px;"
+				<tag
 					v-for="(id, index) in file.tags"
+					style="margin-top: 3px; margin-bottom: 3px;"
 					:key="index"
-					:style="{ 'background-color': allTags[id].color == undefined ? 'white' : allTags[id].color }"
-				>
-					<div>{{allTags[id].name}}</div>
-				</div>
+					:tag="allTags[id]"
+				></tag>
 			</div>
 		</td>
 		<td :title="file.description">
@@ -76,6 +73,8 @@
 
 
 <script>
+import TagComponent from "./Tag.vue";
+//
 import { Events, EventBus } from "../eventBus";
 
 export default {
@@ -88,6 +87,9 @@ export default {
             hover: false,
             selected: false
         };
+    },
+    components: {
+        tag: TagComponent
     },
     computed: {
         stylesObject: function() {

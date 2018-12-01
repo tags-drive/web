@@ -49,10 +49,7 @@
 					style="display: flex; margin-bottom: 5px;"
 				>
 					<div style="width: 200px; display: flex; ">
-						<div
-							class="tag noselect"
-							:style="{ 'background-color': tag.color }"
-						>{{tag.name}}</div>
+						<tag :tag="tag"></tag>
 					</div>
 					<div style="font-size: 20px;">
 						<input
@@ -79,11 +76,11 @@
 
 <style scoped>
 input[type="checkbox"] {
-	vertical-align: middle;
+    vertical-align: middle;
 }
 
 #background {
-	background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.3);
     height: 100vh;
     left: 0;
     margin-bottom: 100px;
@@ -95,65 +92,67 @@ input[type="checkbox"] {
 }
 
 #upload-layer {
-	height: 100%;
-	left: 0;
-	position: absolute;
-	top: 0;
-	width: 100%;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
 }
 
 #upload-text {
-	position: absolute;
+    position: absolute;
     border: 2px black dotted;
     border-radius: 15px;
     font-size: 50px;
 
-	/* Center */
-	left: 50%;
-	transform: translate(-50%, -100%);
-	top: 50%;
+    /* Center */
+    left: 50%;
+    transform: translate(-50%, -100%);
+    top: 50%;
 }
 
 #working-area {
-	background-color: white;
-	border-radius: 5px;
-	height: auto;
-	left: 50%;
-	margin: auto;
-	position: absolute;
-	text-align: center;
-	top: 10%;
-	transform: translateX(-50%);
-	width: 700px;
+    background-color: white;
+    border-radius: 5px;
+    height: auto;
+    left: 50%;
+    margin: auto;
+    position: absolute;
+    text-align: center;
+    top: 10%;
+    transform: translateX(-50%);
+    width: 700px;
 }
 
 #files-list {
-	height: auto;
-	overflow-x: auto;
-	display: flex;
+    height: auto;
+    overflow-x: auto;
+    display: flex;
 }
 
 .file-preview {
-	margin: 0 10px;
-	overflow-wrap: break-word;
-	text-align: center;
+    margin: 0 10px;
+    overflow-wrap: break-word;
+    text-align: center;
 }
 
 .file-preview > img {
-	display: inline-block;
-	height: auto;
-	max-height: 100px;
-	max-width: 100px;
-	width: auto;
+    display: inline-block;
+    height: auto;
+    max-height: 100px;
+    max-width: 100px;
+    width: auto;
 }
 
 #tags-list {
-	display: inline-block;
-	margin-top: 10px;
+    display: inline-block;
+    margin-top: 10px;
 }
 </style>
 
 <script>
+import TagComponent from "./components/Tag.vue";
+
 export default {
     data: function() {
         return {
@@ -162,6 +161,9 @@ export default {
             files: [],
             tags: {}
         };
+    },
+    components: {
+        tag: TagComponent
     },
     created() {
         // Add listeners
