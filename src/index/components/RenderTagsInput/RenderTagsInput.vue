@@ -28,43 +28,49 @@
 }
 </style>
 
-<script>
-import TagComponent from "./Tag/Tag.vue";
+<script lang="ts">
+import Vue from "vue";
+import { Prop } from "vue-property-decorator";
+import Component from "vue-class-component";
+//
+import { Tag } from "../../global";
+import TagComponent from "../Tag/Tag.vue";
+import SharedStore from "../../store";
 
-export default {
-    props: {
-        expression: String
-    },
-    data: function() {
-        return {
-            /*
-			If it's a tag:
-			{
-			  type: "tag",
-			  tag: {
-				name: "",
-				colot: "",
-			  }
-			}
+class TagElement {
+    type: string = "tag";
 
-			Else:
-			{
-			  type="text",
-			  text: ""
-			}
-			*/
-            elements: []
-        };
-    },
+    tag: Tag;
+
+    constructor(n: string, c: string) {
+        this.tag = new Tag();
+        this.tag.name = n;
+        this.tag.color = c;
+    }
+}
+
+class TextElement {
+    type: string = "text";
+    text: string;
+
+    constructor(t: string) {
+        this.text = t;
+    }
+}
+
+@Component({
     components: {
         tag: TagComponent
-    },
-    created: function() {
-        let id = "";
-        let text = "";
+    }
+})
+export default class extends Vue {
+    @Prop() expression!: string;
 
-        let addTag = () => {
-            let tag = this.SharedStore.state.allTags[id];
+    elements: (TagElement | TextElement)[] = [];
+
+    created() {
+        let addTag = (id: number) => {
+            let tag = SharedStore.state.allTags.get(id);
             let name = "undefined";
             let color = "white";
 
@@ -73,24 +79,27 @@ export default {
                 color = tag.color;
             }
 
-            this.elements.push({ type: "tag", tag: { name: name, color: color } });
+            this.elements.push(new TagElement(name, color));
         };
-        let addText = () => {
-            this.elements.push({ type: "text", text: text });
+        let addText = (text: string) => {
+            this.elements.push(new TextElement(text));
         };
+
+        let id = "";
+        let text = "";
 
         for (let i = 0; i < this.expression.length; i++) {
             if ("0" <= this.expression[i] && this.expression[i] <= "9") {
                 if (text != "") {
                     // text
-                    addText();
+                    addText(text);
                     text = "";
                 }
                 id += this.expression[i];
             } else {
                 if (id != "") {
                     // tag
-                    addTag();
+                    addTag(Number(id));
                     id = "";
                 }
                 text += this.expression[i];
@@ -99,12 +108,12 @@ export default {
 
         // Add last tag or text
         if (id != "") {
-            addTag();
+            addTag(Number(id));
             id = "";
         } else if (text != "") {
-            addText();
+            addText(text);
             text = "";
         }
     }
-};
+}
 </script>

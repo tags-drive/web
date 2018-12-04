@@ -247,7 +247,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 // Components
 import TagComponent from "./components/Tag/Tag.vue";
-import RenderTagsInput from "./components/RenderTagsInput.vue";
+import RenderTagsInput from "./components/RenderTagsInput/RenderTagsInput.vue";
 // Store
 import SharedStore from "./store";
 import { Store } from "./store/types";
