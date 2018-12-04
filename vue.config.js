@@ -2,7 +2,7 @@ module.exports = {
     assetsDir: "static",
     pages: {
         index: {
-            entry: "src/index/index.js",
+            entry: "src/index/index.ts",
             template: "public/index.html",
             filename: "index.html"
         },
