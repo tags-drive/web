@@ -29,7 +29,7 @@
 </style>
 
 <script>
-import TagComponent from "./Tag.vue";
+import TagComponent from "./Tag/Tag.vue";
 
 export default {
     props: {

@@ -246,7 +246,7 @@ div#search-button > i {
 import Vue from "vue";
 import Component from "vue-class-component";
 // Components
-import TagComponent from "./components/Tag.vue";
+import TagComponent from "./components/Tag/Tag.vue";
 import RenderTagsInput from "./components/RenderTagsInput.vue";
 // Store
 import SharedStore from "./store";
