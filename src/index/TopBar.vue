@@ -24,7 +24,6 @@
 					@focus="() => { focused = true; addListener(); }"
 					
 				>
-					<!-- TODO: v-on-clickaway="blur" -->
 					<span
 						v-if="focused"
 						style="line-height: 25px; font-size: 18px;"
@@ -287,6 +286,25 @@ export default class TopBar extends Vue {
         this.Store = SharedStore.state;
     }
 
+    created() {
+        document.addEventListener("click", event => {
+            let ev = event as any;
+            // We need to use type any because EventMouse hasn't property path, composedPath and composedPath().
+            // Nevertheless, it's a cross browser way to get path.
+            let path = ev.path || (ev.composedPath && ev.composedPath());
+
+            for (let i in path) {
+                // We don't render expression or close tags list if there's element with id == "expression" in path
+                if (path[i].id == "expression") {
+                    return;
+                }
+            }
+
+            this.focused = false;
+            this.removeListener();
+        });
+    }
+
     mounted() {
         EventBus.$on(Events.UsualSearch, () => {
             this.search().usual();
@@ -425,21 +443,6 @@ export default class TopBar extends Vue {
         let text = String(id);
         this.expression = this.expression.substr(0, this.position) + text + this.expression.substr(this.position);
         this.position += text.length;
-    }
-
-    // TODO
-    blur(event: any) {
-        // Cross browser way to get path
-        let path = event.path || (event.composedPath && event.composedPath());
-        for (let i in path) {
-            // It prevents blur if it was click on #tags-list
-            if (path[i].id == "expression") {
-                return;
-            }
-        }
-
-        this.focused = false;
-        this.removeListener();
     }
 
     addListener() {
