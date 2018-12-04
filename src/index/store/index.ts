@@ -1,15 +1,17 @@
 import Vue from "vue";
-import Vuex from "vuex";
+import Vuex, { StoreOptions } from "vuex";
 import dateformat from "dateformat";
-
+//
 import { Params } from "../../global";
+import { Store, Tag } from "./types";
+import { logError } from "../tools";
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
+const store: StoreOptions<Store> = {
     state: {
-        allFiles: {},
-        allTags: {},
+        allFiles: [],
+        allTags: new Map(),
         selectedFiles: []
     },
     mutations: {
@@ -27,7 +29,7 @@ export default new Vuex.Store({
                     }
                     state.allFiles = files;
                 })
-                .catch(err => this.logError(err));
+                .catch(err => logError(err));
         },
         setFiles(state, files) {
             // Change time from "2018-08-23T22:48:59.0459184+03:00" to "23-08-2018 22:48"
@@ -43,16 +45,29 @@ export default new Vuex.Store({
                 credentials: "same-origin"
             })
                 .then(data => data.json())
-                .then(tags => (state.allTags = tags))
-                .catch(err => this.logError(err));
+                .then(tags => {
+                    for (let id in tags) {
+                        if (tags[id].name == undefined || tags[id].color == undefined) {
+                            continue;
+                        }
+
+                        let t = new Tag();
+                        t.name = tags[id].name;
+                        t.color = tags[id].color;
+                        state.allTags.set(Number(id), t);
+                    }
+                })
+                .catch(err => logError(err));
         },
         // selectedFiles
         // clearSelectedFiles must be called before setSelectedFiles
         clearSelectedFiles(state) {
-            state.selectedFiles = null;
+            state.selectedFiles = [];
         },
         setSelectedFiles(state, files) {
             state.selectedFiles = files;
         }
     }
-});
+};
+
+export default new Vuex.Store(store);
