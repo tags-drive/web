@@ -250,7 +250,7 @@ import TagComponent from "./components/Tag.vue";
 import RenderTagsInput from "./components/RenderTagsInput.vue";
 // Store
 import SharedStore from "./store";
-import { Store, Tag } from "@/index/store/types";
+import { Store } from "./store/types";
 // Event
 import { Events, EventBus } from "./eventBus";
 // Utils

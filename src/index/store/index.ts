@@ -2,8 +2,10 @@ import Vue from "vue";
 import Vuex, { StoreOptions } from "vuex";
 import dateformat from "dateformat";
 //
+import { File, Tag } from "../global";
+import { Store } from "./types";
+//
 import { Params } from "../../global";
-import { Store, Tag } from "./types";
 import { logError } from "../tools";
 
 Vue.use(Vuex);
@@ -23,10 +25,25 @@ const store: StoreOptions<Store> = {
             })
                 .then(data => data.json())
                 .then(files => {
+                    state.allFiles = [];
+
                     // Change time from "2018-08-23T22:48:59.0459184+03:00" to "23-08-2018 22:48"
                     for (let i in files) {
-                        files[i].addTime = dateformat(new Date(files[i].addTime), "dd-mm-yyyy HH:MM");
+                        let f = files[i];
+                        f.addTime = dateformat(new Date(files[i].addTime), "dd-mm-yyyy HH:MM");
+
+                        let file: File = new File();
+                        file.filename = <string>f.filename;
+                        file.origin = <string>f.origin;
+                        file.description = <string>f.description;
+                        file.size = <number>f.size;
+                        file.tags = <number[]>f.tags;
+                        file.addTime = <number>f.addTime;
+                        file.preview = <string>f.preview;
+
+                        state.allFiles.push(file);
                     }
+
                     state.allFiles = files;
                 })
                 .catch(err => logError(err));
@@ -46,6 +63,8 @@ const store: StoreOptions<Store> = {
             })
                 .then(data => data.json())
                 .then(tags => {
+                    state.allTags.clear();
+
                     for (let id in tags) {
                         if (tags[id].name == undefined || tags[id].color == undefined) {
                             continue;
