@@ -2,7 +2,6 @@
 <div id="top-bar">
 	<!-- Logo -->
 	<div id="logo"><span class="noselect">Tags Drive</span></div>
-
 	<!-- Search bar -->
 	<div id="search">
 		<div id="expression">
@@ -23,8 +22,9 @@
 					@click="changeCursorPosition"
 
 					@focus="() => { focused = true; addListener(); }"
-					v-on-clickaway="blur"
+					
 				>
+					<!-- TODO: v-on-clickaway="blur" -->
 					<span
 						v-if="focused"
 						style="line-height: 25px; font-size: 18px;"
@@ -47,19 +47,19 @@
 					id="tags-list"
 				>
 					<div
-						v-for="(tag, index) in SharedStore.state.allTags"
+						v-for="(id, index) in Array.from(Store.allTags.keys())"
 						style="display: flex; margin: 5px; vertical-align: center"
 						:key="index"
 					>
 						<!-- @click in tag component doesn't work, so we need a wrapper -->
-						<div @click="addTagID(tag.id)">
+						<div @click="addTagID(id)">
 							<tag
 							style="cursor: pointer;"
 							title="Paste tag"
-								:tag="tag"
+								:tag="Store.allTags.get(id)"
 							></tag>
 						</div>
-						<i style="line-height: 26px;">id: {{tag.id}}</i>
+						<i style="line-height: 26px;">id: {{id}}</i>
 					</div>
 				</div>
 			</div>
@@ -243,38 +243,55 @@ div#search-button > i {
 }
 </style>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
+import Component from "vue-class-component";
+// Components
 import TagComponent from "./components/Tag.vue";
 import RenderTagsInput from "./components/RenderTagsInput.vue";
-// Mixin
-import VueClickaway from "vue-clickaway2";
-//
-import { Events, EventBus } from "./eventBus/eventBus";
+// Store
+import SharedStore from "./store";
+import { Store, Tag } from "@/index/store/types";
+// Event
+import { Events, EventBus } from "./eventBus";
+// Utils
+import { Params } from "../global";
+import { isErrorStatusCode, logError, logInfo } from "./tools";
 
 const fontWidth = 18 * 0.6; // px * em
 
-export default {
-    mixins: [VueClickaway.mixin],
-    data: function() {
-        return {
-            // Expression
-            expression: "",
-            position: 0,
-            showTagsList: false,
-            focused: false,
-            // Text search
-            text: ""
-        };
-    },
+@Component({
     components: {
         tag: TagComponent,
         "render-tags-input": RenderTagsInput
-    },
-    mounted: function() {
+    }
+})
+export default class TopBar extends Vue {
+    // Expression
+    expression: string;
+    position: number;
+    showTagsList: boolean;
+    focused: boolean;
+    // Text search
+    text: string;
+    Store: Store;
+
+    constructor() {
+        super();
+
+        this.expression = "";
+        this.position = 0;
+        this.showTagsList = false;
+        this.focused = false;
+        this.text = "";
+        this.Store = SharedStore.state;
+    }
+
+    mounted() {
         EventBus.$on(Events.UsualSearch, () => {
             this.search().usual();
         });
-        EventBus.$on(Events.AdvancedSearch, payload => {
+        EventBus.$on(Events.AdvancedSearch, (payload: any) => {
             if (payload.type == undefined || payload.order == undefined) {
                 /* eslint-disable no-console */
                 console.error("Payload hasn't order or type fields:", payload);
@@ -283,212 +300,218 @@ export default {
             }
             this.search().advanced(payload.type, payload.order);
         });
-    },
-    methods: {
-        search: function() {
-            return {
-                usual: () => {
-                    EventBus.$emit(Events.UnselectAllFiles);
+    }
 
-                    let params = new URLSearchParams();
-                    // Expression
-                    if (this.expression != "") {
-                        params.append("expr", this.expression);
-                    }
-                    // search
-                    if (this.text != "") {
-                        params.append("search", this.text);
-                    }
+    search() {
+        return {
+            usual: () => {
+                EventBus.$emit(Events.UnselectAllFiles);
 
-                    // Can skip sort and order, because server will use default values
-
-                    fetch(this.Params.Host + "/api/files?" + params, {
-                        method: "GET",
-                        credentials: "same-origin"
-                    })
-                        .then(resp => {
-                            if (this.isErrorStatusCode(resp.status)) {
-                                resp.text().then(text => {
-                                    this.logError(text);
-                                });
-                                return;
-                            }
-                            return resp.json();
-                        })
-                        .then(files => {
-                            if (files === undefined) {
-                                return;
-                            }
-                            this.SharedStore.commit("setFiles", files);
-                            EventBus.$emit(Events.ResetSortParams);
-                        })
-                        .catch(err => this.logError(err));
-                },
-                advanced: (sType, sOrder) => {
-                    EventBus.$emit(Events.UnselectAllFiles);
-
-                    let params = new URLSearchParams();
-                    // Expression
-                    if (this.expression != "") {
-                        params.append("expr", this.expression);
-                    }
-                    // search
-                    if (this.text != "") {
-                        params.append("search", this.text);
-                    }
-                    // sort
-                    params.append("sort", sType);
-                    // order
-                    params.append("order", sOrder);
-
-                    fetch(this.Params.Host + "/api/files?" + params, {
-                        method: "GET",
-                        credentials: "same-origin"
-                    })
-                        .then(resp => {
-                            if (this.isErrorStatusCode(resp.status)) {
-                                resp.text().then(text => {
-                                    this.logError(text);
-                                });
-                                return;
-                            }
-                            return resp.json();
-                        })
-                        .then(files => {
-                            if (files === undefined) {
-                                return;
-                            }
-                            this.SharedStore.commit("setFiles", files);
-                            EventBus.$emit(Events.ResetSortParams);
-                        })
-                        .catch(err => this.logError(err));
+                let params = new URLSearchParams();
+                // Expression
+                if (this.expression != "") {
+                    params.append("expr", this.expression);
                 }
-            };
-        },
-        management: function() {
-            return {
-                globalTags: () => {
-                    EventBus.$emit(Events.GlobalTagsChanging);
-                },
-                settings: () => {
-                    EventBus.$emit(Events.SettingsMenu);
-                },
-                logout: () => {
-                    if (!confirm("Are you sure you want log out?")) {
-                        return;
-                    }
-
-                    fetch(this.Params.Host + "/logout", {
-                        method: "POST",
-                        credentials: "same-origin"
-                    })
-                        .then(resp => {
-                            if (this.isErrorStatusCode(resp.status)) {
-                                resp.text().then(text => {
-                                    this.logError(text);
-                                });
-                                return;
-                            }
-
-                            location.reload(true);
-                        })
-                        .catch(err => this.logError(err));
+                // search
+                if (this.text != "") {
+                    params.append("search", this.text);
                 }
-            };
-        },
-        changeCursorPosition: function(event) {
-            let x = event.offsetX > 0 ? event.offsetX : 0;
-            let pos = Math.round(x / fontWidth);
-            this.position = pos < this.expression.length ? pos : this.expression.length;
-        },
-        addTagID: function(id) {
-            let text = String(id);
-            this.expression = this.expression.substr(0, this.position) + text + this.expression.substr(this.position);
-            this.position += text.length;
-        },
-        blur: function(event) {
-            // Cross browser way to get path
-            let path = event.path || (event.composedPath && event.composedPath());
-            for (let i in path) {
-                // It prevents blur if it was click on #tags-list
-                if (path[i].id == "expression") {
+
+                // Can skip sort and order, because server will use default values
+
+                fetch(Params.Host + "/api/files?" + params, {
+                    method: "GET",
+                    credentials: "same-origin"
+                })
+                    .then(resp => {
+                        if (isErrorStatusCode(resp.status)) {
+                            resp.text().then(text => {
+                                logError(text);
+                            });
+                            return;
+                        }
+                        return resp.json();
+                    })
+                    .then(files => {
+                        if (files === undefined) {
+                            return;
+                        }
+                        SharedStore.commit("setFiles", files);
+                        EventBus.$emit(Events.ResetSortParams);
+                    })
+                    .catch(err => logError(err));
+            },
+            advanced: (sType: string, sOrder: string) => {
+                EventBus.$emit(Events.UnselectAllFiles);
+
+                let params = new URLSearchParams();
+                // Expression
+                if (this.expression != "") {
+                    params.append("expr", this.expression);
+                }
+                // search
+                if (this.text != "") {
+                    params.append("search", this.text);
+                }
+                // sort
+                params.append("sort", sType);
+                // order
+                params.append("order", sOrder);
+
+                fetch(Params.Host + "/api/files?" + params, {
+                    method: "GET",
+                    credentials: "same-origin"
+                })
+                    .then(resp => {
+                        if (isErrorStatusCode(resp.status)) {
+                            resp.text().then(text => {
+                                logError(text);
+                            });
+                            return;
+                        }
+                        return resp.json();
+                    })
+                    .then(files => {
+                        if (files === undefined) {
+                            return;
+                        }
+                        SharedStore.commit("setFiles", files);
+                        EventBus.$emit(Events.ResetSortParams);
+                    })
+                    .catch(err => logError(err));
+            }
+        };
+    }
+
+    management() {
+        return {
+            globalTags: () => {
+                EventBus.$emit(Events.GlobalTagsChanging);
+            },
+            settings: () => {
+                EventBus.$emit(Events.SettingsMenu);
+            },
+            logout: () => {
+                if (!confirm("Are you sure you want log out?")) {
                     return;
                 }
+
+                fetch(Params.Host + "/logout", {
+                    method: "POST",
+                    credentials: "same-origin"
+                })
+                    .then(resp => {
+                        if (isErrorStatusCode(resp.status)) {
+                            resp.text().then(text => {
+                                logError(text);
+                            });
+                            return;
+                        }
+
+                        location.reload(true);
+                    })
+                    .catch(err => logError(err));
             }
+        };
+    }
 
-            this.focused = false;
-            this.removeListener();
-        },
-        addListener: function() {
-            document.addEventListener("keydown", this.onkeydownListener);
+    changeCursorPosition(event: MouseEvent) {
+        let x = event.offsetX > 0 ? event.offsetX : 0;
+        let pos = Math.round(x / fontWidth);
+        this.position = pos < this.expression.length ? pos : this.expression.length;
+    }
 
-            // Paste event
-            document.getElementById("expression-input").onpaste = ev => {
-                let text = ev.clipboardData.getData("Text");
-                this.expression =
-                    this.expression.substr(0, this.position) + text + this.expression.substr(this.position);
-                this.position += text.length;
-            };
-        },
-        removeListener: function() {
-            document.removeEventListener("keydown", this.onkeydownListener);
-        },
-        onkeydownListener: function(ev) {
-            let hasPrefix = (str, prefix) => {
-                if (str.length < prefix.length) {
-                    return false;
-                }
+    addTagID(id: number) {
+        let text = String(id);
+        this.expression = this.expression.substr(0, this.position) + text + this.expression.substr(this.position);
+        this.position += text.length;
+    }
 
-                for (let i = 0; i < prefix.length; i++) {
-                    if (str[i] != prefix[i]) {
-                        return false;
-                    }
-                }
-                return true;
-            };
-
-            if (ev.ctrlKey || ev.altKey) {
+    // TODO
+    blur(event: any) {
+        // Cross browser way to get path
+        let path = event.path || (event.composedPath && event.composedPath());
+        for (let i in path) {
+            // It prevents blur if it was click on #tags-list
+            if (path[i].id == "expression") {
                 return;
             }
+        }
 
-            if (
-                ev.key.length == 1 &&
-                (hasPrefix(ev.code, "Key") ||
-                    ev.key == "(" ||
-                    ev.key == ")" ||
-                    ev.key == "|" ||
-                    hasPrefix(ev.code, "Numpad") ||
-                    hasPrefix(ev.code, "Digit"))
-            ) {
-                this.expression =
-                    this.expression.substr(0, this.position) + ev.key + this.expression.substr(this.position);
+        this.focused = false;
+        this.removeListener();
+    }
 
-                this.position++;
-            } else if (hasPrefix(ev.code, "Arrow")) {
-                // Arrow
-                if (hasPrefix(ev.code, "ArrowLeft")) {
-                    if (this.position > 0) {
-                        this.position--;
-                    }
-                } else if (hasPrefix(ev.code, "ArrowRight")) {
-                    if (this.position < this.expression.length) {
-                        this.position++;
-                    }
-                }
-            } else if (hasPrefix(ev.code, "Backspace")) {
-                if (this.position == 0) {
-                    return;
-                }
-                this.expression = this.expression.substr(0, this.position - 1) + this.expression.substr(this.position);
-                this.position--;
-            } else if (hasPrefix(ev.code, "Delete")) {
-                this.expression = this.expression.substr(0, this.position) + this.expression.substr(this.position + 1);
-            } else if (ev.code == "Home") {
-                this.position = 0;
-            } else if (ev.code == "End") {
-                this.position = this.expression.length;
+    addListener() {
+        document.addEventListener("keydown", this.onkeydownListener);
+
+        // Paste event
+        const elem: HTMLElement = document.getElementById("expression-input")!;
+        elem.onpaste = ev => {
+            let text = ev.clipboardData.getData("Text");
+            this.expression = this.expression.substr(0, this.position) + text + this.expression.substr(this.position);
+            this.position += text.length;
+        };
+    }
+
+    removeListener() {
+        document.removeEventListener("keydown", this.onkeydownListener);
+    }
+
+    onkeydownListener(ev: KeyboardEvent) {
+        let hasPrefix = (str: string, prefix: string) => {
+            if (str.length < prefix.length) {
+                return false;
             }
+
+            for (let i = 0; i < prefix.length; i++) {
+                if (str[i] != prefix[i]) {
+                    return false;
+                }
+            }
+            return true;
+        };
+
+        if (ev.ctrlKey || ev.altKey) {
+            return;
+        }
+
+        if (
+            ev.key.length == 1 &&
+            (hasPrefix(ev.code, "Key") ||
+                ev.key == "(" ||
+                ev.key == ")" ||
+                ev.key == "|" ||
+                hasPrefix(ev.code, "Numpad") ||
+                hasPrefix(ev.code, "Digit"))
+        ) {
+            this.expression = this.expression.substr(0, this.position) + ev.key + this.expression.substr(this.position);
+
+            this.position++;
+        } else if (hasPrefix(ev.code, "Arrow")) {
+            // Arrow
+            if (hasPrefix(ev.code, "ArrowLeft")) {
+                if (this.position > 0) {
+                    this.position--;
+                }
+            } else if (hasPrefix(ev.code, "ArrowRight")) {
+                if (this.position < this.expression.length) {
+                    this.position++;
+                }
+            }
+        } else if (hasPrefix(ev.code, "Backspace")) {
+            if (this.position == 0) {
+                return;
+            }
+            this.expression = this.expression.substr(0, this.position - 1) + this.expression.substr(this.position);
+            this.position--;
+        } else if (hasPrefix(ev.code, "Delete")) {
+            this.expression = this.expression.substr(0, this.position) + this.expression.substr(this.position + 1);
+        } else if (ev.code == "Home") {
+            this.position = 0;
+        } else if (ev.code == "End") {
+            this.position = this.expression.length;
         }
     }
-};
+}
 </script>

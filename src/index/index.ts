@@ -4,15 +4,15 @@ import SharedStore from "./store";
 import SharedState from "./state";
 
 window.onload = function() {
-	SharedState.commit("readSettings");
+    SharedState.commit("readSettings");
     SharedStore.commit("updateFiles");
     SharedStore.commit("updateTags");
 };
 
 import TagsDrive from "./TagsDrive.vue";
+import TopBar from "./TopBar.vue";
 // TODO
 /*
-import TopBar from "./TopBar.vue";
 import FilesBlock from "./FilesBlock.vue";
 import UploadBlock from "./UploadBlock.vue";
 import ContextMenu from "./ContextMenu.vue";
@@ -27,13 +27,13 @@ new Vue({
     render: h => h(TagsDrive)
 });
 
-// TODO
 // /* Top Bar */
-// new Vue({
-//     el: "#top-bar",
-//     render: h => h(TopBar)
-// });
+new Vue({
+    el: "#top-bar",
+    render: h => h(TopBar)
+});
 
+// TODO
 // /* Files Block */
 // new Vue({
 //     el: "#files-block",
