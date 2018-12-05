@@ -69,7 +69,7 @@ import { Store } from "./store/types";
 import SharedState from "./state";
 import { State } from "./state/types";
 // Components
-import Files from "./components/Files.vue";
+import Files from "./components/Files/Files.vue";
 //
 import { Const } from "./tools";
 import { Events, EventBus } from "./eventBus";
