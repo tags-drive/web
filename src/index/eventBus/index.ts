@@ -17,6 +17,11 @@ export const Events = {
     SelectTagsAdding: <string> "select-tags-adding",
     SelectTagsDeleting: <string> "select-tags-deleting",
     SelectFilesDeleting: <string> "select-files-deleting",
+	// For children of TopBar
+	FilesBlock: {
+		SelectFile: <string> "files-block-select-file",
+		UnselectFile: <string> "files-block-unselect-file"
+	},
     //
     UpdateSelectedFiles: <string> "update-selected-files",
     RestoreSortParams: <string> "reset-sort-params",

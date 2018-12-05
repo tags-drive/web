@@ -101,6 +101,14 @@ export default class extends Vue {
         EventBus.$on(Events.UpdateSelectedFiles, () => {
             this.updateSelectedFiles();
         });
+        //
+        EventBus.$on(Events.FilesBlock.SelectFile, () => {
+            this.selectFile();
+        });
+        EventBus.$on(Events.FilesBlock.UnselectFile, () => {
+            this.unselectFile();
+        });
+        //
         EventBus.$on(Events.RestoreSortParams, () => {
             this.sort().restoreDefault();
         });

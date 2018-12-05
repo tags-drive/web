@@ -162,11 +162,10 @@ export default class extends Vue {
         // We can skip changing this.selected, because a checkbox is bound to this.selected
 
         // The function is called after changing this.selected
-        // TODO
         if (this.selected) {
-            this.$parent.selectFile();
+            EventBus.$emit(Events.FilesBlock.SelectFile);
         } else {
-            this.$parent.unselectFile();
+            EventBus.$emit(Events.FilesBlock.UnselectFile);
         }
     }
 }
