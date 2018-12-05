@@ -1,34 +1,38 @@
 import Vue from "vue";
 
 export const Events = {
-	// Search
-    UsualSearch: <string> "usual-search",
-    AdvancedSearch: <string> "advanced-search",
-    //
-    SettingsMenu: <string> "settings-menu",
-    //
-    GlobalTagsChanging: <string> "global-tags-changing",
-    // Regular mode
-    RegularFileRenaming: <string> "regular-file-renaming",
-    RegularDescriptionChanging: <string> "regular-file-description-changing",
-    RegularTagsChanging: <string> "regular-tags-changing",
-    RegularFileDeleting: <string> "regular-file-deleting",
-    // Select mode
-    SelectTagsAdding: <string> "select-tags-adding",
-    SelectTagsDeleting: <string> "select-tags-deleting",
-    SelectFilesDeleting: <string> "select-files-deleting",
-	// For children of TopBar
-	FilesBlock: {
-		SelectFile: <string> "files-block-select-file",
-		UnselectFile: <string> "files-block-unselect-file"
-	},
-    //
-    UpdateSelectedFiles: <string> "update-selected-files",
-    RestoreSortParams: <string> "reset-sort-params",
-    ShowContextMenu: <string> "show-context-menu",
-    UnselectAllFiles: <string> "unselect-all-files",
-    LogEvent: <string> "log-event",
-    ShowPreview: <string> "show-preview"
-}
+    Search: {
+        Usual: <string>"search-usual",
+        Advanced: <string>"search-advanced"
+    },
+    ModalWindow: {
+        ShowSettingsWindow: <string>"modal-window-settings-window",
+        ShowTagsChangingWindow: <string>"modal-window-tags-changing",
+        RegularMode: {
+            ShowFileRenamingWindow: <string>"modal-window-regular-file-renaming",
+            ShowFileDescriptionChangingWindow: <string>"modal-window-regular-file-description-changing",
+            ShowTagsChangingWindow: <string>"modal-window-regular-tags-changing",
+            ShowFileDeletingWindow: <string>"modal-window-regular-file-deleting"
+        },
+        SelectMode: {
+            ShowTagsAddingWindow: <string>"modal-window-select-tags-adding",
+            ShowTagsDeletingWindow: <string>"modal-window-select-tags-deleting",
+            ShowFilesDeletingWindow: <string>"modal-window-select-files-deleting"
+        }
+    },
+    FilesBlock: {
+        // For children of TopBar
+        SelectFile: <string>"files-block-select-file",
+        UnselectFile: <string>"files-block-unselect-file",
+        //
+        UnselectAllFiles: <string>"files-block-unselect-all-files",
+        //
+        RestoreSortParams: <string>"files-block-restore-sort-params"
+    },
+    UpdateSelectedFiles: <string>"update-selected-files",
+    ShowContextMenu: <string>"show-context-menu",
+    ShowPreview: <string>"show-preview",
+    LogEvent: <string>"log-event"
+};
 
 export const EventBus = new Vue({});

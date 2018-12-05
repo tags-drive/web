@@ -95,7 +95,7 @@ export default class extends Vue {
     Store: Store = SharedStore.state;
 
     mounted() {
-        EventBus.$on(Events.UnselectAllFiles, () => {
+        EventBus.$on(Events.FilesBlock.UnselectAllFiles, () => {
             this.unselectAllFiles();
         });
         EventBus.$on(Events.UpdateSelectedFiles, () => {
@@ -109,7 +109,7 @@ export default class extends Vue {
             this.unselectFile();
         });
         //
-        EventBus.$on(Events.RestoreSortParams, () => {
+        EventBus.$on(Events.FilesBlock.RestoreSortParams, () => {
             this.sort().restoreDefault();
         });
     }
@@ -134,7 +134,7 @@ export default class extends Vue {
                 let type = this.lastSortType,
                     order = this.sortOrderAsc ? Const.sortOrder.asc : Const.sortOrder.desc;
 
-                EventBus.$emit(Events.AdvancedSearch, { type: type, order: order });
+                EventBus.$emit(Events.Search.Advanced, { type: type, order: order });
             },
             bySize: () => {
                 if (this.lastSortType == Const.sortType.size) {
@@ -154,7 +154,7 @@ export default class extends Vue {
                 let type = this.lastSortType,
                     order = this.sortOrderAsc ? Const.sortOrder.asc : Const.sortOrder.desc;
 
-                EventBus.$emit(Events.AdvancedSearch, { type: type, order: order });
+                EventBus.$emit(Events.Search.Advanced, { type: type, order: order });
             },
             byTime: () => {
                 if (this.lastSortType == Const.sortType.time) {
@@ -173,7 +173,7 @@ export default class extends Vue {
                 let type = this.lastSortType,
                     order = this.sortOrderAsc ? Const.sortOrder.asc : Const.sortOrder.desc;
 
-                EventBus.$emit(Events.AdvancedSearch, { type: type, order: order });
+                EventBus.$emit(Events.Search.Advanced, { type: type, order: order });
             },
             restoreDefault: () => {
                 this.sortModeByName = true;

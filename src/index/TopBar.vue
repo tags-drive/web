@@ -306,10 +306,10 @@ export default class TopBar extends Vue {
     }
 
     mounted() {
-        EventBus.$on(Events.UsualSearch, () => {
+        EventBus.$on(Events.Search.Usual, () => {
             this.search().usual();
         });
-        EventBus.$on(Events.AdvancedSearch, (payload: any) => {
+        EventBus.$on(Events.Search.Advanced, (payload: any) => {
             if (payload.type == undefined || payload.order == undefined) {
                 /* eslint-disable no-console */
                 console.error("Payload hasn't order or type fields:", payload);
@@ -323,7 +323,7 @@ export default class TopBar extends Vue {
     search() {
         return {
             usual: () => {
-                EventBus.$emit(Events.UnselectAllFiles);
+                EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
 
                 let params = new URLSearchParams();
                 // Expression
@@ -355,12 +355,12 @@ export default class TopBar extends Vue {
                             return;
                         }
                         SharedStore.commit("setFiles", files);
-                        EventBus.$emit(Events.RestoreSortParams);
+                        EventBus.$emit(Events.FilesBlock.RestoreSortParams);
                     })
                     .catch(err => logError(err));
             },
             advanced: (sType: string, sOrder: string) => {
-                EventBus.$emit(Events.UnselectAllFiles);
+                EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
 
                 let params = new URLSearchParams();
                 // Expression
@@ -403,10 +403,10 @@ export default class TopBar extends Vue {
     management() {
         return {
             globalTags: () => {
-                EventBus.$emit(Events.GlobalTagsChanging);
+                EventBus.$emit(Events.ModalWindow.ShowTagsChangingWindow);
             },
             settings: () => {
-                EventBus.$emit(Events.SettingsMenu);
+                EventBus.$emit(Events.ModalWindow.ShowSettingsWindow);
             },
             logout: () => {
                 if (!confirm("Are you sure you want log out?")) {
