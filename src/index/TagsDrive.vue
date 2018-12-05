@@ -94,3 +94,27 @@ th {
 }
 </style>
 
+<script lang="ts">
+import Vue from "vue";
+import Component from "vue-class-component";
+//
+import SharedStore from "./store";
+import SharedState from "./state";
+
+@Component({})
+export default class extends Vue {
+    created() {
+        SharedState.commit("readSettings");
+        SharedStore.commit("updateTags");
+
+        // If we call SharedStore.commit("updateFiles") immediately, some tags can be undefined.
+        // So we need to wait for tags are ready
+        let t = setInterval(() => {
+            if (SharedStore.state.tagsReady) {
+                SharedStore.commit("updateFiles");
+                clearInterval(t);
+            }
+        }, 10);
+    }
+}
+</script>

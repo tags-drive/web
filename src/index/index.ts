@@ -1,13 +1,4 @@
 import Vue from "vue";
-// Shared data
-import SharedStore from "./store";
-import SharedState from "./state";
-
-window.onload = function() {
-    SharedState.commit("readSettings");
-    SharedStore.commit("updateFiles");
-    SharedStore.commit("updateTags");
-};
 
 import TagsDrive from "./TagsDrive.vue";
 import TopBar from "./TopBar.vue";

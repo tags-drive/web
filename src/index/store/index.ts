@@ -14,7 +14,11 @@ const store: StoreOptions<Store> = {
     state: {
         allFiles: [],
         allTags: new Map(),
-        selectedFiles: []
+        selectedFiles: [],
+        // filesReady is true after first call of updateFiles
+        filesReady: false,
+        // tagsReady is true after first call of updateTags
+        tagsReady: false
     },
     mutations: {
         // allFiles
@@ -46,7 +50,7 @@ const store: StoreOptions<Store> = {
                         state.allFiles.push(file);
                     }
 
-                    state.allFiles = files;
+                    state.filesReady = true;
                 })
                 .catch(err => logError(err));
         },
@@ -77,6 +81,8 @@ const store: StoreOptions<Store> = {
                         t.color = tags[id].color;
                         state.allTags.set(Number(id), t);
                     }
+
+                    state.tagsReady = true;
                 })
                 .catch(err => logError(err));
         },
