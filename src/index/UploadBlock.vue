@@ -49,18 +49,18 @@
 			<!-- Tags -->
 			<div id="tags-list">
 				<div
-					v-for="(tag, index) in SharedStore.state.allTags"
+					v-for="(id, index) in Array.from(Store.allTags.keys())"
 					:key="index"
 					style="display: flex; margin-bottom: 5px;"
 				>
 					<div style="width: 200px; display: flex; ">
-						<tag :tag="tag"></tag>
+						<tag :tag="Store.allTags.get(id)"></tag>
 					</div>
 					<div style="font-size: 20px;">
 						<input
 							type="checkbox"
 							style="transform: scale(1.4);"
-							@click="updateTags(tag.id)">
+							@click="updateTags(id)">
 					</div>
 					
 				</div>
@@ -199,172 +199,192 @@ input[type="checkbox"] {
 }
 </style>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
+import Component from "vue-class-component";
+//
 import axios from "axios";
+// Components
+import TagComponent from "./components/Tag/Tag.vue";
+// Shared data
+import SharedStore from "./store";
+import { Store } from "./store/types";
+import SharedState from "./state";
 //
-import TagComponent from "./components/Tag.vue";
-//
-import { Events, EventBus } from "./eventBus/eventBus";
+import { Events, EventBus } from "./eventBus";
+import { Tag } from "./global";
+import { Params } from "../global";
+import { isErrorStatusCode, logError, logInfo } from "./tools";
 
-export default {
-    data: function() {
-        return {
-            counter: 0, // for definition did user drag file into div. If counter > 0, user dragged file.
-            // states
-            showChosenFiles: false,
-            uploading: false,
-            uploadPercentage: 0,
-            //
-            files: [],
-            tags: {}
-        };
-    },
+@Component({
     components: {
         tag: TagComponent
-    },
+    }
+})
+export default class extends Vue {
+    counter: number = 0; // for definition did user drag file into div. If counter > 0, user dragged file.
+    // states
+    showChosenFiles: boolean = false;
+    uploading: boolean = false;
+    uploadPercentage: number = 0;
+    //
+    files: File[] = [];
+    tags: Map<number, Tag> = new Map();
+    //
+    Store: Store = SharedStore.state;
+
     created() {
         // Add listeners
         document.ondragenter = () => {
-            if (this.SharedState.state.showDropLayer) {
+            if (SharedState.state.showDropLayer) {
                 this.counter++;
             }
         };
         document.ondragleave = () => {
-            if (this.SharedState.state.showDropLayer) {
+            if (SharedState.state.showDropLayer) {
                 this.counter--;
             }
         };
         document.ondrop = () => {
-            if (this.SharedState.state.showDropLayer) {
+            if (SharedState.state.showDropLayer) {
                 this.counter = 0;
             }
         };
-    },
-    methods: {
-        showFilesMenu: function(event) {
-            this.files = [];
-            this.uploading = false;
+    }
 
-            this.showChosenFiles = true;
-            for (let i = 0; i < event.dataTransfer.files.length; i++) {
-                this.files.push(event.dataTransfer.files[i]);
-            }
-        },
-        upload: function() {
-            this.uploading = true;
-            this.uploadPercentage = 0;
+    showFilesMenu(event: DragEvent) {
+        if (event.dataTransfer == null || event.dataTransfer.files == null) {
+            return;
+        }
 
-            let formData = new FormData();
-            for (let i = 0; i < this.files.length; i++) {
-                formData.append("files", this.files[i], this.files[i].name);
-            }
+        this.files = [];
+        this.uploading = false;
 
-            let tags = Object.keys(this.tags).join(",");
-
-            // Reset vars
-            this.tags = {};
-            this.files = [];
-            this.showChosenFiles = false;
-
-            var config = {
-                onUploadProgress: ev => {
-                    this.uploadPercentage = Math.round((ev.loaded / ev.total) * 100);
-                }
-            };
-
-            // We use axios for upload bar
-            axios
-                .post(this.Params.Host + "/api/files?tags=" + tags, formData, config)
-                .then(resp => {
-                    this.uploading = false;
-
-                    if (this.isErrorStatusCode(resp.status)) {
-                        resp.text().then(text => {
-                            this.logError(text);
-                        });
-                        return;
-                    }
-
-                    // Update list of files
-                    EventBus.$emit(Events.UsualSearch);
-                    return resp.data;
-                })
-                .then(log => {
-                    if (log === undefined) {
-                        return;
-                    }
-                    // Schema:
-                    // [
-                    //     {
-                    //         filename: string,
-                    //         isError: boolean,
-                    //         error: string (when isError == true),
-                    //         status: string (when isError == false)
-                    //     }
-                    // ]
-                    //
-                    for (let i in log) {
-                        let msg = log[i].filename;
-                        if (log[i].isError) {
-                            msg += " " + log[i].error;
-                        } else {
-                            msg += " " + log[i].status;
-                        }
-
-                        if (log[i].isError) {
-                            this.logError(msg);
-                        } else {
-                            this.logInfo(msg);
-                        }
-                    }
-                })
-                .catch(err => {
-                    this.uploading = false;
-                    this.logError(err);
-                });
-        },
-        addFileSource: function(file) {
-            let id = "preview-for-file-" + file.name;
-
-            if (file.type == "image/jpeg" || file.type == "image/png" || file.type == "image/gif") {
-                // Load preview fron Disk
-                let reader = new FileReader();
-                reader.readAsDataURL(file);
-
-                reader.onloadend = () => {
-                    // An element already exists, when file is loaded
-                    document.getElementById(id).src = reader.result;
-                };
-            } else {
-                // Load extension
-                let path = this.Params.Host + "/ext/" + file.name.split(".").pop();
-
-                // Need to wait for element creation
-                let f = () => {
-                    let elem = document.getElementById(id);
-                    if (elem === null) {
-                        setTimeout(f, 20);
-                        return;
-                    }
-                    elem.src = path;
-                };
-
-                f();
-            }
-        },
-        updateTags: function(id) {
-            if (this.tags[id] === undefined) {
-                this.tags[id] = true;
-            } else {
-                delete this.tags[id];
-            }
-        },
-        hideWindow: function() {
-            // Shouldn't close window during file uploading
-            if (!this.uploading) {
-                this.showChosenFiles = false;
-            }
+        this.showChosenFiles = true;
+        for (let i = 0; i < event.dataTransfer.files.length; i++) {
+            this.files.push(event.dataTransfer.files[i]);
         }
     }
-};
+
+    upload() {
+        this.uploading = true;
+        this.uploadPercentage = 0;
+
+        let formData = new FormData();
+        for (let i = 0; i < this.files.length; i++) {
+            formData.append("files", this.files[i], this.files[i].name);
+        }
+
+        let tags = Array.from(this.tags.keys()).join(",");
+
+        // Reset vars
+        this.tags.clear();
+        this.files = [];
+        this.showChosenFiles = false;
+
+        var config = {
+            onUploadProgress: (ev: ProgressEvent) => {
+                this.uploadPercentage = Math.round((ev.loaded / ev.total) * 100);
+            }
+        };
+
+        // We use axios for upload bar
+        axios
+            .post(Params.Host + "/api/files?tags=" + tags, formData, config)
+            .then(resp => {
+                this.uploading = false;
+
+                if (isErrorStatusCode(resp.status)) {
+                    logError(resp.data);
+                    return;
+                }
+
+                // Update list of files
+                EventBus.$emit(Events.Search.Usual);
+                return resp.data;
+            })
+            .then(log => {
+                if (log === undefined) {
+                    return;
+                }
+                // Schema:
+                // [
+                //     {
+                //         filename: string,
+                //         isError: boolean,
+                //         error: string (when isError == true),
+                //         status: string (when isError == false)
+                //     }
+                // ]
+                //
+                for (let i in log) {
+                    let msg = log[i].filename;
+                    if (log[i].isError) {
+                        msg += " " + log[i].error;
+                    } else {
+                        msg += " " + log[i].status;
+                    }
+
+                    if (log[i].isError) {
+                        logError(msg);
+                    } else {
+                        logInfo(msg);
+                    }
+                }
+            })
+            .catch(err => {
+                this.uploading = false;
+                logError(err);
+            });
+    }
+
+    addFileSource(file: File) {
+        let id = "preview-for-file-" + file.name;
+
+        if (file.type == "image/jpeg" || file.type == "image/png" || file.type == "image/gif") {
+            // Load preview fron Disk
+            let reader = new FileReader();
+            reader.readAsDataURL(file);
+
+            reader.onloadend = () => {
+                // An element already exists, when file is loaded
+                let elem = <HTMLImageElement>document.getElementById(id);
+                elem.src = <string>reader.result;
+            };
+        } else {
+            // Load extension
+            let path = Params.Host + "/ext/" + file.name.split(".").pop();
+
+            // Need to wait for element creation
+            let f = () => {
+                let elem = <HTMLImageElement>document.getElementById(id)!;
+                if (elem === null) {
+                    setTimeout(f, 20);
+                    return;
+                }
+                elem.src = path;
+            };
+
+            f();
+        }
+    }
+
+    updateTags(id: number) {
+        if (!this.tags.has(id)) {
+            let t = SharedStore.state.allTags.get(id);
+            if (t !== undefined) {
+                this.tags.set(id, t);
+            }
+        } else {
+            this.tags.delete(id);
+        }
+    }
+
+    hideWindow() {
+        // Shouldn't close window during file uploading
+        if (!this.uploading) {
+            this.showChosenFiles = false;
+        }
+    }
+}
 </script>
