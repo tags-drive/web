@@ -12,7 +12,7 @@
 					v-model="allSelected"
 					:indeterminate.prop="
 						selectCount > 0 &&
-						selectCount != Object.keys(SharedStore.state.allFiles).length"
+						selectCount != Store.allFiles.length"
 					@click="toggleAllFiles"
 				></th>
 			<th>
@@ -53,36 +53,44 @@
 		</tr>
 
 		<files
-			v-for="(file, index) in SharedStore.state.allFiles"
+			v-for="(file, index) in Store.allFiles"
 			:key="index"
 			:file="file"
-			:allTags="SharedStore.state.allTags"
 		></files>
 	</table>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
+import Component from "vue-class-component";
+// Store
+import SharedStore from "./store";
+import { Store } from "./store/types";
+import SharedState from "./state";
+import { State } from "./state/types";
 // Components
 import Files from "./components/Files.vue";
 //
-import { Events, EventBus } from "./eventBus/eventBus";
+import { Const } from "./tools";
+import { Events, EventBus } from "./eventBus";
 
-export default {
-    data: function() {
-        return {
-            sortByNameModeAsc: true,
-            sortBySizeModeAsc: true,
-            sortByTimeModeAsc: true,
-            lastSortType: this.Const.sortType.name,
-
-            allSelected: false,
-            selectCount: 0
-        };
-    },
+@Component({
     components: {
         files: Files
-    },
-    mounted: function() {
+    }
+})
+export default class extends Vue {
+    sortByNameModeAsc: boolean = true;
+    sortBySizeModeAsc: boolean = true;
+    sortByTimeModeAsc: boolean = true;
+    lastSortType: string = Const.sortType.name; // TODO
+    //
+    allSelected: boolean = false;
+    selectCount: number = 0;
+    //
+    Store: Store = SharedStore.state;
+
+    mounted() {
         EventBus.$on(Events.UnselectAllFiles, () => {
             this.unselectAllFiles();
         });
@@ -92,115 +100,119 @@ export default {
         EventBus.$on(Events.ResetSortParams, () => {
             this.sort().reset();
         });
-    },
-    methods: {
-        // Sorts
-        sort: function() {
-            return {
-                byName: () => {
-                    if (this.lastSortType == this.Const.sortType.name) {
-                        this.sortByNameModeAsc = !this.sortByNameModeAsc;
-                    } else {
-                        // Use default settings
-                        this.sort().reset();
-                    }
-                    this.lastSortType = this.Const.sortType.name;
+    }
 
-                    let type = this.Const.sortType.name,
-                        order = this.sortByNameModeAsc ? this.Const.sortOrder.asc : this.Const.sortOrder.desc;
-
-                    EventBus.$emit(Events.AdvancedSearch, { type: type, order: order });
-                },
-                bySize: () => {
-                    if (this.lastSortType == this.Const.sortType.size) {
-                        this.sortBySizeModeAsc = !this.sortBySizeModeAsc;
-                    } else {
-                        // Use default settings
-                        this.sort().reset();
-                    }
-                    this.lastSortType = this.Const.sortType.size;
-
-                    let type = this.Const.sortType.size,
-                        order = this.sortBySizeModeAsc ? this.Const.sortOrder.asc : this.Const.sortOrder.desc;
-
-                    EventBus.$emit(Events.AdvancedSearch, { type: type, order: order });
-                },
-                byTime: () => {
-                    if (this.lastSortType == this.Const.sortType.time) {
-                        this.sortByTimeModeAsc = !this.sortByTimeModeAsc;
-                    } else {
-                        // Use default settings
-                        this.sort().reset();
-                    }
-                    this.lastSortType = this.Const.sortType.time;
-
-                    let type = this.Const.sortType.time,
-                        order = this.sortByTimeModeAsc ? this.Const.sortOrder.asc : this.Const.sortOrder.desc;
-
-                    EventBus.$emit(Events.AdvancedSearch, { type: type, order: order });
-                },
-                reset: () => {
-                    this.sortByNameModeAsc = true;
-                    this.sortBySizeModeAsc = true;
-                    this.sortByTimeModeAsc = true;
+    // Sorts
+    sort() {
+        return {
+            byName: () => {
+                if (this.lastSortType == Const.sortType.name) {
+                    this.sortByNameModeAsc = !this.sortByNameModeAsc;
+                } else {
+                    // Use default settings
+                    this.sort().reset();
                 }
-            };
-        },
-        // Select mode
-        toggleAllFiles: function() {
-            if (!this.allSelected) {
-                this.selectCount = this.SharedStore.state.allFiles.length;
-                this.allSelected = true;
-                this.SharedState.commit("setSelectMode");
+                this.lastSortType = Const.sortType.name;
 
-                for (let i in this.$children) {
-                    this.$children[i].select();
-                }
-            } else {
-                this.selectCount = 0;
-                this.allSelected = false;
-                this.SharedState.commit("unsetSelectMode");
+                let type = Const.sortType.name,
+                    order = this.sortByNameModeAsc ? Const.sortOrder.asc : Const.sortOrder.desc;
 
-                for (let i in this.$children) {
-                    this.$children[i].unselect();
+                EventBus.$emit(Events.AdvancedSearch, { type: type, order: order });
+            },
+            bySize: () => {
+                if (this.lastSortType == Const.sortType.size) {
+                    this.sortBySizeModeAsc = !this.sortBySizeModeAsc;
+                } else {
+                    // Use default settings
+                    this.sort().reset();
                 }
+                this.lastSortType = Const.sortType.size;
+
+                let type = Const.sortType.size,
+                    order = this.sortBySizeModeAsc ? Const.sortOrder.asc : Const.sortOrder.desc;
+
+                EventBus.$emit(Events.AdvancedSearch, { type: type, order: order });
+            },
+            byTime: () => {
+                if (this.lastSortType == Const.sortType.time) {
+                    this.sortByTimeModeAsc = !this.sortByTimeModeAsc;
+                } else {
+                    // Use default settings
+                    this.sort().reset();
+                }
+                this.lastSortType = Const.sortType.time;
+
+                let type = Const.sortType.time,
+                    order = this.sortByTimeModeAsc ? Const.sortOrder.asc : Const.sortOrder.desc;
+
+                EventBus.$emit(Events.AdvancedSearch, { type: type, order: order });
+            },
+            reset: () => {
+                this.sortByNameModeAsc = true;
+                this.sortBySizeModeAsc = true;
+                this.sortByTimeModeAsc = true;
             }
-        },
-        unselectAllFiles: function() {
+        };
+    }
+
+    // Select mode
+    toggleAllFiles() {
+        if (!this.allSelected) {
+            this.selectCount = SharedStore.state.allFiles.length;
+            this.allSelected = true;
+            SharedState.commit("setSelectMode");
+
             for (let i in this.$children) {
-                this.$children[i].unselect();
+                this.$children[i].$emit("select");
             }
-            this.allSelected = false;
-            this.SharedState.commit("unsetSelectMode");
+        } else {
             this.selectCount = 0;
-        },
-        // updateSelectedFiles updates list of selectedFiles in SharedStore
-        updateSelectedFiles: function() {
-            let files = [];
-            for (let i in this.$children) {
-                if (this.$children[i].selected) {
-                    if (this.$children[i].file != undefined) {
-                        files.push(this.$children[i].file);
-                    }
-                }
-            }
-            this.SharedStore.commit("setSelectedFiles", files);
-        },
-        // For children
-        selectFile: function() {
-            this.selectCount++;
-            this.SharedState.commit("setSelectMode");
-            if (this.selectCount == Object.keys(this.SharedStore.state.allFiles).length) {
-                this.allSelected = true;
-            }
-        },
-        unselectFile: function() {
-            this.selectCount--;
             this.allSelected = false;
-            if (this.selectCount == 0) {
-                this.SharedState.commit("unsetSelectMode");
+            SharedState.commit("unsetSelectMode");
+
+            for (let i in this.$children) {
+                this.$children[i].$emit("unselect");
             }
         }
     }
-};
+
+    unselectAllFiles() {
+        for (let i in this.$children) {
+            this.$children[i].$emit("unselect");
+        }
+        this.allSelected = false;
+        SharedState.commit("unsetSelectMode");
+        this.selectCount = 0;
+    }
+
+    // updateSelectedFiles updates list of selectedFiles in SharedStore
+    updateSelectedFiles() {
+        // let files = [];
+        for (let i in this.$children) {
+            // if (this.$children[i].selected) {
+            //     if (this.$children[i].file != undefined) {
+            //         files.push(this.$children[i].file);
+            //     }
+            // }
+        }
+        // SharedStore.commit("setSelectedFiles", files);
+    }
+
+    // For children
+    selectFile() {
+        this.selectCount++;
+        SharedState.commit("setSelectMode");
+        if (this.selectCount == Object.keys(SharedStore.state.allFiles).length) {
+            this.allSelected = true;
+        }
+    }
+
+    unselectFile() {
+        this.selectCount--;
+        this.allSelected = false;
+        if (this.selectCount == 0) {
+            SharedState.commit("unsetSelectMode");
+        }
+    }
+}
 </script>

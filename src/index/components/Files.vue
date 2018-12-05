@@ -23,7 +23,7 @@
 		>
 			<img
 				style="display: inline-block; height: auto; max-height: 100%; max-width: 100%; width: auto;"	
-				:src="Params.Host + '/' + file.preview">
+				:src="previewLink">
 		</td>
 		<td
 			v-else
@@ -33,7 +33,7 @@
 		>
 			<img
 				style="width: 30px; cursor: pointer;"
-				:src="Params.Host + '/ext/' + file.filename.split('.').pop()">
+				:src="previewLink">
 		</td>	
 		<td>
 			<div class="filename" :title="file.filename">
@@ -46,7 +46,7 @@
 					v-for="(id, index) in file.tags"
 					style="margin-top: 3px; margin-bottom: 3px;"
 					:key="index"
-					:tag="allTags[id]"
+					:tag="Store.allTags.get(id)"
 				></tag>
 			</div>
 		</td>
@@ -72,82 +72,102 @@
 </style>
 
 
-<script>
-import TagComponent from "./Tag.vue";
+<script lang="ts">
+import Vue from "vue";
+import Component from "vue-class-component";
+import { Prop } from "vue-property-decorator";
+// Components
+import TagComponent from "./Tag/Tag.vue";
+// Shared data
+import SharedStore from "../store";
+import { Store } from "../store/types";
 //
-import { Events, EventBus } from "../eventBus/eventBus";
+import { Events, EventBus } from "../eventBus";
+import { File, Tag } from "@/index/global";
+import { Params } from "../../global";
 
-export default {
-    props: {
-        file: Object,
-        allTags: Object
-    },
-    data: function() {
-        return {
-            hover: false,
-            selected: false
-        };
-    },
+@Component({
     components: {
         tag: TagComponent
-    },
-    computed: {
-        stylesObject: function() {
-            let bgColor = "white";
-            if (this.hover || this.selected) {
-                bgColor = "rgba(0, 0, 0, 0.1)";
-            }
-            return {
-                opacity: this.file.deleted && !this.selected ? 0.4 : 1,
-                "background-color": bgColor
-            };
-        },
-        titleMessage: function() {
-            if (!this.file.deleted) {
-                return "";
-            }
-            let date = new Date(this.file.timeToDelete),
-                now = new Date();
+    }
+})
+export default class extends Vue {
+    @Prop() file!: File;
+    hover: boolean = false;
+    selected: boolean = false;
+    //
+    Store: Store = SharedStore.state;
 
-            let leftHours = Math.round((date - now) / (1000 * 60 * 60)), // in hours
-                leftDays = 0;
-            if (leftHours < 1) {
-                // File should be already deleted or it's left less than 1 hour
-                return "File is in a Trash. It will be deleted soon";
-            }
-
-            if (leftHours > 24) {
-                leftDays = Math.round(leftHours / 24);
-                leftHours = leftHours % 24;
-            }
-
-            return `File is in a Trash. It will be deleted in ${leftDays} days ${leftHours} hours`;
+    get stylesObject() {
+        let bgColor = "white";
+        if (this.hover || this.selected) {
+            bgColor = "rgba(0, 0, 0, 0.1)";
         }
-    },
-    methods: {
-        showContextMenu: function(event) {
-            EventBus.$emit(Events.ShowContextMenu, { file: this.file, x: event.x, y: event.y });
-        },
-        toggleSelect: function() {
-            // We can skip changing this.selected, because a checkbox is bound to this.selected
+        return {
+            opacity: this.file.deleted && !this.selected ? 0.4 : 1,
+            "background-color": bgColor
+        };
+    }
 
-            // The function is called after changing this.selected
-            if (this.selected) {
-                this.$parent.selectFile();
-            } else {
-                this.$parent.unselectFile();
-            }
-        },
+    get titleMessage(): string {
+        if (!this.file.deleted) {
+            return "";
+        }
+        let date = new Date(this.file.timeToDelete),
+            now = new Date();
+
+        let leftHours = Math.round((date.getTime() - now.getTime()) / (1000 * 60 * 60)), // in hours
+            leftDays = 0;
+
+        if (leftHours < 1) {
+            // File should be already deleted or it's left less than 1 hour
+            return "File is in a Trash. It will be deleted soon";
+        }
+
+        if (leftHours > 24) {
+            leftDays = Math.round(leftHours / 24);
+            leftHours = leftHours % 24;
+        }
+
+        return `File is in a Trash. It will be deleted in ${leftDays} days ${leftHours} hours`;
+    }
+
+    get previewLink(): string {
+        if (this.file.type == "image") {
+            return Params.Host + "/" + this.file.preview;
+        }
+
+        return Params.Host + "/ext/" + this.file.filename.split(".").pop();
+    }
+
+    created() {
         /* For the parent */
-        select: function() {
+        this.$on("select", () => {
             this.selected = true;
-        },
-        unselect: function() {
+        });
+        this.$on("unselect", () => {
             this.selected = false;
-        },
-        showPreview: function() {
-            EventBus.$emit(Events.ShowPreview, { file: this.file });
+        });
+    }
+
+    showContextMenu(event: MouseEvent) {
+        EventBus.$emit(Events.ShowContextMenu, { file: this.file, x: event.x, y: event.y });
+    }
+
+    showPreview() {
+        EventBus.$emit(Events.ShowPreview, { file: this.file });
+    }
+
+    toggleSelect() {
+        // We can skip changing this.selected, because a checkbox is bound to this.selected
+
+        // The function is called after changing this.selected
+        // TODO
+        if (this.selected) {
+            this.$parent.selectFile();
+        } else {
+            this.$parent.unselectFile();
         }
     }
-};
+}
 </script>
