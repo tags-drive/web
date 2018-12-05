@@ -25,7 +25,7 @@
 					class="material-icons noselect"
 					style="font-size: 20px; cursor: pointer;"
 					@click="sort().byName()"
-					:style="[sortByNameModeAsc ? {'transform': 'scale(1, 1)'} : {'transform': 'scale(1, -1)'}]"
+					:style="[!sortModeByName || sortOrderAsc || !sortOrderDesc ? {'transform': 'scale(1, -1)'} : {'transform': 'scale(1, 1)'}]"
 				>sort</i>
 			</th>
 			<th class="noselect">Tags</th>
@@ -37,7 +37,7 @@
 					class="material-icons noselect"
 					style="transform: scale(1, 1); font-size: 20px; cursor: pointer;"
 					@click="sort().bySize()"
-					:style="[sortBySizeModeAsc ? {'transform': 'scale(1, 1)'} : {'transform': 'scale(1, -1)'}]"
+					:style="[!sortModeBySize || sortOrderAsc || !sortOrderDesc ? {'transform': 'scale(1, -1)'} : {'transform': 'scale(1, 1)'}]"
 				>sort</i>
 			</th>
 			<th class="noselect" style="width: 150px;">
@@ -47,7 +47,7 @@
 				class="material-icons noselect"
 				style="transform: scale(1, 1); font-size: 20px; cursor: pointer;"
 				@click="sort().byTime()"
-				:style="[sortByTimeModeAsc ? {'transform': 'scale(1, 1)'} : {'transform': 'scale(1, -1)'}]"
+				:style="[!sortModeByTime || sortOrderAsc || !sortOrderDesc ? {'transform': 'scale(1, -1)'} : {'transform': 'scale(1, 1)'}]"
 				>sort</i>
 			</th>
 		</tr>
@@ -80,10 +80,14 @@ import { Events, EventBus } from "./eventBus";
     }
 })
 export default class extends Vue {
-    sortByNameModeAsc: boolean = true;
-    sortBySizeModeAsc: boolean = true;
-    sortByTimeModeAsc: boolean = true;
-    lastSortType: string = Const.sortType.name; // TODO
+    sortModeByName: boolean = true;
+    sortModeBySize: boolean = false;
+    sortModeByTime: boolean = false;
+    //
+    sortOrderAsc: boolean = true;
+    sortOrderDesc: boolean = false;
+    //
+    lastSortType: string = Const.sortType.name;
     //
     allSelected: boolean = false;
     selectCount: number = 0;
@@ -97,8 +101,8 @@ export default class extends Vue {
         EventBus.$on(Events.UpdateSelectedFiles, () => {
             this.updateSelectedFiles();
         });
-        EventBus.$on(Events.ResetSortParams, () => {
-            this.sort().reset();
+        EventBus.$on(Events.RestoreSortParams, () => {
+            this.sort().restoreDefault();
         });
     }
 
@@ -107,50 +111,69 @@ export default class extends Vue {
         return {
             byName: () => {
                 if (this.lastSortType == Const.sortType.name) {
-                    this.sortByNameModeAsc = !this.sortByNameModeAsc;
+                    // Just invert order
+                    this.sortOrderAsc = !this.sortOrderAsc;
+                    this.sortOrderDesc = !this.sortOrderDesc;
                 } else {
-                    // Use default settings
-                    this.sort().reset();
+                    this.sortOrderAsc = true;
+                    this.sortOrderDesc = false;
                 }
+                this.sortModeByName = true;
+                this.sortModeBySize = false;
+                this.sortModeByTime = false;
                 this.lastSortType = Const.sortType.name;
 
-                let type = Const.sortType.name,
-                    order = this.sortByNameModeAsc ? Const.sortOrder.asc : Const.sortOrder.desc;
+                let type = this.lastSortType,
+                    order = this.sortOrderAsc ? Const.sortOrder.asc : Const.sortOrder.desc;
 
                 EventBus.$emit(Events.AdvancedSearch, { type: type, order: order });
             },
             bySize: () => {
                 if (this.lastSortType == Const.sortType.size) {
-                    this.sortBySizeModeAsc = !this.sortBySizeModeAsc;
+                    // Just invert order
+                    this.sortOrderAsc = !this.sortOrderAsc;
+                    this.sortOrderDesc = !this.sortOrderDesc;
                 } else {
-                    // Use default settings
-                    this.sort().reset();
+                    this.sortOrderAsc = true;
+                    this.sortOrderDesc = false;
                 }
+                this.sortModeByName = false;
+                this.sortModeBySize = true;
+                this.sortModeByTime = false;
+
                 this.lastSortType = Const.sortType.size;
 
-                let type = Const.sortType.size,
-                    order = this.sortBySizeModeAsc ? Const.sortOrder.asc : Const.sortOrder.desc;
+                let type = this.lastSortType,
+                    order = this.sortOrderAsc ? Const.sortOrder.asc : Const.sortOrder.desc;
 
                 EventBus.$emit(Events.AdvancedSearch, { type: type, order: order });
             },
             byTime: () => {
                 if (this.lastSortType == Const.sortType.time) {
-                    this.sortByTimeModeAsc = !this.sortByTimeModeAsc;
+                    // Just invert order
+                    this.sortOrderAsc = !this.sortOrderAsc;
+                    this.sortOrderDesc = !this.sortOrderDesc;
                 } else {
-                    // Use default settings
-                    this.sort().reset();
+                    this.sortOrderAsc = true;
+                    this.sortOrderDesc = false;
                 }
+                this.sortModeByName = false;
+                this.sortModeBySize = false;
+                this.sortModeByTime = true;
                 this.lastSortType = Const.sortType.time;
 
-                let type = Const.sortType.time,
-                    order = this.sortByTimeModeAsc ? Const.sortOrder.asc : Const.sortOrder.desc;
+                let type = this.lastSortType,
+                    order = this.sortOrderAsc ? Const.sortOrder.asc : Const.sortOrder.desc;
 
                 EventBus.$emit(Events.AdvancedSearch, { type: type, order: order });
             },
-            reset: () => {
-                this.sortByNameModeAsc = true;
-                this.sortBySizeModeAsc = true;
-                this.sortByTimeModeAsc = true;
+            restoreDefault: () => {
+                this.sortModeByName = true;
+                this.sortModeBySize = false;
+                this.sortModeByTime = false;
+                //
+                this.sortOrderAsc = true;
+                this.sortOrderDesc = false;
             }
         };
     }

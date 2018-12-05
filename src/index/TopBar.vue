@@ -355,7 +355,7 @@ export default class TopBar extends Vue {
                             return;
                         }
                         SharedStore.commit("setFiles", files);
-                        EventBus.$emit(Events.ResetSortParams);
+                        EventBus.$emit(Events.RestoreSortParams);
                     })
                     .catch(err => logError(err));
             },
@@ -394,7 +394,6 @@ export default class TopBar extends Vue {
                             return;
                         }
                         SharedStore.commit("setFiles", files);
-                        EventBus.$emit(Events.ResetSortParams);
                     })
                     .catch(err => logError(err));
             }

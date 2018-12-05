@@ -19,7 +19,7 @@ export const Events = {
     SelectFilesDeleting: <string> "select-files-deleting",
     //
     UpdateSelectedFiles: <string> "update-selected-files",
-    ResetSortParams: <string> "reset-sort-params",
+    RestoreSortParams: <string> "reset-sort-params",
     ShowContextMenu: <string> "show-context-menu",
     UnselectAllFiles: <string> "unselect-all-files",
     LogEvent: <string> "log-event",
