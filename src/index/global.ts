@@ -1,11 +1,17 @@
 export class File {
+    type: string = "file";
     filename: string = "";
-    origin: string = ""; // link
     description: string = "";
     size: number = 0;
     tags: number[] = [];
-    addTime: number = 0; // UNIX
+    // Links
+    origin: string = ""; // link
     preview: string = ""; // link
+    //
+    addTime: string = ""; // UNIX time
+    // Deleted info
+    deleted: boolean = false;
+    timeToDelete: number = 0; // UNIX time
 }
 
 export class Tag {

@@ -30,16 +30,18 @@ const store: StoreOptions<Store> = {
                     // Change time from "2018-08-23T22:48:59.0459184+03:00" to "23-08-2018 22:48"
                     for (let i in files) {
                         let f = files[i];
-                        f.addTime = dateformat(new Date(files[i].addTime), "dd-mm-yyyy HH:MM");
 
                         let file: File = new File();
+                        file.type = <string>f.type;
                         file.filename = <string>f.filename;
                         file.origin = <string>f.origin;
                         file.description = <string>f.description;
                         file.size = <number>f.size;
                         file.tags = <number[]>f.tags;
-                        file.addTime = <number>f.addTime;
+                        file.addTime = dateformat(new Date(f.addTime), "dd-mm-yyyy HH:MM");
                         file.preview = <string>f.preview;
+                        file.deleted = <boolean>f.deleted;
+                        file.timeToDelete = <number>f.timeToDelete;
 
                         state.allFiles.push(file);
                     }
@@ -48,7 +50,7 @@ const store: StoreOptions<Store> = {
                 })
                 .catch(err => logError(err));
         },
-        setFiles(state, files) {
+        setFiles(state, files: File[]) {
             // Change time from "2018-08-23T22:48:59.0459184+03:00" to "23-08-2018 22:48"
             for (let i in files) {
                 files[i].addTime = dateformat(new Date(files[i].addTime), "dd-mm-yyyy HH:MM");
