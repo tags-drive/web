@@ -18,7 +18,7 @@
 				</div>
 				<!-- Next button -->
 				<div
-					v-if="fileIndex < SharedStore.state.allFiles.length - 1"
+					v-if="fileIndex < Store.allFiles.length - 1"
 					class="switch-button"
 					style="right: 0;"
 					@click="nextPreview"
@@ -40,7 +40,7 @@
 					class="noselect"
 				>
 					<span class="helper"></span>
-					<img :src="Params.Host + '/' + file.origin">
+					<img :src="imageLink">
 				</div>
 				<!-- Unsopported format -->
 				<div
@@ -68,7 +68,7 @@
 						<tag
 							v-for="(id, index) in file.tags"
 							:key="index"
-							:tag="SharedStore.state.allTags[id]"
+							:tag="Store.allTags.get(id)"
 							style="margin-bottom: 3px;"
 						></tag>
 					</div>
@@ -210,31 +210,55 @@
 }
 </style>
 
-<script>
-import TagComponent from "./components/Tag.vue";
+<script lang="ts">
+import Vue from "vue";
+import Component from "vue-class-component";
+// Components
+import TagComponent from "./components/Tag/Tag.vue";
+// Shared data
+import SharedStore from "./store";
+import { Store } from "./store/types";
+import SharedState from "./state";
 //
-import { Events, EventBus } from "./eventBus/eventBus";
+import { File } from "./global";
+import { Events, EventBus } from "./eventBus";
+// Utils
+import { Params } from "../global";
+import { logError } from "./tools";
 
-export default {
-    data: function() {
-        return {
-            show: false,
-            // File
-            fileIndex: 0,
-            file: Object,
-            // Data
-            textFileContent: ""
-        };
-    },
+@Component({
     components: {
         tag: TagComponent
-    },
-    mounted: function() {
-        EventBus.$on(Events.ShowPreview, payload => {
+    }
+})
+export default class extends Vue {
+    show: boolean = false;
+    // File
+    fileIndex: number = 0;
+    file: File = new File();
+    // Data
+    textFileContent: string = "";
+    //
+    Store: Store = SharedStore.state;
+
+    get imageLink(): string {
+        return Params.Host + "/" + this.file.origin;
+    }
+
+    created() {
+        EventBus.$on(Events.ShowPreview, (payload: any) => {
+            if (payload == undefined || !(payload.file instanceof File)) {
+                /* eslint-disable no-console */
+                console.error("Events.ShowPreview: payload isn't valid:", payload);
+                /* eslint-enable no-console */
+                return;
+            }
+
             this.file = payload.file;
+
             // Define fileIndex
-            for (let i in this.SharedStore.state.allFiles) {
-                if (this.SharedStore.state.allFiles[i].filename == this.file.filename) {
+            for (let i = 0; i < SharedStore.state.allFiles.length; i++) {
+                if (SharedStore.state.allFiles[i].filename == this.file.filename) {
                     this.fileIndex = i;
                     break;
                 }
@@ -242,84 +266,88 @@ export default {
 
             this.textFileContent = "";
             if (this.isTextFile()) {
-                fetch(this.Params.Host + "/" + this.file.origin, {
+                fetch(Params.Host + "/" + this.file.origin, {
                     method: "GET",
                     credentials: "same-origin"
                 })
                     .then(resp => resp.text())
                     .then(text => (this.textFileContent = text))
-                    .catch(err => this.logError(err));
+                    .catch(err => logError(err));
             }
 
             this.window().show();
         });
-    },
-    methods: {
-        window: function() {
-            return {
-                show: () => {
-                    this.SharedState.commit("hideDropLayer");
-                    document.addEventListener("keydown", this.onkeydownListener);
-                    this.show = true;
-                },
-                hide: () => {
-                    this.SharedState.commit("showDropLayer");
-                    document.removeEventListener("keydown", this.onkeydownListener);
-                    this.show = false;
-                }
-            };
-        },
-        isTextFile: function() {
-            let ext = this.file.filename.split(".").pop();
-            return ext == "txt";
-        },
-        isImage: function() {
-            return this.file.type == "image";
-            // return ext == "jpg" || ext == "jpeg" || ext == "png" || ext == "gif";
-        },
-        nextPreview: function() {
-            if (this.fileIndex < this.SharedStore.state.allFiles.length - 1) {
-                this.file = this.SharedStore.state.allFiles[++this.fileIndex];
+    }
 
-                if (this.isTextFile()) {
-                    fetch(this.Params.Host + "/" + this.file.origin, {
-                        method: "GET",
-                        credentials: "same-origin"
-                    })
-                        .then(resp => resp.text())
-                        .then(text => (this.textFileContent = text))
-                        .catch(err => this.logError(err));
-                }
+    window() {
+        return {
+            show: () => {
+                SharedState.commit("hideDropLayer");
+                document.addEventListener("keydown", this.onkeydownListener);
+                this.show = true;
+            },
+            hide: () => {
+                SharedState.commit("showDropLayer");
+                document.removeEventListener("keydown", this.onkeydownListener);
+                this.show = false;
             }
-        },
-        previousPreview: function() {
-            if (this.fileIndex > 0) {
-                this.file = this.SharedStore.state.allFiles[--this.fileIndex];
+        };
+    }
 
-                if (this.isTextFile()) {
-                    fetch(this.Params.Host + "/" + this.file.origin, {
-                        method: "GET",
-                        credentials: "same-origin"
-                    })
-                        .then(resp => resp.text())
-                        .then(text => (this.textFileContent = text))
-                        .catch(err => this.logError(err));
-                }
-            }
-        },
-        onkeydownListener: function(event) {
-            switch (event.key) {
-                case "ArrowRight":
-                    this.nextPreview();
-                    break;
-                case "ArrowLeft":
-                    this.previousPreview();
-                    break;
-                case "Escape":
-                    this.window().hide();
-                    break;
+    isTextFile() {
+        let ext = this.file.filename.split(".").pop();
+        return ext == "txt";
+    }
+
+    isImage() {
+        return this.file.type == "image";
+        // return ext == "jpg" || ext == "jpeg" || ext == "png" || ext == "gif";
+    }
+
+    nextPreview() {
+        if (this.fileIndex < SharedStore.state.allFiles.length - 1) {
+            this.file = SharedStore.state.allFiles[++this.fileIndex];
+
+            if (this.isTextFile()) {
+                fetch(Params.Host + "/" + this.file.origin, {
+                    method: "GET",
+                    credentials: "same-origin"
+                })
+                    .then(resp => resp.text())
+                    .then(text => (this.textFileContent = text))
+                    .catch(err => logError(err));
             }
         }
     }
-};
+
+    previousPreview() {
+        if (this.fileIndex > 0) {
+            this.file = SharedStore.state.allFiles[--this.fileIndex];
+
+            if (this.isTextFile()) {
+                fetch(Params.Host + "/" + this.file.origin, {
+                    method: "GET",
+                    credentials: "same-origin"
+                })
+                    .then(resp => resp.text())
+                    .then(text => (this.textFileContent = text))
+                    .catch(err => logError(err));
+            }
+        }
+    }
+
+    onkeydownListener(event: KeyboardEvent) {
+        switch (event.key) {
+            case "ArrowRight":
+                this.nextPreview();
+                break;
+            case "ArrowLeft":
+                this.previousPreview();
+                break;
+            case "Escape":
+                this.window().hide();
+                break;
+        }
+    }
+}
 </script>

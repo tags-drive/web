@@ -9,8 +9,8 @@ import ContextMenu from "./ContextMenu.vue";
 /*
 import ModalWindow from "./ModalWindow.vue";
 import LogWindow from "./LogWindow.vue";
-import PreviewWindow from "./PreviewWindow.vue";
 */
+import PreviewWindow from "./PreviewWindow.vue";
 
 /* Tags Drive (main instance) */
 new Vue({
@@ -38,7 +38,7 @@ new Vue({
 
 /* Context menu */
 new Vue({
-	el: "#context-menu",
+    el: "#context-menu",
     render: h => h(ContextMenu)
 });
 
@@ -55,8 +55,8 @@ new Vue({
 //     render: h => h(LogWindow)
 // });
 
-// /* Preview Window */
-// new Vue({
-//     el: "#preview-window",
-//     render: h => h(PreviewWindow)
-// });
+/* Preview Window */
+new Vue({
+    el: "#preview-window",
+    render: h => h(PreviewWindow)
+});
