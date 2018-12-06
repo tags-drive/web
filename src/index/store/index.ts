@@ -18,7 +18,10 @@ const store: StoreOptions<Store> = {
         // filesReady is true after first call of updateFiles
         filesReady: false,
         // tagsReady is true after first call of updateTags
-        tagsReady: false
+        tagsReady: false,
+        // selectedFilesReady is false after calling clearSelectedFiles (it must me called before setSelectedFiles)
+        // and it is true after calling setSelectedFiles
+        selectedFilesReady: false
     },
     mutations: {
         // allFiles
@@ -87,12 +90,15 @@ const store: StoreOptions<Store> = {
                 .catch(err => logError(err));
         },
         // selectedFiles
+        //
         // clearSelectedFiles must be called before setSelectedFiles
         clearSelectedFiles(state) {
             state.selectedFiles = [];
+            state.selectedFilesReady = false;
         },
-        setSelectedFiles(state, files) {
+        setSelectedFiles(state, files: File[]) {
             state.selectedFiles = files;
+            state.selectedFilesReady = true;
         }
     }
 };

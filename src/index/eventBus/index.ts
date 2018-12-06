@@ -29,6 +29,7 @@ export const Events = {
         //
         RestoreSortParams: <string>"files-block-restore-sort-params"
     },
+    // Use this event to update selectedFiles in store
     UpdateSelectedFiles: <string>"update-selected-files",
     ShowContextMenu: <string>"show-context-menu",
     ShowPreview: <string>"show-preview",

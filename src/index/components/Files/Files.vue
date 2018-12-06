@@ -145,8 +145,18 @@ export default class extends Vue {
         this.$on("select", () => {
             this.selected = true;
         });
+
         this.$on("unselect", () => {
             this.selected = false;
+        });
+
+        this.$on("getFile", () => {
+            if (this.selected) {
+                this.$parent.$emit("sendFile", { selected: true, file: this.file });
+            } else {
+                // Can skip file
+                this.$parent.$emit("sendFile", { selected: false });
+            }
         });
     }
 

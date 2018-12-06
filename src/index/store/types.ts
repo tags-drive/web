@@ -7,4 +7,5 @@ export interface Store {
 	//
 	filesReady: boolean;
 	tagsReady: boolean;
+	selectedFilesReady: boolean;
 }

@@ -91,6 +91,10 @@ export default class extends Vue {
     //
     allSelected: boolean = false;
     selectCount: number = 0;
+    // For updating selected files in SharedStore
+    selectedFiles: File[] = [];
+    // This counter == this.$childre.lenght, it reduces on every "sendFile" event
+    selectedFilesCounter: number = 0;
     //
     Store: Store = SharedStore.state;
 
@@ -111,6 +115,13 @@ export default class extends Vue {
         //
         EventBus.$on(Events.FilesBlock.RestoreSortParams, () => {
             this.sort().restoreDefault();
+        });
+
+        this.$on("sendFile", (payload: any) => {
+            if (payload.selected && payload.file) {
+                this.selectedFiles.push(payload.file);
+            }
+            this.selectedFilesCounter--;
         });
     }
 
@@ -216,17 +227,24 @@ export default class extends Vue {
         this.selectCount = 0;
     }
 
-    // updateSelectedFiles updates list of selectedFiles in SharedStore
+    // updateSelectedFiles updates list of selectedFiles
+    // We use this.selectedFilesCounter to count number of $on("sendFile") events
+    // After this.selectedFilesCounter == 0, we update SharedStore
     updateSelectedFiles() {
-        // let files = [];
-        for (let i in this.$children) {
-            // if (this.$children[i].selected) {
-            //     if (this.$children[i].file != undefined) {
-            //         files.push(this.$children[i].file);
-            //     }
-            // }
+        this.selectedFiles = [];
+        this.selectedFilesCounter = this.$children.length;
+
+        for (let i = 0; i < this.$children.length; i++) {
+            this.$children[i].$emit("getFile");
         }
-        // SharedStore.commit("setSelectedFiles", files);
+
+        let t = setInterval(() => {
+            // Wait for all children call this.parent.$emit("sendFile")
+            if (this.selectedFilesCounter == 0) {
+                SharedStore.commit("setSelectedFiles", this.selectedFiles);
+                clearInterval(t);
+            }
+        }, 20);
     }
 
     // For children
