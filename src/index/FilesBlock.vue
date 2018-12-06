@@ -94,7 +94,7 @@ export default class extends Vue {
     //
     Store: Store = SharedStore.state;
 
-    mounted() {
+    created() {
         EventBus.$on(Events.FilesBlock.UnselectAllFiles, () => {
             this.unselectAllFiles();
         });

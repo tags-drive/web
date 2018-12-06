@@ -287,6 +287,19 @@ export default class TopBar extends Vue {
     }
 
     created() {
+        EventBus.$on(Events.Search.Usual, () => {
+            this.search().usual();
+        });
+        EventBus.$on(Events.Search.Advanced, (payload: any) => {
+            if (payload.type == undefined || payload.order == undefined) {
+                /* eslint-disable no-console */
+                console.error("Payload hasn't order or type fields:", payload);
+                /* eslint-enable no-console */
+                return;
+            }
+            this.search().advanced(payload.type, payload.order);
+        });
+
         document.addEventListener("click", event => {
             let ev = event as any;
             // We need to use type any because EventMouse hasn't property path, composedPath and composedPath().
@@ -302,21 +315,6 @@ export default class TopBar extends Vue {
 
             this.focused = false;
             this.removeListener();
-        });
-    }
-
-    mounted() {
-        EventBus.$on(Events.Search.Usual, () => {
-            this.search().usual();
-        });
-        EventBus.$on(Events.Search.Advanced, (payload: any) => {
-            if (payload.type == undefined || payload.order == undefined) {
-                /* eslint-disable no-console */
-                console.error("Payload hasn't order or type fields:", payload);
-                /* eslint-enable no-console */
-                return;
-            }
-            this.search().advanced(payload.type, payload.order);
         });
     }
 
