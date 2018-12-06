@@ -10,6 +10,39 @@ import { logError } from "../tools";
 
 Vue.use(Vuex);
 
+function objectToFile(f: any): File | null {
+    if (
+        f == undefined ||
+        f.type == undefined ||
+        f.filename == undefined ||
+        f.origin == undefined ||
+        f.description == undefined ||
+        f.size == undefined ||
+        f.tags == undefined ||
+        f.addTime == undefined ||
+        // Preview can be omitted
+        f.deleted == undefined ||
+        f.timeToDelete == undefined
+    ) {
+        return null;
+    }
+
+    let file: File = new File();
+
+    file.type = <string>f.type;
+    file.filename = <string>f.filename;
+    file.origin = <string>f.origin;
+    file.description = <string>f.description;
+    file.size = <number>f.size;
+    file.tags = <number[]>f.tags;
+    file.addTime = dateformat(new Date(f.addTime), "dd-mm-yyyy HH:MM");
+    file.preview = <string>f.preview;
+    file.deleted = <boolean>f.deleted;
+    file.timeToDelete = <number>f.timeToDelete;
+
+    return file;
+}
+
 const store: StoreOptions<Store> = {
     state: {
         allFiles: [],
@@ -32,37 +65,35 @@ const store: StoreOptions<Store> = {
             })
                 .then(data => data.json())
                 .then(files => {
-                    state.allFiles = [];
+                    let updatedFiles: File[] = [];
 
-                    // Change time from "2018-08-23T22:48:59.0459184+03:00" to "23-08-2018 22:48"
                     for (let i in files) {
                         let f = files[i];
 
-                        let file: File = new File();
-                        file.type = <string>f.type;
-                        file.filename = <string>f.filename;
-                        file.origin = <string>f.origin;
-                        file.description = <string>f.description;
-                        file.size = <number>f.size;
-                        file.tags = <number[]>f.tags;
-                        file.addTime = dateformat(new Date(f.addTime), "dd-mm-yyyy HH:MM");
-                        file.preview = <string>f.preview;
-                        file.deleted = <boolean>f.deleted;
-                        file.timeToDelete = <number>f.timeToDelete;
-
-                        state.allFiles.push(file);
+                        let file = objectToFile(f);
+                        if (file === null) {
+                            continue;
+                        }
+                        updatedFiles.push(file);
                     }
 
-                    state.filesReady = true;
+                    state.allFiles = updatedFiles;
                 })
                 .catch(err => logError(err));
         },
-        setFiles(state, files: File[]) {
-            // Change time from "2018-08-23T22:48:59.0459184+03:00" to "23-08-2018 22:48"
+        setFiles(state, files: object[]) {
+            let updatedFiles: File[] = [];
+
             for (let i in files) {
-                files[i].addTime = dateformat(new Date(files[i].addTime), "dd-mm-yyyy HH:MM");
+                let f = files[i];
+                let file = objectToFile(f);
+                if (file === null) {
+                    continue;
+                }
+                updatedFiles.push(file);
             }
-            state.allFiles = files;
+
+            state.allFiles = updatedFiles;
         },
         // allTags
         updateTags(state) {
@@ -96,8 +127,20 @@ const store: StoreOptions<Store> = {
             state.selectedFiles = [];
             state.selectedFilesReady = false;
         },
-        setSelectedFiles(state, files: File[]) {
-            state.selectedFiles = files;
+        setSelectedFiles(state, files: object[]) {
+            let updatedFiles: File[] = [];
+
+            for (let i in files) {
+                let f = files[i];
+                let file = objectToFile(f);
+                if (file === null) {
+                    continue;
+                }
+                updatedFiles.push(file);
+            }
+
+            state.allFiles = updatedFiles;
+
             state.selectedFilesReady = true;
         }
     }
