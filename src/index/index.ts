@@ -8,9 +8,10 @@ import ContextMenu from "./ContextMenu.vue";
 // TODO
 /*
 import ModalWindow from "./ModalWindow.vue";
-import LogWindow from "./LogWindow.vue";
 */
+import LogWindow from "./LogWindow.vue";
 import PreviewWindow from "./PreviewWindow.vue";
+
 
 /* Tags Drive (main instance) */
 new Vue({
@@ -49,11 +50,11 @@ new Vue({
 //     render: h => h(ModalWindow)
 // });
 
-// /* Log Window */
-// new Vue({
-//     el: "#log-window",
-//     render: h => h(LogWindow)
-// });
+/* Log Window */
+new Vue({
+    el: "#log-window",
+    render: h => h(LogWindow)
+});
 
 /* Preview Window */
 new Vue({
