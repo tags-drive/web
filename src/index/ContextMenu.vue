@@ -154,7 +154,7 @@ export default class extends Vue {
             let path = ev.path || (ev.composedPath && ev.composedPath());
 
             for (let i in path) {
-                if (path[i].id == "context-menu") {
+                if (path[i].id === "context-menu") {
                     return;
                 }
             }

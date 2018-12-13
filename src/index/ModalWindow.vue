@@ -23,7 +23,7 @@
 					class="btn"
 					style="width: 150px; height: 25px;"
 					type="button"
-					@click="newTag.name == undefined ? newTag = {'name': 'new tag', 'color': '#ffffff'} : {}"
+					@click="newTag.name === undefined ? newTag = {'name': 'new tag', 'color': '#ffffff'} : {}"
 					value="Create new tag">
 				<p></p>
 
@@ -465,12 +465,12 @@ export default {
                     let tagID = Number(ev.dataTransfer.getData("tagID"));
                     let index = -1;
                     for (let i in this.fileNewData.unusedTags) {
-                        if (this.fileNewData.unusedTags[i].id == tagID) {
+                        if (this.fileNewData.unusedTags[i].id === tagID) {
                             index = i;
                             break;
                         }
                     }
-                    if (index == -1) {
+                    if (index === -1) {
                         return;
                     }
                     this.fileNewData.newTags.push(this.fileNewData.unusedTags[index]);
@@ -480,12 +480,12 @@ export default {
                     let tagID = ev.dataTransfer.getData("tagID");
                     let index = -1;
                     for (let i in this.fileNewData.newTags) {
-                        if (this.fileNewData.newTags[i].id == tagID) {
+                        if (this.fileNewData.newTags[i].id === tagID) {
                             index = i;
                             break;
                         }
                     }
-                    if (index == -1) {
+                    if (index === -1) {
                         return;
                     }
                     this.fileNewData.unusedTags.push(this.fileNewData.newTags[index]);
@@ -659,12 +659,12 @@ export default {
                 },
                 // Select mode
                 tagSelectedFiles: () => {
-                    if (this.$children.length == 0 || this.$children[0].selectedTags === undefined) {
+                    if (this.$children.length === 0 || this.$children[0].selectedTags === undefined) {
                         return;
                     }
 
                     let tagIDs = this.$children[0].selectedTags;
-                    if (tagIDs.length == 0) {
+                    if (tagIDs.length === 0) {
                         return;
                     }
 
@@ -704,12 +704,12 @@ export default {
                         .catch(err => this.logError(err));
                 },
                 untagSelectedFiles: () => {
-                    if (this.$children.length == 0 || this.$children[0].selectedTags === undefined) {
+                    if (this.$children.length === 0 || this.$children[0].selectedTags === undefined) {
                         return;
                     }
 
                     let tagIDs = this.$children[0].selectedTags;
-                    if (tagIDs.length == 0) {
+                    if (tagIDs.length === 0) {
                         return;
                     }
 
@@ -932,7 +932,7 @@ export default {
             document.removeEventListener("keydown", this.onkeydownListener);
         },
         onkeydownListener: function(event) {
-            if (event.key == "Escape") {
+            if (event.key === "Escape") {
                 this.hideWindow();
             }
         }

@@ -90,7 +90,7 @@ export default {
     },
     methods: {
         check: function() {
-            if (this.tag.name == this.newName && this.tag.color == this.newColor && this.isNewTag !== true) {
+            if (this.tag.name === this.newName && this.tag.color === this.newColor && this.isNewTag !== true) {
                 // Can skip, if name and color weren't changed
                 this.isChanged = false;
                 this.isError = false;
@@ -98,7 +98,7 @@ export default {
             }
             this.isChanged = true;
 
-            if (this.newName.length == 0 || validTagName.exec(this.newName) === null) {
+            if (this.newName.length === 0 || validTagName.exec(this.newName) === null) {
                 this.isError = true;
                 return;
             }

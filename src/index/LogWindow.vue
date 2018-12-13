@@ -19,8 +19,8 @@
 			:key="index"
 		>
 			{{event.time}}
-			<span v-if="event.type == errorType" style="color: red;">[Error] </span>
-			<span v-else-if="event.type == infoType" style="color: blue;">[Info] </span>
+			<span v-if="event.type === errorType" style="color: red;">[Error] </span>
+			<span v-else-if="event.type === infoType" style="color: blue;">[Info] </span>
 			{{event.msg}}
 		</div>
 	</div>
@@ -86,7 +86,7 @@ export default class extends Vue {
 
     created() {
         EventBus.$on(Events.LogEvent, (payload: any) => {
-            if (payload.type == undefined || payload.msg == undefined) {
+            if (payload.type === undefined || payload.msg === undefined) {
                 /* eslint-disable no-console */
                 console.error("Payload hasn't type or msg fields:", payload);
                 /* eslint-enable no-console */

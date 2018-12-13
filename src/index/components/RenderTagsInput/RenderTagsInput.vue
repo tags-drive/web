@@ -1,13 +1,13 @@
 <template>
 	<div style="display: flex;">
-		<span v-if="elements.length == 0">Logical expression</span>
+		<span v-if="elements.length === 0">Logical expression</span>
 		<div
 			v-for="(elem, index) in elements"
 			:key="index"
 			class="vertically"
 		>
 			<tag
-				v-if="elem.type == 'tag'"
+				v-if="elem.type === 'tag'"
 				:tag="elem.tag"
 				class="input-tag"
 			></tag>

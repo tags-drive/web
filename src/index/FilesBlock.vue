@@ -129,7 +129,7 @@ export default class extends Vue {
     sort() {
         return {
             byName: () => {
-                if (this.lastSortType == Const.sortType.name) {
+                if (this.lastSortType === Const.sortType.name) {
                     // Just invert order
                     this.sortOrderAsc = !this.sortOrderAsc;
                     this.sortOrderDesc = !this.sortOrderDesc;
@@ -148,7 +148,7 @@ export default class extends Vue {
                 EventBus.$emit(Events.Search.Advanced, { type: type, order: order });
             },
             bySize: () => {
-                if (this.lastSortType == Const.sortType.size) {
+                if (this.lastSortType === Const.sortType.size) {
                     // Just invert order
                     this.sortOrderAsc = !this.sortOrderAsc;
                     this.sortOrderDesc = !this.sortOrderDesc;
@@ -168,7 +168,7 @@ export default class extends Vue {
                 EventBus.$emit(Events.Search.Advanced, { type: type, order: order });
             },
             byTime: () => {
-                if (this.lastSortType == Const.sortType.time) {
+                if (this.lastSortType === Const.sortType.time) {
                     // Just invert order
                     this.sortOrderAsc = !this.sortOrderAsc;
                     this.sortOrderDesc = !this.sortOrderDesc;
@@ -240,7 +240,7 @@ export default class extends Vue {
 
         let t = setInterval(() => {
             // Wait for all children call this.parent.$emit("sendFile")
-            if (this.selectedFilesCounter == 0) {
+            if (this.selectedFilesCounter === 0) {
                 SharedStore.commit("setSelectedFiles", this.selectedFiles);
                 clearInterval(t);
             }
@@ -251,7 +251,7 @@ export default class extends Vue {
     selectFile() {
         this.selectCount++;
         SharedState.commit("setSelectMode");
-        if (this.selectCount == Object.keys(SharedStore.state.allFiles).length) {
+        if (this.selectCount === Object.keys(SharedStore.state.allFiles).length) {
             this.allSelected = true;
         }
     }
@@ -259,7 +259,7 @@ export default class extends Vue {
     unselectFile() {
         this.selectCount--;
         this.allSelected = false;
-        if (this.selectCount == 0) {
+        if (this.selectCount === 0) {
             SharedState.commit("unsetSelectMode");
         }
     }

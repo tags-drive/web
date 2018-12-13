@@ -16,7 +16,7 @@
 				@change="toggleSelect">
 		</td>
 		<td
-			v-if="file.type == 'image'"
+			v-if="file.type === 'image'"
 			title="Show preview"
 			style="width: 50px; text-align: center; cursor: pointer;"
 			@click="showPreview"
@@ -133,7 +133,7 @@ export default class extends Vue {
     }
 
     get previewLink(): string {
-        if (this.file.type == "image") {
+        if (this.file.type === "image") {
             return Params.Host + "/" + this.file.preview;
         }
 

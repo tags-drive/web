@@ -96,7 +96,7 @@ export default {
             })
                 .then(data => {
                     // Valid login and password
-                    if (data.status == 200) {
+                    if (data.status === 200) {
                         window.location.href = "/";
                     }
 

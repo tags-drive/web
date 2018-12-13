@@ -253,7 +253,7 @@ export default class extends Vue {
     }
 
     showFilesMenu(event: DragEvent) {
-        if (event.dataTransfer == null || event.dataTransfer.files == null) {
+        if (event.dataTransfer === null || event.dataTransfer.files === null) {
             return;
         }
 
@@ -341,7 +341,7 @@ export default class extends Vue {
     addFileSource(file: File) {
         let id = "preview-for-file-" + file.name;
 
-        if (file.type == "image/jpeg" || file.type == "image/png" || file.type == "image/gif") {
+        if (file.type === "image/jpeg" || file.type === "image/png" || file.type === "image/gif") {
             // Load preview fron Disk
             let reader = new FileReader();
             reader.readAsDataURL(file);

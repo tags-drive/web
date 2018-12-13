@@ -247,7 +247,7 @@ export default class extends Vue {
 
     created() {
         EventBus.$on(Events.ShowPreview, (payload: any) => {
-            if (payload == undefined || !(payload.file instanceof File)) {
+            if (payload === undefined || !(payload.file instanceof File)) {
                 /* eslint-disable no-console */
                 console.error("Events.ShowPreview: payload isn't valid:", payload);
                 /* eslint-enable no-console */
@@ -258,7 +258,7 @@ export default class extends Vue {
 
             // Define fileIndex
             for (let i = 0; i < SharedStore.state.allFiles.length; i++) {
-                if (SharedStore.state.allFiles[i].filename == this.file.filename) {
+                if (SharedStore.state.allFiles[i].filename === this.file.filename) {
                     this.fileIndex = i;
                     break;
                 }
@@ -296,12 +296,12 @@ export default class extends Vue {
 
     isTextFile() {
         let ext = this.file.filename.split(".").pop();
-        return ext == "txt";
+        return ext === "txt";
     }
 
     isImage() {
-        return this.file.type == "image";
-        // return ext == "jpg" || ext == "jpeg" || ext == "png" || ext == "gif";
+        return this.file.type === "image";
+        // return ext === "jpg" || ext === "jpeg" || ext === "png" || ext === "gif";
     }
 
     nextPreview() {

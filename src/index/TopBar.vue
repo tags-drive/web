@@ -291,7 +291,7 @@ export default class TopBar extends Vue {
             this.search().usual();
         });
         EventBus.$on(Events.Search.Advanced, (payload: any) => {
-            if (payload.type == undefined || payload.order == undefined) {
+            if (payload.type === undefined || payload.order === undefined) {
                 /* eslint-disable no-console */
                 console.error("Payload hasn't order or type fields:", payload);
                 /* eslint-enable no-console */
@@ -308,7 +308,7 @@ export default class TopBar extends Vue {
 
             for (let i in path) {
                 // We don't render expression or close tags list if there's element with id == "expression" in path
-                if (path[i].id == "expression") {
+                if (path[i].id === "expression") {
                     return;
                 }
             }
@@ -477,11 +477,11 @@ export default class TopBar extends Vue {
         }
 
         if (
-            ev.key.length == 1 &&
+            ev.key.length === 1 &&
             (hasPrefix(ev.code, "Key") ||
-                ev.key == "(" ||
-                ev.key == ")" ||
-                ev.key == "|" ||
+                ev.key === "(" ||
+                ev.key === ")" ||
+                ev.key === "|" ||
                 hasPrefix(ev.code, "Numpad") ||
                 hasPrefix(ev.code, "Digit"))
         ) {
@@ -500,16 +500,16 @@ export default class TopBar extends Vue {
                 }
             }
         } else if (hasPrefix(ev.code, "Backspace")) {
-            if (this.position == 0) {
+            if (this.position === 0) {
                 return;
             }
             this.expression = this.expression.substr(0, this.position - 1) + this.expression.substr(this.position);
             this.position--;
         } else if (hasPrefix(ev.code, "Delete")) {
             this.expression = this.expression.substr(0, this.position) + this.expression.substr(this.position + 1);
-        } else if (ev.code == "Home") {
+        } else if (ev.code === "Home") {
             this.position = 0;
-        } else if (ev.code == "End") {
+        } else if (ev.code === "End") {
             this.position = this.expression.length;
         }
     }

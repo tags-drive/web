@@ -12,17 +12,17 @@ Vue.use(Vuex);
 
 function objectToFile(f: any): File | null {
     if (
-        f == undefined ||
-        f.type == undefined ||
-        f.filename == undefined ||
-        f.origin == undefined ||
-        f.description == undefined ||
-        f.size == undefined ||
-        f.tags == undefined ||
-        f.addTime == undefined ||
+        f === undefined ||
+        f.type === undefined ||
+        f.filename === undefined ||
+        f.origin === undefined ||
+        f.description === undefined ||
+        f.size === undefined ||
+        f.tags === undefined ||
+        f.addTime === undefined ||
         // Preview can be omitted
-        f.deleted == undefined ||
-        f.timeToDelete == undefined
+        f.deleted === undefined ||
+        f.timeToDelete === undefined
     ) {
         return null;
     }
@@ -36,7 +36,7 @@ function objectToFile(f: any): File | null {
     file.size = <number>f.size;
     file.tags = <number[]>f.tags;
     file.addTime = dateformat(new Date(f.addTime), "dd-mm-yyyy HH:MM");
-    file.preview = <string>f.preview;
+    file.preview = f.preview ? <string>f.preview : "";
     file.deleted = <boolean>f.deleted;
     file.timeToDelete = <number>f.timeToDelete;
 
@@ -106,7 +106,7 @@ const store: StoreOptions<Store> = {
                     state.allTags.clear();
 
                     for (let id in tags) {
-                        if (tags[id].name == undefined || tags[id].color == undefined) {
+                        if (tags[id].name === undefined || tags[id].color === undefined) {
                             continue;
                         }
 
