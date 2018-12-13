@@ -72,7 +72,7 @@ export default class extends Vue {
         let addTag = (id: number) => {
             let tag = SharedStore.state.allTags.get(id);
             let name = "undefined";
-            let color = "white";
+            let color = "#ffffff";
 
             if (tag !== undefined) {
                 name = tag.name;
