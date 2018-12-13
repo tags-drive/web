@@ -5,13 +5,9 @@ import TopBar from "./TopBar.vue";
 import FilesBlock from "./FilesBlock.vue";
 import UploadBlock from "./UploadBlock.vue";
 import ContextMenu from "./ContextMenu.vue";
-// TODO
-/*
 import ModalWindow from "./ModalWindow.vue";
-*/
 import LogWindow from "./LogWindow.vue";
 import PreviewWindow from "./PreviewWindow.vue";
-
 
 /* Tags Drive (main instance) */
 new Vue({
@@ -43,12 +39,11 @@ new Vue({
     render: h => h(ContextMenu)
 });
 
-// TODO
-// /* Modal Window */
-// new Vue({
-//     el: "#modal-window",
-//     render: h => h(ModalWindow)
-// });
+/* Modal Window */
+new Vue({
+    el: "#modal-window",
+    render: h => h(ModalWindow)
+});
 
 /* Log Window */
 new Vue({
