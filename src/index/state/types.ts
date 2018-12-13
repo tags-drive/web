@@ -1,7 +1,9 @@
 export interface State {
     showDropLayer: boolean;
     selectMode: boolean;
-    settings: {
-        showDeletedFiles: boolean
-    };
+    settings: Settings;
+}
+
+export interface Settings {
+    showDeletedFiles: boolean;
 }

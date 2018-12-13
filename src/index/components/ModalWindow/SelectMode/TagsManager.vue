@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import TagComponent from "./Tag.vue";
+import TagComponent from "@/index/components/Tag/Tag.vue";
 
 export default {
     props: {

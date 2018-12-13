@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import TagComponent from "./Tag.vue";
+import TagComponent from "../Tag/Tag.vue";
 
 const validTagName = /^[\w\d- ]{1,20}$/;
 const validColor = /^#[\dabcdef]{6}$/;
@@ -85,7 +85,7 @@ export default {
         // We delete a tag only after closing the window
         // It lets us to undo the file deleting
         if (this.isDeleted) {
-            this.$parent.tagsAPI().del(this.tag.id);
+            this.$parent.deleteTag(this.tag.id);
         }
     },
     methods: {
@@ -129,9 +129,9 @@ export default {
 
             if (this.isNewTag) {
                 // Need to create, not to change
-                this.$parent.tagsAPI().add(this.newName, this.newColor);
+                this.$parent.addTag(this.newName, this.newColor);
             } else {
-                this.$parent.tagsAPI().change(this.tag.id, this.newName, this.newColor);
+                this.$parent.changeTag(this.tag.id, this.newName, this.newColor);
             }
 
             this.isChanged = false;
@@ -139,7 +139,7 @@ export default {
         del: function() {
             if (this.isNewTag) {
                 // Delete tag right now
-                this.$parent.tagsAPI().delNewTag();
+                this.$parent.deleteNewTag();
                 return;
             }
 

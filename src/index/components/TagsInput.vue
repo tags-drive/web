@@ -13,18 +13,27 @@
 </template>
 
 <script>
-import TagComponent from "./Tag.vue";
+import TagComponent from "./Tag/Tag.vue";
+import SharedStore from "@/index/store";
 
 export default {
     props: {
-        tag: Object
+        id: Number
+    },
+    data: function() {
+        return {
+            tag: Object
+        };
+    },
+    created() {
+        this.tag = SharedStore.state.allTags.get(this.id);
     },
     components: {
         tag: TagComponent
     },
     methods: {
         startDrag: function(ev) {
-            ev.dataTransfer.setData("tagID", this.tag.id);
+            ev.dataTransfer.setData("tagID", this.id);
         }
     }
 };

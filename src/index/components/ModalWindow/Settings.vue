@@ -48,42 +48,49 @@ input[type="checkbox"] {
 }
 </style>
 
-<script>
-export default {
-    data: function() {
-        return {
-            settings: {}
-        };
-    },
-    created: function() {
+<script lang="ts">
+import Vue from "vue";
+import Component from "vue-class-component";
+//
+import { Settings } from "@/index/state/types";
+//
+import SharedState from "@/index/state";
+
+@Component({})
+export default class extends Vue {
+    settings: Settings = { showDeletedFiles: false };
+
+    created() {
         this.$nextTick(function() {
             // Add onchange handlers to input["checkbox"]
-            let checkboxes = document.getElementById("settings").getElementsByTagName("input");
+            let checkboxes = document.getElementById("settings")!.getElementsByTagName("input");
             for (let i = 0; i < checkboxes.length; i++) {
                 checkboxes[i].onchange = () => this.apply();
             }
         });
 
         // Copy global settings to local ones
-        this.settings = JSON.parse(JSON.stringify(this.SharedState.state.settings));
-    },
-    destroyed: function() {
+        this.settings = JSON.parse(JSON.stringify(SharedState.state.settings));
+    }
+
+    destroyed() {
         // If user pressed Save button, readSettings will read same settings,
         // else readSettings will recover saved settings
-        this.SharedState.commit("readSettings");
-    },
-    methods: {
-        apply: function() {
-            this.SharedState.commit("applySettings", this.settings);
-        },
-        saveSettings: function() {
-            // Update global settings from local ones
-            // We will save current settings because we call apply() on every change
-            this.SharedState.commit("saveSettings");
-
-            // Close window
-            this.$parent.hideWindow();
-        }
+        SharedState.commit("readSettings");
     }
-};
+
+    apply() {
+        SharedState.commit("applySettings", this.settings);
+    }
+
+    saveSettings() {
+        // Update global settings from local ones
+        // We will save current settings because we call apply() on every change
+        SharedState.commit("saveSettings");
+
+        // Close window
+        // TODO
+        // this.$parent.hideWindow();
+    }
+}
 </script>
