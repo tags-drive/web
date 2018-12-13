@@ -1,37 +1,24 @@
 <template>
 	<div>
-		<!-- Current tags -->
 		<div
-			class="tags-field"
-			title="Tags of a file"
-			@drop.prevent="addTag($event)"
-			@dragover.prevent
+			v-for="(tag, index) in tags"
+			:key="index"
+			style="margin-right: auto; margin-left: auto; width: 40%;"
 		>
-			<tags-input
-				v-for="(id, index) in Array.from(newTags.keys())"
-				:key="index"
-				:id="id"
-			></tags-input>
+			<div style="display: flex; margin-bottom: 5px; position: relative;">
+				<div style="width: 200px; display: flex">
+					<tag :tag="tag" style="margin: 0;"></tag>
+				</div>
+				<div style="position: absolute; right: 0;">
+					<input
+						type="checkbox"
+						style="width: 20px; height: 20px; right: 0;"
+						v-model="tag.selected">
+				</div>
+			</div>
 		</div>
 
-		<div style="border-bottom: 1px solid black; width: 90%; margin: 20px auto 20px auto;"></div>
-
-		<!-- All tags -->
-		<div
-			class="tags-field"
-			title="Unused tags"
-			@drop.prevent="deleteTag($event)"
-			@dragover.prevent
-		>
-			<tags-input
-				v-for="(id, index) in Array.from(unusedTags.keys())"
-				:key="index"
-				:id="id">
-			</tags-input>
-		</div>
-		<br>
-
-		<input class="btn" type="button" value="Change tags" @click="updateTags()">
+		<input class="btn" type="button" value="Change tags" @click="updateTags">
 	</div>
 </template>
 
@@ -54,7 +41,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 // Components
-import TagsInput from "@/index/components/TagsInput.vue";
+import TagComponent from "@/index/components/Tag/Tag.vue";
 // Shared data
 import SharedStore from "@/index/store";
 //
@@ -64,61 +51,40 @@ import { Events, EventBus } from "@/index/eventBus";
 import { Params } from "@/global";
 import { logError, isErrorStatusCode } from "@/index/tools";
 
+interface CustomTag {
+    id: number;
+    name: string;
+    color: string;
+    selected: boolean;
+}
+
 @Component({
     components: {
-        "tags-input": TagsInput
+        tag: TagComponent
     }
 })
 export default class extends Vue {
     @Prop() file!: File;
-    unusedTags: Map<number, Tag> = new Map();
-    newTags: Map<number, Tag> = new Map();
+    tags: CustomTag[] = [];
 
     created() {
-        this.newTags.clear();
-        this.unusedTags.clear();
-
         for (let [id, tag] of SharedStore.state.allTags) {
+            let t: CustomTag = { id: id, name: tag.name, color: tag.color, selected: false };
             if (this.file.tags.includes(id)) {
-                this.newTags.set(id, tag);
-            } else {
-                this.unusedTags.set(id, tag);
+                t.selected = true;
             }
-        }
-    }
 
-    addTag(ev: DragEvent) {
-        if (ev === null || ev.dataTransfer === null) {
-            return;
-        }
-
-        let tagID = Number(ev.dataTransfer.getData("tagID"));
-        if (this.unusedTags.has(tagID)) {
-            let t = this.unusedTags.get(tagID);
-            this.newTags.set(tagID, t!);
-            this.unusedTags.delete(tagID);
-        }
-    }
-
-    deleteTag(ev: DragEvent) {
-        if (ev === null || ev.dataTransfer === null) {
-            return;
-        }
-
-        let tagID = Number(ev.dataTransfer.getData("tagID"));
-
-        if (this.newTags.has(tagID)) {
-            let t = this.newTags.get(tagID);
-            this.unusedTags.set(tagID, t!);
-            this.newTags.delete(tagID);
+            this.tags.push(t);
         }
     }
 
     updateTags() {
+        let ids: number[] = [];
+        this.tags.filter(tag => tag.selected).forEach(tag => ids.push(tag.id));
+
         let params = new URLSearchParams();
-        let tags = Array.from(this.newTags.keys());
         params.append("file", this.file.filename);
-        params.append("tags", tags.join(","));
+        params.append("tags", ids.join(","));
 
         fetch(Params.Host + "/api/files/tags?" + params, {
             method: "PUT",
