@@ -61,7 +61,7 @@ export default class extends Vue {
     }
 
     hideWindow() {
-        alert("TODO");
+        EventBus.$emit(Events.ModalWindow.HideWindow);;
     }
 }
 </script>

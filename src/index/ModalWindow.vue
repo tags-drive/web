@@ -136,6 +136,10 @@ export default class extends Vue {
     selectDeleteMode: boolean = false;
 
     created() {
+        EventBus.$on(Events.ModalWindow.HideWindow, () => {
+            this.hideWindow();
+        });
+        //
         EventBus.$on(Events.ModalWindow.ShowSettingsWindow, () => {
             this.settingsMode = true;
             this.showWindow();

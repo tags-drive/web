@@ -2,38 +2,39 @@ import Vue from "vue";
 
 export const Events = {
     Search: {
-        Usual: <string>"search-usual",
-        Advanced: <string>"search-advanced"
+        Usual: "search-usual",
+        Advanced: "search-advanced"
     },
     ModalWindow: {
-        ShowSettingsWindow: <string>"modal-window-settings-window",
-        ShowTagsChangingWindow: <string>"modal-window-tags-changing",
+        HideWindow: "modal-window-hide",
+        ShowSettingsWindow: "modal-window-settings-window",
+        ShowTagsChangingWindow: "modal-window-tags-changing",
         RegularMode: {
-            ShowFileRenamingWindow: <string>"modal-window-regular-file-renaming",
-            ShowFileDescriptionChangingWindow: <string>"modal-window-regular-file-description-changing",
-            ShowTagsChangingWindow: <string>"modal-window-regular-tags-changing",
-            ShowFileDeletingWindow: <string>"modal-window-regular-file-deleting"
+            ShowFileRenamingWindow: "modal-window-regular-file-renaming",
+            ShowFileDescriptionChangingWindow: "modal-window-regular-file-description-changing",
+            ShowTagsChangingWindow: "modal-window-regular-tags-changing",
+            ShowFileDeletingWindow: "modal-window-regular-file-deleting"
         },
         SelectMode: {
-            ShowTagsAddingWindow: <string>"modal-window-select-tags-adding",
-            ShowTagsDeletingWindow: <string>"modal-window-select-tags-deleting",
-            ShowFilesDeletingWindow: <string>"modal-window-select-files-deleting"
+            ShowTagsAddingWindow: "modal-window-select-tags-adding",
+            ShowTagsDeletingWindow: "modal-window-select-tags-deleting",
+            ShowFilesDeletingWindow: "modal-window-select-files-deleting"
         }
     },
     FilesBlock: {
         // For children of TopBar
-        SelectFile: <string>"files-block-select-file",
-        UnselectFile: <string>"files-block-unselect-file",
+        SelectFile: "files-block-select-file",
+        UnselectFile: "files-block-unselect-file",
         //
-        UnselectAllFiles: <string>"files-block-unselect-all-files",
+        UnselectAllFiles: "files-block-unselect-all-files",
         //
-        RestoreSortParams: <string>"files-block-restore-sort-params"
+        RestoreSortParams: "files-block-restore-sort-params"
     },
     // Use this event to update selectedFiles in store
-    UpdateSelectedFiles: <string>"update-selected-files",
-    ShowContextMenu: <string>"show-context-menu",
-    ShowPreview: <string>"show-preview",
-    LogEvent: <string>"log-event"
+    UpdateSelectedFiles: "update-selected-files",
+    ShowContextMenu: "show-context-menu",
+    ShowPreview: "show-preview",
+    LogEvent: "log-event"
 };
 
 export const EventBus = new Vue({});

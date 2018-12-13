@@ -55,6 +55,8 @@ import Component from "vue-class-component";
 import { Settings } from "@/index/state/types";
 //
 import SharedState from "@/index/state";
+//
+import { Events, EventBus } from "@/index/eventBus";
 
 @Component({})
 export default class extends Vue {
@@ -89,8 +91,7 @@ export default class extends Vue {
         SharedState.commit("saveSettings");
 
         // Close window
-        // TODO
-        // this.$parent.hideWindow();
+        EventBus.$emit(Events.ModalWindow.HideWindow);
     }
 }
 </script>
