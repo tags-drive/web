@@ -55,56 +55,56 @@ input[type="button"]:hover {
 }
 </style>
 
-<script>
-import { Params } from "../global";
+<script lang="ts">
+import Vue from "vue";
+import Component from "vue-class-component";
+//
 import { sha256 } from "js-sha256";
+//
+import { Params } from "../global";
 
-export default {
-    data: function() {
-        return {
-            login: "",
-            password: "",
-            isError: false,
-            errorMsg: ""
-        };
-    },
-    methods: {
-        fail: function(error) {
-            setTimeout(() => {
-                this.errorMsg = error;
-                this.isError = true;
-                this.password = "";
-            }, 700);
-        },
-        auth: function() {
-            this.isError = false;
+@Component({})
+export default class extends Vue {
+    login: string = "";
+    password: string = "";
+    isError: boolean = false;
+    errorMsg: string = "";
 
-            // 11 times
-            var hash = sha256(this.password);
-            for (var i = 0; i < 10; i++) {
-                hash = sha256(hash);
-            }
-
-            const params = new URLSearchParams();
-            params.append("login", this.login);
-            params.append("password", hash);
-
-            fetch(Params.Host + "/login", {
-                method: "POST",
-                body: params,
-                credentials: "same-origin" // for set cookie
-            })
-                .then(data => {
-                    // Valid login and password
-                    if (data.status === 200) {
-                        window.location.href = "/";
-                    }
-
-                    data.text().then(msg => this.fail(msg));
-                })
-                .catch(err => this.fail(err));
-        }
+    fail(error: string) {
+        setTimeout(() => {
+            this.errorMsg = error;
+            this.isError = true;
+            this.password = "";
+        }, 300);
     }
-};
-</script>
 
+    auth() {
+        this.isError = false;
+
+        // 11 times
+        let hash = sha256(this.password);
+        for (var i = 0; i < 10; i++) {
+            hash = sha256(hash);
+        }
+
+        let params = new URLSearchParams();
+        params.append("login", this.login);
+        params.append("password", hash);
+
+        fetch(Params.Host + "/login?" + params, {
+            method: "POST",
+            credentials: "same-origin"
+        })
+            .then(data => {
+                // Valid login and password
+                if (data.status === 200) {
+                    window.location.href = "/";
+                    return;
+                }
+
+                data.text().then(msg => this.fail(msg));
+            })
+            .catch(err => this.fail(err));
+    }
+}
+</script>
