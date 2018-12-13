@@ -12,7 +12,7 @@
 					v-model="allSelected"
 					:indeterminate.prop="
 						selectCount > 0 &&
-						selectCount != allFiles.length"
+						selectCount !== allFiles.length"
 					@click="toggleAllFiles"
 				></th>
 			<th>

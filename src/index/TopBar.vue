@@ -330,11 +330,11 @@ export default class TopBar extends Vue {
 
                 let params = new URLSearchParams();
                 // Expression
-                if (this.expression != "") {
+                if (this.expression !== "") {
                     params.append("expr", this.expression);
                 }
                 // search
-                if (this.text != "") {
+                if (this.text !== "") {
                     params.append("search", this.text);
                 }
 
@@ -367,11 +367,11 @@ export default class TopBar extends Vue {
 
                 let params = new URLSearchParams();
                 // Expression
-                if (this.expression != "") {
+                if (this.expression !== "") {
                     params.append("expr", this.expression);
                 }
                 // search
-                if (this.text != "") {
+                if (this.text !== "") {
                     params.append("search", this.text);
                 }
                 // sort
@@ -470,7 +470,7 @@ export default class TopBar extends Vue {
             }
 
             for (let i = 0; i < prefix.length; i++) {
-                if (str[i] != prefix[i]) {
+                if (str[i] !== prefix[i]) {
                     return false;
                 }
             }

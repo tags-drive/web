@@ -48,7 +48,7 @@ function hexToRGB(hex: string) {
     let rgb = { r: 0, g: 0, b: 0 };
 
     let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    if (result != null) {
+    if (result !== null) {
         rgb.r = parseInt(result[1], 16);
         rgb.g = parseInt(result[2], 16);
         rgb.b = parseInt(result[3], 16);

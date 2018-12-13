@@ -5,13 +5,13 @@
 		uploading - show progress bar
 	-->
 	<div
-		v-if="counter != 0 || showChosenFiles || uploading"
+		v-if="counter !== 0 || showChosenFiles || uploading"
 		id="background"
 		@click.self="hideWindow"
 	>
 		<!-- Upload layer -->
 		<div
-			v-if="counter != 0"
+			v-if="counter !== 0"
 			id="upload-layer"
 			@drop.prevent="showFilesMenu"
 			@dragover.prevent

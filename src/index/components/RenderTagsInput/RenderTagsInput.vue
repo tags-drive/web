@@ -90,14 +90,14 @@ export default class extends Vue {
 
         for (let i = 0; i < this.expression.length; i++) {
             if ("0" <= this.expression[i] && this.expression[i] <= "9") {
-                if (text != "") {
+                if (text !== "") {
                     // text
                     addText(text);
                     text = "";
                 }
                 id += this.expression[i];
             } else {
-                if (id != "") {
+                if (id !== "") {
                     // tag
                     addTag(Number(id));
                     id = "";
@@ -107,10 +107,10 @@ export default class extends Vue {
         }
 
         // Add last tag or text
-        if (id != "") {
+        if (id !== "") {
             addTag(Number(id));
             id = "";
-        } else if (text != "") {
+        } else if (text !== "") {
             addText(text);
             text = "";
         }
