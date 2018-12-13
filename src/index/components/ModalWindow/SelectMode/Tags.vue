@@ -120,7 +120,7 @@ export default class extends Vue {
     }
 
     hideWindow() {
-        EventBus.$emit(Events.ModalWindow.HideWindow);;
+        EventBus.$emit(Events.ModalWindow.HideWindow);
     }
 }
 </script>
