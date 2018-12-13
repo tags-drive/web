@@ -1,6 +1,6 @@
 <template>
 	<tr
-		v-show="!file.deleted || SharedState.state.settings.showDeletedFiles"
+		v-show="!file.deleted || State.settings.showDeletedFiles"
 		class="file-info"
 		:style="stylesObject"
 		:title="titleMessage"
@@ -81,6 +81,8 @@ import TagComponent from "../Tag/Tag.vue";
 // Shared data
 import SharedStore from "../../store";
 import { Store } from "../../store/types";
+import SharedState from "../../state";
+import { State } from "../../state/types";
 //
 import { Events, EventBus } from "../../eventBus";
 import { File, Tag } from "@/index/global";
@@ -97,6 +99,7 @@ export default class extends Vue {
     selected: boolean = false;
     //
     Store: Store = SharedStore.state;
+    State: State = SharedState.state;
 
     get stylesObject() {
         let bgColor = "white";
