@@ -18,7 +18,7 @@
 				</div>
 				<!-- Next button -->
 				<div
-					v-if="fileIndex < Store.allFiles.length - 1"
+					v-if="fileIndex < allFiles.length - 1"
 					class="switch-button"
 					style="right: 0;"
 					@click="nextPreview"
@@ -240,6 +240,11 @@ export default class extends Vue {
     textFileContent: string = "";
     //
     Store: Store = SharedStore.state;
+
+    get allFiles() {
+        // For reactive updating (see @/index/store/types.ts for more information)
+        return SharedStore.state.allFilesChangesCounter && SharedStore.state.allFiles;
+    }
 
     get imageLink(): string {
         return Params.Host + "/" + this.file.origin;

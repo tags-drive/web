@@ -51,8 +51,14 @@ function objectToFile(f: any, skipTimeParsing?: boolean): File | null {
 const store: StoreOptions<Store> = {
     state: {
         allFiles: [],
+        allFilesChangesCounter: 0,
+        //
         allTags: new Map(),
+        allTagsChangesCounter: 0,
+        //
         selectedFiles: [],
+        selectedFilesChangesCounter: 0,
+        //
         // filesReady is true after first call of updateFiles
         filesReady: false,
         // tagsReady is true after first call of updateTags
@@ -82,7 +88,9 @@ const store: StoreOptions<Store> = {
                         updatedFiles.push(file);
                     }
 
+                    state.filesReady = true;
                     state.allFiles = updatedFiles;
+                    state.allFilesChangesCounter++;
                 })
                 .catch(err => logError(err));
         },
@@ -99,6 +107,7 @@ const store: StoreOptions<Store> = {
             }
 
             state.allFiles = updatedFiles;
+            state.allFilesChangesCounter++;
         },
         // allTags
         updateTags(state) {
@@ -122,6 +131,7 @@ const store: StoreOptions<Store> = {
                     }
 
                     state.tagsReady = true;
+                    state.allTagsChangesCounter++;
                 })
                 .catch(err => logError(err));
         },
@@ -131,6 +141,7 @@ const store: StoreOptions<Store> = {
         clearSelectedFiles(state) {
             state.selectedFiles = [];
             state.selectedFilesReady = false;
+            state.selectedFilesChangesCounter++;
         },
         setSelectedFiles(state, files: object[]) {
             let updatedFiles: File[] = [];
@@ -146,8 +157,8 @@ const store: StoreOptions<Store> = {
             }
 
             state.selectedFiles = updatedFiles;
-
             state.selectedFilesReady = true;
+            state.selectedFilesChangesCounter++;
         }
     }
 };

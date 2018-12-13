@@ -12,7 +12,7 @@
 					v-model="allSelected"
 					:indeterminate.prop="
 						selectCount > 0 &&
-						selectCount != Store.allFiles.length"
+						selectCount != allFiles.length"
 					@click="toggleAllFiles"
 				></th>
 			<th>
@@ -53,7 +53,7 @@
 		</tr>
 
 		<files
-			v-for="(file, index) in Store.allFiles"
+			v-for="(file, index) in allFiles"
 			:key="index"
 			:file="file"
 		></files>
@@ -65,7 +65,6 @@ import Vue from "vue";
 import Component from "vue-class-component";
 // Store
 import SharedStore from "./store";
-import { Store } from "./store/types";
 import SharedState from "./state";
 import { State } from "./state/types";
 // Components
@@ -73,6 +72,7 @@ import Files from "./components/Files/Files.vue";
 //
 import { Const } from "./tools";
 import { Events, EventBus } from "./eventBus";
+import { File } from "@/index/global";
 
 @Component({
     components: {
@@ -93,10 +93,13 @@ export default class extends Vue {
     selectCount: number = 0;
     // For updating selected files in SharedStore
     selectedFiles: File[] = [];
-    // This counter == this.$childre.lenght, it reduces on every "sendFile" event
+    // This counter == this.$childre.length, it reduces on every "sendFile" event
     selectedFilesCounter: number = 0;
-    //
-    Store: Store = SharedStore.state;
+
+    get allFiles() {
+        // For reactive updating (see @/index/store/types.ts for more information)
+        return SharedStore.state.allFilesChangesCounter && SharedStore.state.allFiles;
+    }
 
     created() {
         EventBus.$on(Events.FilesBlock.UnselectAllFiles, () => {

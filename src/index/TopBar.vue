@@ -46,7 +46,7 @@
 					id="tags-list"
 				>
 					<div
-						v-for="(id, index) in Array.from(Store.allTags.keys())"
+						v-for="(id, index) in allTagsIDs"
 						style="display: flex; margin: 5px; vertical-align: center"
 						:key="index"
 					>
@@ -274,6 +274,11 @@ export default class TopBar extends Vue {
     // Text search
     text: string;
     Store: Store;
+
+    get allTagsIDs() {
+        // For reactive updating (see @/index/store/types.ts for more information)
+        return SharedStore.state.allTagsChangesCounter && Array.from(SharedStore.state.allTags.keys());
+    }
 
     constructor() {
         super();

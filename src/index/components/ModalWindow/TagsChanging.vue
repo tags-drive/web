@@ -2,7 +2,7 @@
 	<div>
 		<!-- Existed tags -->
 		<modifying-tags
-			v-for="(id, index) in Array.from(Store.allTags.keys())"
+			v-for="(id, index) in allTagsIDs"
 			:key="index"
 			:tagID="id"
 			:tag="Store.allTags.get(id)"
@@ -42,6 +42,11 @@ import { logError, logInfo, isErrorStatusCode } from "@/index/tools";
 })
 export default class extends Vue {
     Store: Store = SharedStore.state;
+
+    get allTagsIDs() {
+        // For reactive updating (see @/index/store/types.ts for more information)
+        return SharedStore.state.allTagsChangesCounter && Array.from(SharedStore.state.allTags.keys());
+    }
 
     created() {
         this.$on("add-tag", (payload: any) => {

@@ -49,7 +49,7 @@
 			<!-- Tags -->
 			<div id="tags-list">
 				<div
-					v-for="(id, index) in Array.from(Store.allTags.keys())"
+					v-for="(id, index) in allTagsIDs"
 					:key="index"
 					style="display: flex; margin-bottom: 5px;"
 				>
@@ -232,6 +232,11 @@ export default class extends Vue {
     tags: Map<number, Tag> = new Map();
     //
     Store: Store = SharedStore.state;
+
+    get allTagsIDs() {
+        // For reactive updating (see @/index/store/types.ts for more information)
+        return SharedStore.state.allTagsChangesCounter && Array.from(SharedStore.state.allTags.keys());
+    }
 
     created() {
         // Add listeners
