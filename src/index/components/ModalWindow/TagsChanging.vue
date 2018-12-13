@@ -4,6 +4,7 @@
 		<modifying-tags
 			v-for="(id, index) in Array.from(Store.allTags.keys())"
 			:key="index"
+			:tagID="id"
 			:tag="Store.allTags.get(id)"
 		></modifying-tags>
 		<p></p>
@@ -12,19 +13,13 @@
 			class="btn"
 			style="width: 150px; height: 25px;"
 			type="button"
-			@click="newTag.name === undefined ? newTag = {'name': 'new tag', 'color': '#ffffff'} : {}"
 			value="Create new tag">
 		<p></p>
 
 		<!-- New tag -->
-		<modifying-tags
-			v-if="newTag.name !== undefined"
-			:tag="newTag"
-			:is-new-tag="true"
-		></modifying-tags>
+		<modifying-tags :is-new-tag="true"></modifying-tags>
 	</div>
 </template>
-
 
 <script lang="ts">
 import Vue from "vue";
@@ -34,8 +29,6 @@ import ModifyingTags from "@/index/components/ModalWindow/ModifyingTags.vue";
 // Shared data
 import SharedStore from "@/index/store";
 import { Store } from "@/index/store/types";
-//
-import { Tag } from "@/index/global";
 //
 import { Events, EventBus } from "@/index/eventBus";
 // Utils
@@ -49,8 +42,18 @@ import { logError, logInfo, isErrorStatusCode } from "@/index/tools";
 })
 export default class extends Vue {
     Store: Store = SharedStore.state;
-    //
-    newTag: Tag = new Tag("new tag", "#ffffff");
+
+    created() {
+        this.$on("add-tag", (payload: any) => {
+            this.addTag(payload.name, payload.color);
+        });
+        this.$on("change-tag", (payload: any) => {
+            this.changeTag(payload.tagID, payload.newName, payload.newColor);
+        });
+        this.$on("delete-tag", (payload: any) => {
+            this.deleteTag(payload.tagID);
+        });
+    }
 
     addTag(name: string, color: string) {
         let params = new URLSearchParams();
@@ -69,7 +72,6 @@ export default class extends Vue {
                     return;
                 }
 
-                this.deleteNewTag();
                 SharedStore.commit("updateTags");
             })
             .catch(err => {
@@ -125,10 +127,6 @@ export default class extends Vue {
             .catch(err => {
                 logError(err);
             });
-    }
-
-    deleteNewTag() {
-        this.newTag = new Tag();
     }
 }
 </script>

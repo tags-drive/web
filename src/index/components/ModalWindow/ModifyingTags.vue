@@ -33,6 +33,7 @@
 			:style="[isDeleted ? {'opacity': '0.3', 'background-color': 'white', 'cursor': 'default'} : {'opacity': '1'}]">cached</i>
 
 		<div style="display: flex;">
+			<!-- Save -->
 			<i
 			class="material-icons btn noselect"
 			style="margin-right: 5px;" 
@@ -40,12 +41,13 @@
 			@click="save"
 			:style="[isError || isDeleted || !this.isChanged ? {'opacity': '0.3', 'background-color': 'white', 'cursor': 'default'} : {'opacity': '1'}]">done</i>
 
+			<!-- Delete or recover -->
 			<i
-				v-if="!isDeleted"
+				v-if="!isDeleted || isNewTag"
 				class="material-icons btn noselect"
 				title="Delete"
 				@click="del"
-				:style="[isDeleted ? {'opacity': '0.3', 'background-color': 'white', 'cursor': 'default'} : {'opacity': '1'}]"
+				:style="[isNewTag ? {'opacity': '0.3', 'background-color': 'white', 'cursor': 'default'} : {'opacity': '1'}]"
 			>delete</i>
 			<i
 				v-else
@@ -57,97 +59,128 @@
 	</div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
+import Component from "vue-class-component";
+import { Prop } from "vue-property-decorator";
+//
 import TagComponent from "../Tag/Tag.vue";
+import { Tag } from "@/index/global";
 
 const validTagName = /^[\w\d- ]{1,20}$/;
 const validColor = /^#[\dabcdef]{6}$/;
 
-export default {
-    props: {
-        tag: Object,
-        isNewTag: Boolean // only new tag
-    },
-    data: function() {
-        return {
-            newName: this.tag.name,
-            newColor: this.tag.color,
-            isChanged: this.isNewTag !== true ? false : true, // isNewTag wasn't passed,
-            isError: false,
-            isDeleted: false
-        };
-    },
+@Component({
     components: {
         tag: TagComponent
-    },
-    destroyed: function() {
+    }
+})
+export default class extends Vue {
+    @Prop() tag!: Tag;
+    @Prop() tagID!: number;
+    @Prop() isNewTag!: boolean; // only new tag
+
+    newName: string;
+    newColor: string;
+    isChanged: boolean; // isNewTag wasn't passed,
+    isError: boolean = false;
+    isDeleted: boolean = false;
+
+    constructor() {
+        super();
+
+        this.isChanged = this.isNewTag !== true ? false : true;
+
+        if (this.isNewTag && this.tag === undefined) {
+            this.newName = "new tag";
+            this.newColor = "#ffffff";
+
+            // We can don't init this.tag, if this.isNewTag === true
+            //
+            // this.tag = new Tag("new tag", "#ffffff");
+        } else {
+            this.newName = this.tag.name;
+            this.newColor = this.tag.color;
+        }
+    }
+
+    destroyed() {
         // Called, when window is closed
         // We delete a tag only after closing the window
         // It lets us to undo the file deleting
         if (this.isDeleted) {
-            this.$parent.deleteTag(this.tag.id);
+            this.$parent.$emit("delete-tag", { tagID: this.tagID });
         }
-    },
-    methods: {
-        check: function() {
-            if (this.tag.name === this.newName && this.tag.color === this.newColor && this.isNewTag !== true) {
-                // Can skip, if name and color weren't changed
-                this.isChanged = false;
-                this.isError = false;
-                return;
-            }
-            this.isChanged = true;
+    }
 
-            if (this.newName.length === 0 || validTagName.exec(this.newName) === null) {
-                this.isError = true;
-                return;
-            }
-            if (validColor.exec(this.newColor) === null) {
-                this.isError = true;
-                return;
-            }
-
-            this.isError = false;
-        },
-        generateRandomColor: function() {
-            if (this.isDeleted) {
-                return;
-            }
-            this.isChanged = true;
-            this.isError = false; // we can't generate an invalid color
-            this.newColor =
-                "#" +
-                Math.floor(Math.random() * 256).toString(16) +
-                Math.floor(Math.random() * 256).toString(16) +
-                Math.floor(Math.random() * 256).toString(16);
-        },
-        // API
-        save: function() {
-            if (this.isError || !this.isChanged) {
-                return;
-            }
-
-            if (this.isNewTag) {
-                // Need to create, not to change
-                this.$parent.addTag(this.newName, this.newColor);
-            } else {
-                this.$parent.changeTag(this.tag.id, this.newName, this.newColor);
-            }
-
+    check() {
+        if (!this.isNewTag && this.tag.name === this.newName && this.tag.color === this.newColor) {
+            // Can skip, if name and color weren't changed
             this.isChanged = false;
-        },
-        del: function() {
-            if (this.isNewTag) {
-                // Delete tag right now
-                this.$parent.deleteNewTag();
-                return;
+            this.isError = false;
+            return;
+        }
+        this.isChanged = true;
+
+        if (this.newName.length === 0 || validTagName.exec(this.newName) === null) {
+            this.isError = true;
+            return;
+        }
+        if (validColor.exec(this.newColor) === null) {
+            this.isError = true;
+            return;
+        }
+
+        this.isError = false;
+    }
+
+    generateRandomColor() {
+        if (this.isDeleted) {
+            return;
+        }
+
+        let getHexRandom = (max: number): string => {
+            let res = Math.floor(Math.random() * max).toString(16);
+            if (res.length === 1) {
+                res = "0" + res;
             }
 
+            return res;
+        };
+
+        this.isChanged = true;
+        this.isError = false; // we can't generate an invalid color
+        this.newColor = "#" + getHexRandom(256) + getHexRandom(256) + getHexRandom(256);
+    }
+
+    // API
+    save() {
+        if (this.isError || !this.isChanged) {
+            return;
+        }
+
+        if (this.isNewTag) {
+            // Need to create, not to change
+            this.$parent.$emit("add-tag", { name: this.newName, color: this.newColor });
+            // Reset vars
+            this.newName = "new tag";
+            this.newColor = "#ffffff";
+        } else {
+            this.$parent.$emit("change-tag", { tagID: this.tagID, newName: this.newName, newColor: this.newColor });
+            this.isChanged = false;
+        }
+    }
+
+    del() {
+        if (!this.isNewTag) {
             this.isDeleted = true;
-        },
-        recover: function() {
+        }
+    }
+
+    recover() {
+        if (!this.isNewTag) {
             this.isDeleted = false;
         }
     }
-};
+}
 </script>
