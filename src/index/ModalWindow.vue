@@ -31,11 +31,17 @@
 			</div>
 			<!-- Select tags adding -->
 			<div v-else-if="selectFilesTagsAddMode" class="modal-window__input">
-				<select-tags-adding :selectedFiles="selectedFiles" ></select-tags-adding>
+				<select-tags-updating
+					:selectedFiles="selectedFiles"
+					mode="add-mode"
+				></select-tags-updating>
 			</div>
 			<!-- Select tags deleting -->
 			<div v-else-if="selectFilesTagsDeleteMode" class="modal-window__input">
-				<select-tags-deleting :selectedFiles="selectedFiles"></select-tags-deleting>
+				<select-tags-updating
+					:selectedFiles="selectedFiles"
+					mode="delete-mode"
+				></select-tags-updating>
 			</div>
 			<!-- Select delete mode -->
 			<div v-else-if="selectDeleteMode" class="modal-window__input">
@@ -89,8 +95,7 @@ import RegularTagsUpdating from "./components/ModalWindow/RegularMode/Tags.vue";
 import RegularDescriptionChanging from "./components/ModalWindow/RegularMode/Description.vue";
 import RegularFileDeletnig from "./components/ModalWindow/RegularMode/Delete.vue";
 // Select Mode
-import SelectTagsAdding from "./components/ModalWindow/SelectMode/TagsAdding.vue";
-import SelectTagsDeleting from "./components/ModalWindow/SelectMode/TagsDeleting.vue";
+import SelectTagsUpdating from "./components/ModalWindow/SelectMode/Tags.vue";
 import SelectFilesDeleting from "./components/ModalWindow/SelectMode/FilesDeleting.vue";
 
 // Shared data
@@ -109,8 +114,7 @@ import { File } from "@/index/global";
         "regular-description-changing": RegularDescriptionChanging,
         "regular-file-deletnig": RegularFileDeletnig,
         // Select mode
-        "select-tags-adding": SelectTagsAdding,
-        "select-tags-deleting": SelectTagsDeleting,
+        "select-tags-updating": SelectTagsUpdating,
         "select-files-deleting": SelectFilesDeleting
     }
 })

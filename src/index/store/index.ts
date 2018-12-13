@@ -10,7 +10,7 @@ import { logError } from "../tools";
 
 Vue.use(Vuex);
 
-function objectToFile(f: any): File | null {
+function objectToFile(f: any, skipTimeParsing?: boolean): File | null {
     if (
         f === undefined ||
         f.type === undefined ||
@@ -28,14 +28,19 @@ function objectToFile(f: any): File | null {
     }
 
     let file: File = new File();
-
     file.type = <string>f.type;
     file.filename = <string>f.filename;
     file.origin = <string>f.origin;
     file.description = <string>f.description;
     file.size = <number>f.size;
     file.tags = <number[]>f.tags;
-    file.addTime = dateformat(new Date(f.addTime), "dd-mm-yyyy HH:MM");
+
+    if (!skipTimeParsing) {
+        file.addTime = dateformat(new Date(f.addTime), "dd-mm-yyyy HH:MM");
+    } else {
+        file.addTime = f.addTime || "";
+    }
+
     file.preview = f.preview ? <string>f.preview : "";
     file.deleted = <boolean>f.deleted;
     file.timeToDelete = <number>f.timeToDelete;
@@ -132,14 +137,15 @@ const store: StoreOptions<Store> = {
 
             for (let i in files) {
                 let f = files[i];
-                let file = objectToFile(f);
+                // Add time was already parsed
+                let file = objectToFile(f, true);
                 if (file === null) {
                     continue;
                 }
                 updatedFiles.push(file);
             }
 
-            state.allFiles = updatedFiles;
+            state.selectedFiles = updatedFiles;
 
             state.selectedFilesReady = true;
         }
