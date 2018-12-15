@@ -89,14 +89,15 @@
 <script lang="ts">
 import Vue from "vue";
 import Components from "vue-class-component";
+// Classes and types
+import { File } from "@app/index/global";
 // Shared data
-import SharedStore from "./store";
-import SharedState from "./state";
-import { State } from "./state/types";
-//
-import { File } from "./global";
-import { Events, EventBus } from "./eventBus";
-import { Params } from "../global";
+import SharedStore from "@app/index/store";
+import SharedState from "@app/index/state";
+import { State } from "@app/index/state/types";
+// Other
+import { Events, EventBus } from "@app/index/eventBus";
+import { Params } from "@app/global";
 
 interface Payload {
     file: File;

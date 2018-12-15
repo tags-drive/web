@@ -25,15 +25,14 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 // Components
-import ModifyingTags from "@/index/components/ModalWindow/ModifyingTags.vue";
+import ModifyingTags from "@components/ModalWindow/ModifyingTags.vue";
 // Shared data
-import SharedStore from "@/index/store";
-import { Store } from "@/index/store/types";
-//
-import { Events, EventBus } from "@/index/eventBus";
-// Utils
-import { Params } from "@/global";
-import { logError, logInfo, isErrorStatusCode } from "@/index/tools";
+import SharedStore from "@app/index/store";
+import { Store } from "@app/index/store/types";
+// Other
+import { Events, EventBus } from "@app/index/eventBus";
+import { Params } from "@app/global";
+import { logError, logInfo, isErrorStatusCode } from "@app/index/tools";
 
 @Component({
     components: {
@@ -44,7 +43,7 @@ export default class extends Vue {
     Store: Store = SharedStore.state;
 
     get allTagsIDs() {
-        // For reactive updating (see @/index/store/types.ts for more information)
+        // For reactive updating (see @app/index/store/types.ts for more information)
         return SharedStore.state.allTagsChangesCounter && Array.from(SharedStore.state.allTags.keys());
     }
 

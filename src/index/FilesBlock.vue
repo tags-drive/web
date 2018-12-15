@@ -63,16 +63,17 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-// Store
-import SharedStore from "./store";
-import SharedState from "./state";
-import { State } from "./state/types";
 // Components
-import Files from "./components/Files/Files.vue";
-//
-import { Const } from "./const";
-import { Events, EventBus } from "./eventBus";
-import { File } from "@/index/global";
+import Files from "@components/Files/Files.vue";
+// Classes and types
+import { File } from "@app/index/global";
+// Shared data
+import SharedStore from "@app/index/store";
+import SharedState from "@app/index/state";
+import { State } from "@app/index/state/types";
+// Other
+import { Const } from "@app/index/const";
+import { Events, EventBus } from "@app/index/eventBus";
 
 @Component({
     components: {
@@ -97,7 +98,7 @@ export default class extends Vue {
     selectedFilesCounter: number = 0;
 
     get allFiles() {
-        // For reactive updating (see @/index/store/types.ts for more information)
+        // For reactive updating (see @app/index/store/types.ts for more information)
         return SharedStore.state.allFilesChangesCounter && SharedStore.state.allFiles;
     }
 

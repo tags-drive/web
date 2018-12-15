@@ -97,9 +97,9 @@ th {
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-//
-import SharedStore from "./store";
-import SharedState from "./state";
+// Shared data
+import SharedStore from "@app/index/store";
+import SharedState from "@app/index/state";
 
 @Component({})
 export default class extends Vue {

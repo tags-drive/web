@@ -1,3 +1,5 @@
+const path = require("path");
+
 module.exports = {
     assetsDir: "static",
     pages: {
@@ -10,6 +12,14 @@ module.exports = {
             entry: "src/login/index.js",
             template: "public/login.html",
             filename: "login.html"
+        }
+    },
+    configureWebpack: {
+        resolve: {
+            alias: {
+                "@app": path.resolve(__dirname, "src/"),
+                "@components": path.resolve(__dirname, "src/index/components")
+            }
         }
     }
 };

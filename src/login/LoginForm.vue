@@ -58,10 +58,9 @@ input[type="button"]:hover {
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-//
+// Other
 import { sha256 } from "js-sha256";
-//
-import { Params } from "../global";
+import { Params } from "@app/global";
 
 @Component({})
 export default class extends Vue {

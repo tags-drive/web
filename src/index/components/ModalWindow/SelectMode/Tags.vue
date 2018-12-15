@@ -33,16 +33,16 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
-//
-import TagComponent from "@/index/components/Tag/Tag.vue";
-import { File } from "@/index/global";
+// Components
+import TagComponent from "@components/Tag/Tag.vue";
+// Classes and types
+import { File } from "@app/index/global";
 // Shared data
-import SharedStore from "@/index/store";
-//
-import { Events, EventBus } from "@/index/eventBus";
-// Utils
-import { Params } from "@/global";
-import { logError, isErrorStatusCode } from "@/index/tools";
+import SharedStore from "@app/index/store";
+// Other
+import { Events, EventBus } from "@app/index/eventBus";
+import { Params } from "@app/global";
+import { logError, isErrorStatusCode } from "@app/index/tools";
 
 interface CustomTag {
     id: number;

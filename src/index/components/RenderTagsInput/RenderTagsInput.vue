@@ -30,12 +30,14 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Prop } from "vue-property-decorator";
 import Component from "vue-class-component";
-//
-import { Tag } from "../../global";
-import TagComponent from "../Tag/Tag.vue";
-import SharedStore from "../../store";
+import { Prop } from "vue-property-decorator";
+// Components
+import TagComponent from "@components/Tag/Tag.vue";
+// Classes and types
+import { Tag } from "@app/index/global";
+// Shared data
+import SharedStore from "@app/index/store";
 
 class TagElement {
     type: string = "tag";

@@ -63,9 +63,10 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
-//
-import TagComponent from "../Tag/Tag.vue";
-import { Tag } from "@/index/global";
+// Components
+import TagComponent from "@components/Tag/Tag.vue";
+// Classes and types
+import { Tag } from "@app/index/global";
 
 const validTagName = /^[\w\d- ]{1,20}$/;
 const validColor = /^#[\dabcdef]{6}$/;

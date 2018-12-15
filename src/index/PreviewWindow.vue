@@ -214,17 +214,17 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 // Components
-import TagComponent from "./components/Tag/Tag.vue";
+import TagComponent from "@components/Tag/Tag.vue";
+// Classes and types
+import { File } from "@app/index/global";
 // Shared data
-import SharedStore from "./store";
-import { Store } from "./store/types";
-import SharedState from "./state";
-//
-import { File } from "./global";
-import { Events, EventBus } from "./eventBus";
-// Utils
-import { Params } from "../global";
-import { logError } from "./tools";
+import SharedStore from "@app/index/store";
+import { Store } from "@app/index/store/types";
+import SharedState from "@app/index/state";
+// Other
+import { Events, EventBus } from "@app/index/eventBus";
+import { Params } from "@app/global";
+import { logError } from "@app/index/tools";
 
 @Component({
     components: {
@@ -242,7 +242,7 @@ export default class extends Vue {
     Store: Store = SharedStore.state;
 
     get allFiles() {
-        // For reactive updating (see @/index/store/types.ts for more information)
+        // For reactive updating (see @app/index/store/types.ts for more information)
         return SharedStore.state.allFilesChangesCounter && SharedStore.state.allFiles;
     }
 

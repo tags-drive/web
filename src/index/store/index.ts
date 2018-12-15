@@ -1,12 +1,12 @@
 import Vue from "vue";
 import Vuex, { StoreOptions } from "vuex";
-import dateformat from "dateformat";
-//
-import { File, Tag } from "../global";
+// Classes and types
 import { Store } from "./types";
-//
-import { Params } from "../../global";
-import { logError } from "../tools";
+import { File, Tag } from "@app/index/global";
+// Other
+import dateformat from "dateformat";
+import { Params } from "@app/global";
+import { logError } from "@app/index/tools";
 
 Vue.use(Vuex);
 

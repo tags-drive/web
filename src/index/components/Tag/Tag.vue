@@ -25,10 +25,10 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Prop } from "vue-property-decorator";
 import Component from "vue-class-component";
-//
-import { Tag } from "../../global";
+import { Prop } from "vue-property-decorator";
+// Classes and types
+import { Tag } from "@app/index/global";
 import { RGBColor, BestRGBColor } from "./types";
 
 const Colors = {

@@ -77,16 +77,16 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 // Components
-import TagComponent from "../Tag/Tag.vue";
+import TagComponent from "@components/Tag/Tag.vue";
 // Shared data
-import SharedStore from "../../store";
-import { Store } from "../../store/types";
-import SharedState from "../../state";
-import { State } from "../../state/types";
-//
-import { Events, EventBus } from "../../eventBus";
-import { File, Tag } from "@/index/global";
-import { Params } from "../../../global";
+import SharedStore from "@app/index/store";
+import { Store } from "@app/index/store/types";
+import SharedState from "@app/index/state";
+import { State } from "@app/index/state/types";
+// Other
+import { Events, EventBus } from "@app/index/eventBus";
+import { File, Tag } from "@app/index/global";
+import { Params } from "@app/global";
 
 @Component({
     components: {

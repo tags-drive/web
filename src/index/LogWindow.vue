@@ -46,11 +46,10 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-//
+// Other
 import dateformat from "dateformat";
-//
-import { Events, EventBus } from "./eventBus";
-import { Const } from "./const";
+import { Events, EventBus } from "@app/index/eventBus";
+import { Const } from "@app/index/const";
 
 interface logEvent {
     type: string;

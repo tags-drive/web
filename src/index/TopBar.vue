@@ -246,16 +246,15 @@ div#search-button > i {
 import Vue from "vue";
 import Component from "vue-class-component";
 // Components
-import TagComponent from "./components/Tag/Tag.vue";
-import RenderTagsInput from "./components/RenderTagsInput/RenderTagsInput.vue";
-// Store
-import SharedStore from "./store";
-import { Store } from "./store/types";
-// Event
-import { Events, EventBus } from "./eventBus";
-// Utils
-import { Params } from "../global";
-import { isErrorStatusCode, logError, logInfo } from "./tools";
+import TagComponent from "@components/Tag/Tag.vue";
+import RenderTagsInput from "@components/RenderTagsInput/RenderTagsInput.vue";
+// Shared data
+import SharedStore from "@app/index/store";
+import { Store } from "@app/index/store/types";
+// Other
+import { Events, EventBus } from "@app/index/eventBus";
+import { isErrorStatusCode, logError, logInfo } from "@app/index/tools";
+import { Params } from "@app/global";
 
 const fontWidth = 18 * 0.6; // px * em
 
@@ -276,7 +275,7 @@ export default class TopBar extends Vue {
     Store: Store;
 
     get allTagsIDs() {
-        // For reactive updating (see @/index/store/types.ts for more information)
+        // For reactive updating (see @app/index/store/types.ts for more information)
         return SharedStore.state.allTagsChangesCounter && Array.from(SharedStore.state.allTags.keys());
     }
 

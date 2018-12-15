@@ -1,13 +1,14 @@
 import Vue from "vue";
-
-import TagsDrive from "./TagsDrive.vue";
-import TopBar from "./TopBar.vue";
-import FilesBlock from "./FilesBlock.vue";
-import UploadBlock from "./UploadBlock.vue";
-import ContextMenu from "./ContextMenu.vue";
-import ModalWindow from "./ModalWindow.vue";
-import LogWindow from "./LogWindow.vue";
-import PreviewWindow from "./PreviewWindow.vue";
+// Main components
+import Test from "@app/index/TagsDrive.vue"
+import TagsDrive from "@app/index/TagsDrive.vue";
+import TopBar from "@app/index/TopBar.vue";
+import FilesBlock from "@app/index/FilesBlock.vue";
+import UploadBlock from "@app/index/UploadBlock.vue";
+import ContextMenu from "@app/index/ContextMenu.vue";
+import ModalWindow from "@app/index/ModalWindow.vue";
+import LogWindow from "@app/index/LogWindow.vue";
+import PreviewWindow from "@app/index/PreviewWindow.vue";
 
 /* Tags Drive (main instance) */
 new Vue({

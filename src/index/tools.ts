@@ -1,5 +1,5 @@
-import { EventBus, Events } from "./eventBus";
-import { Const } from "./const";
+import { EventBus, Events } from "@app/index/eventBus";
+import { Const } from "@app/index/const";
 
 function isErrorStatusCode(code: number): boolean {
     return code >= 400;

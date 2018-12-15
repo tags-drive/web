@@ -51,12 +51,12 @@ input[type="checkbox"] {
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-//
-import { Settings } from "@/index/state/types";
-//
-import SharedState from "@/index/state";
-//
-import { Events, EventBus } from "@/index/eventBus";
+// Classes and types
+import { Settings } from "@app/index/state/types";
+// Shared data
+import SharedState from "@app/index/state";
+// Other
+import { Events, EventBus } from "@app/index/eventBus";
 
 @Component({})
 export default class extends Vue {

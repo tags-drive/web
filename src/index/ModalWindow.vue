@@ -87,22 +87,22 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 // Components
-import Settings from "./components/ModalWindow/Settings.vue";
-import GlobalTagsChanging from "./components/ModalWindow/TagsChanging.vue";
-// Regular Mode
-import RegularRenaming from "./components/ModalWindow/RegularMode/Rename.vue";
-import RegularTagsUpdating from "./components/ModalWindow/RegularMode/Tags.vue";
-import RegularDescriptionChanging from "./components/ModalWindow/RegularMode/Description.vue";
-import RegularFileDeletnig from "./components/ModalWindow/RegularMode/Delete.vue";
-// Select Mode
-import SelectTagsUpdating from "./components/ModalWindow/SelectMode/Tags.vue";
-import SelectFilesDeleting from "./components/ModalWindow/SelectMode/FilesDeleting.vue";
-
+import Settings from "@components/ModalWindow/Settings.vue";
+import GlobalTagsChanging from "@components/ModalWindow/TagsChanging.vue";
+// Components: Regular Mode
+import RegularRenaming from "@components/ModalWindow/RegularMode/Rename.vue";
+import RegularTagsUpdating from "@components/ModalWindow/RegularMode/Tags.vue";
+import RegularDescriptionChanging from "@components/ModalWindow/RegularMode/Description.vue";
+import RegularFileDeletnig from "@components/ModalWindow/RegularMode/Delete.vue";
+// Components: Select Mode
+import SelectTagsUpdating from "@components/ModalWindow/SelectMode/Tags.vue";
+import SelectFilesDeleting from "@components/ModalWindow/SelectMode/FilesDeleting.vue";
+// Classes and types
+import { File } from "@app/index/global";
 // Shared data
-import SharedState from "./state";
-//
-import { Events, EventBus } from "./eventBus";
-import { File } from "@/index/global";
+import SharedState from "@app/index/state";
+// Other
+import { Events, EventBus } from "@app/index/eventBus";
 
 @Component({
     components: {

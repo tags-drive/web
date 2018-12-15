@@ -31,13 +31,12 @@ textarea {
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
-//
-import { File } from "@/index/global";
-//
-import { Events, EventBus } from "@/index/eventBus";
-// Utils
-import { Params } from "@/global";
-import { logError, isErrorStatusCode } from "@/index/tools";
+// Classes and types
+import { File } from "@app/index/global";
+// Other
+import { Events, EventBus } from "@app/index/eventBus";
+import { Params } from "@app/global";
+import { logError, isErrorStatusCode } from "@app/index/tools";
 
 @Component({})
 export default class extends Vue {
