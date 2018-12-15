@@ -1,20 +1,5 @@
 import { EventBus, Events } from "./eventBus";
-
-const Const = {
-	sortType: {
-        name: <string> "name",
-        size: <string> "size",
-        time: <string> "time"
-    },
-    sortOrder: {
-        asc: <string> "asc",
-        desc: <string> "desc"
-    },
-    logType: {
-        info: <string> "info",
-        error: <string> "error"
-    }
-}
+import { Const } from "./const";
 
 function isErrorStatusCode(code: number): boolean {
     return code >= 400;

@@ -50,7 +50,7 @@ import Component from "vue-class-component";
 import dateformat from "dateformat";
 //
 import { Events, EventBus } from "./eventBus";
-import { Const } from "./tools";
+import { Const } from "./const";
 
 interface logEvent {
     type: string;

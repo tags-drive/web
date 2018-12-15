@@ -70,7 +70,7 @@ import { State } from "./state/types";
 // Components
 import Files from "./components/Files/Files.vue";
 //
-import { Const } from "./tools";
+import { Const } from "./const";
 import { Events, EventBus } from "./eventBus";
 import { File } from "@/index/global";
 
