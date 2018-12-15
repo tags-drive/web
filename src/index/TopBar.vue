@@ -2,7 +2,6 @@
 <div id="top-bar">
 	<!-- Logo -->
 	<div id="logo"><span class="noselect">Tags Drive</span></div>
-
 	<!-- Search bar -->
 	<div id="search">
 		<div id="expression">
@@ -23,7 +22,7 @@
 					@click="changeCursorPosition"
 
 					@focus="() => { focused = true; addListener(); }"
-					v-on-clickaway="blur"
+					
 				>
 					<span
 						v-if="focused"
@@ -47,19 +46,19 @@
 					id="tags-list"
 				>
 					<div
-						v-for="(tag, index) in SharedStore.state.allTags"
+						v-for="(id, index) in allTagsIDs"
 						style="display: flex; margin: 5px; vertical-align: center"
 						:key="index"
 					>
 						<!-- @click in tag component doesn't work, so we need a wrapper -->
-						<div @click="addTagID(tag.id)">
+						<div @click="addTagID(id)">
 							<tag
 							style="cursor: pointer;"
 							title="Paste tag"
-								:tag="tag"
+								:tag="Store.allTags.get(id)"
 							></tag>
 						</div>
-						<i style="line-height: 26px;">id: {{tag.id}}</i>
+						<i style="line-height: 26px;">id: {{id}}</i>
 					</div>
 				</div>
 			</div>
@@ -243,39 +242,60 @@ div#search-button > i {
 }
 </style>
 
-<script>
-import TagComponent from "./components/Tag.vue";
-import RenderTagsInput from "./components/RenderTagsInput.vue";
-// Mixin
-import VueClickaway from "vue-clickaway2";
-//
-import { Events, EventBus } from "./eventBus/eventBus";
+<script lang="ts">
+import Vue from "vue";
+import Component from "vue-class-component";
+// Components
+import TagComponent from "@components/Tag/Tag.vue";
+import RenderTagsInput from "@components/RenderTagsInput/RenderTagsInput.vue";
+// Shared data
+import SharedStore from "@app/index/store";
+import { Store } from "@app/index/store/types";
+// Other
+import { Events, EventBus } from "@app/index/eventBus";
+import { isErrorStatusCode, logError, logInfo } from "@app/index/tools";
+import { Params } from "@app/global";
 
 const fontWidth = 18 * 0.6; // px * em
 
-export default {
-    mixins: [VueClickaway.mixin],
-    data: function() {
-        return {
-            // Expression
-            expression: "",
-            position: 0,
-            showTagsList: false,
-            focused: false,
-            // Text search
-            text: ""
-        };
-    },
+@Component({
     components: {
         tag: TagComponent,
         "render-tags-input": RenderTagsInput
-    },
-    mounted: function() {
-        EventBus.$on(Events.UsualSearch, () => {
+    }
+})
+export default class TopBar extends Vue {
+    // Expression
+    expression: string;
+    position: number;
+    showTagsList: boolean;
+    focused: boolean;
+    // Text search
+    text: string;
+    Store: Store;
+
+    get allTagsIDs() {
+        // For reactive updating (see @app/index/store/types.ts for more information)
+        return SharedStore.state.allTagsChangesCounter && Array.from(SharedStore.state.allTags.keys());
+    }
+
+    constructor() {
+        super();
+
+        this.expression = "";
+        this.position = 0;
+        this.showTagsList = false;
+        this.focused = false;
+        this.text = "";
+        this.Store = SharedStore.state;
+    }
+
+    created() {
+        EventBus.$on(Events.Search.Usual, () => {
             this.search().usual();
         });
-        EventBus.$on(Events.AdvancedSearch, payload => {
-            if (payload.type == undefined || payload.order == undefined) {
+        EventBus.$on(Events.Search.Advanced, (payload: any) => {
+            if (payload.type === undefined || payload.order === undefined) {
                 /* eslint-disable no-console */
                 console.error("Payload hasn't order or type fields:", payload);
                 /* eslint-enable no-console */
@@ -283,212 +303,219 @@ export default {
             }
             this.search().advanced(payload.type, payload.order);
         });
-    },
-    methods: {
-        search: function() {
-            return {
-                usual: () => {
-                    EventBus.$emit(Events.UnselectAllFiles);
 
-                    let params = new URLSearchParams();
-                    // Expression
-                    if (this.expression != "") {
-                        params.append("expr", this.expression);
-                    }
-                    // search
-                    if (this.text != "") {
-                        params.append("search", this.text);
-                    }
+        document.addEventListener("click", event => {
+            let ev = event as any;
+            // We need to use type any because EventMouse hasn't property path, composedPath and composedPath().
+            // Nevertheless, it's a cross browser way to get path.
+            let path = ev.path || (ev.composedPath && ev.composedPath());
 
-                    // Can skip sort and order, because server will use default values
-
-                    fetch(this.Params.Host + "/api/files?" + params, {
-                        method: "GET",
-                        credentials: "same-origin"
-                    })
-                        .then(resp => {
-                            if (this.isErrorStatusCode(resp.status)) {
-                                resp.text().then(text => {
-                                    this.logError(text);
-                                });
-                                return;
-                            }
-                            return resp.json();
-                        })
-                        .then(files => {
-                            if (files === undefined) {
-                                return;
-                            }
-                            this.SharedStore.commit("setFiles", files);
-                            EventBus.$emit(Events.ResetSortParams);
-                        })
-                        .catch(err => this.logError(err));
-                },
-                advanced: (sType, sOrder) => {
-                    EventBus.$emit(Events.UnselectAllFiles);
-
-                    let params = new URLSearchParams();
-                    // Expression
-                    if (this.expression != "") {
-                        params.append("expr", this.expression);
-                    }
-                    // search
-                    if (this.text != "") {
-                        params.append("search", this.text);
-                    }
-                    // sort
-                    params.append("sort", sType);
-                    // order
-                    params.append("order", sOrder);
-
-                    fetch(this.Params.Host + "/api/files?" + params, {
-                        method: "GET",
-                        credentials: "same-origin"
-                    })
-                        .then(resp => {
-                            if (this.isErrorStatusCode(resp.status)) {
-                                resp.text().then(text => {
-                                    this.logError(text);
-                                });
-                                return;
-                            }
-                            return resp.json();
-                        })
-                        .then(files => {
-                            if (files === undefined) {
-                                return;
-                            }
-                            this.SharedStore.commit("setFiles", files);
-                            EventBus.$emit(Events.ResetSortParams);
-                        })
-                        .catch(err => this.logError(err));
-                }
-            };
-        },
-        management: function() {
-            return {
-                globalTags: () => {
-                    EventBus.$emit(Events.GlobalTagsChanging);
-                },
-                settings: () => {
-                    EventBus.$emit(Events.SettingsMenu);
-                },
-                logout: () => {
-                    if (!confirm("Are you sure you want log out?")) {
-                        return;
-                    }
-
-                    fetch(this.Params.Host + "/logout", {
-                        method: "POST",
-                        credentials: "same-origin"
-                    })
-                        .then(resp => {
-                            if (this.isErrorStatusCode(resp.status)) {
-                                resp.text().then(text => {
-                                    this.logError(text);
-                                });
-                                return;
-                            }
-
-                            location.reload(true);
-                        })
-                        .catch(err => this.logError(err));
-                }
-            };
-        },
-        changeCursorPosition: function(event) {
-            let x = event.offsetX > 0 ? event.offsetX : 0;
-            let pos = Math.round(x / fontWidth);
-            this.position = pos < this.expression.length ? pos : this.expression.length;
-        },
-        addTagID: function(id) {
-            let text = String(id);
-            this.expression = this.expression.substr(0, this.position) + text + this.expression.substr(this.position);
-            this.position += text.length;
-        },
-        blur: function(event) {
-            // Cross browser way to get path
-            let path = event.path || (event.composedPath && event.composedPath());
             for (let i in path) {
-                // It prevents blur if it was click on #tags-list
-                if (path[i].id == "expression") {
+                // We don't render expression or close tags list if there's element with id == "expression" in path
+                if (path[i].id === "expression") {
                     return;
                 }
             }
 
             this.focused = false;
             this.removeListener();
-        },
-        addListener: function() {
-            document.addEventListener("keydown", this.onkeydownListener);
+        });
+    }
 
-            // Paste event
-            document.getElementById("expression-input").onpaste = ev => {
-                let text = ev.clipboardData.getData("Text");
-                this.expression =
-                    this.expression.substr(0, this.position) + text + this.expression.substr(this.position);
-                this.position += text.length;
-            };
-        },
-        removeListener: function() {
-            document.removeEventListener("keydown", this.onkeydownListener);
-        },
-        onkeydownListener: function(ev) {
-            let hasPrefix = (str, prefix) => {
-                if (str.length < prefix.length) {
-                    return false;
+    search() {
+        return {
+            usual: () => {
+                EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
+
+                let params = new URLSearchParams();
+                // Expression
+                if (this.expression !== "") {
+                    params.append("expr", this.expression);
+                }
+                // search
+                if (this.text !== "") {
+                    params.append("search", this.text);
                 }
 
-                for (let i = 0; i < prefix.length; i++) {
-                    if (str[i] != prefix[i]) {
-                        return false;
-                    }
-                }
-                return true;
-            };
+                // Can skip sort and order, because server will use default values
 
-            if (ev.ctrlKey || ev.altKey) {
-                return;
+                fetch(Params.Host + "/api/files?" + params, {
+                    method: "GET",
+                    credentials: "same-origin"
+                })
+                    .then(resp => {
+                        if (isErrorStatusCode(resp.status)) {
+                            resp.text().then(text => {
+                                logError(text);
+                            });
+                            return;
+                        }
+                        return resp.json();
+                    })
+                    .then(files => {
+                        if (files === undefined) {
+                            return;
+                        }
+                        SharedStore.commit("setFiles", files);
+                        EventBus.$emit(Events.FilesBlock.RestoreSortParams);
+                    })
+                    .catch(err => logError(err));
+            },
+            advanced: (sType: string, sOrder: string) => {
+                EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
+
+                let params = new URLSearchParams();
+                // Expression
+                if (this.expression !== "") {
+                    params.append("expr", this.expression);
+                }
+                // search
+                if (this.text !== "") {
+                    params.append("search", this.text);
+                }
+                // sort
+                params.append("sort", sType);
+                // order
+                params.append("order", sOrder);
+
+                fetch(Params.Host + "/api/files?" + params, {
+                    method: "GET",
+                    credentials: "same-origin"
+                })
+                    .then(resp => {
+                        if (isErrorStatusCode(resp.status)) {
+                            resp.text().then(text => {
+                                logError(text);
+                            });
+                            return;
+                        }
+                        return resp.json();
+                    })
+                    .then(files => {
+                        if (files === undefined) {
+                            return;
+                        }
+                        SharedStore.commit("setFiles", files);
+                    })
+                    .catch(err => logError(err));
             }
+        };
+    }
 
-            if (
-                ev.key.length == 1 &&
-                (hasPrefix(ev.code, "Key") ||
-                    ev.key == "(" ||
-                    ev.key == ")" ||
-                    ev.key == "|" ||
-                    hasPrefix(ev.code, "Numpad") ||
-                    hasPrefix(ev.code, "Digit"))
-            ) {
-                this.expression =
-                    this.expression.substr(0, this.position) + ev.key + this.expression.substr(this.position);
-
-                this.position++;
-            } else if (hasPrefix(ev.code, "Arrow")) {
-                // Arrow
-                if (hasPrefix(ev.code, "ArrowLeft")) {
-                    if (this.position > 0) {
-                        this.position--;
-                    }
-                } else if (hasPrefix(ev.code, "ArrowRight")) {
-                    if (this.position < this.expression.length) {
-                        this.position++;
-                    }
-                }
-            } else if (hasPrefix(ev.code, "Backspace")) {
-                if (this.position == 0) {
+    management() {
+        return {
+            globalTags: () => {
+                EventBus.$emit(Events.ModalWindow.ShowTagsChangingWindow);
+            },
+            settings: () => {
+                EventBus.$emit(Events.ModalWindow.ShowSettingsWindow);
+            },
+            logout: () => {
+                if (!confirm("Are you sure you want log out?")) {
                     return;
                 }
-                this.expression = this.expression.substr(0, this.position - 1) + this.expression.substr(this.position);
-                this.position--;
-            } else if (hasPrefix(ev.code, "Delete")) {
-                this.expression = this.expression.substr(0, this.position) + this.expression.substr(this.position + 1);
-            } else if (ev.code == "Home") {
-                this.position = 0;
-            } else if (ev.code == "End") {
-                this.position = this.expression.length;
+
+                fetch(Params.Host + "/logout", {
+                    method: "POST",
+                    credentials: "same-origin"
+                })
+                    .then(resp => {
+                        if (isErrorStatusCode(resp.status)) {
+                            resp.text().then(text => {
+                                logError(text);
+                            });
+                            return;
+                        }
+
+                        location.reload(true);
+                    })
+                    .catch(err => logError(err));
             }
+        };
+    }
+
+    changeCursorPosition(event: MouseEvent) {
+        let x = event.offsetX > 0 ? event.offsetX : 0;
+        let pos = Math.round(x / fontWidth);
+        this.position = pos < this.expression.length ? pos : this.expression.length;
+    }
+
+    addTagID(id: number) {
+        let text = String(id);
+        this.expression = this.expression.substr(0, this.position) + text + this.expression.substr(this.position);
+        this.position += text.length;
+    }
+
+    addListener() {
+        document.addEventListener("keydown", this.onkeydownListener);
+
+        // Paste event
+        const elem: HTMLElement = document.getElementById("expression-input")!;
+        elem.onpaste = ev => {
+            let text = ev.clipboardData.getData("Text");
+            this.expression = this.expression.substr(0, this.position) + text + this.expression.substr(this.position);
+            this.position += text.length;
+        };
+    }
+
+    removeListener() {
+        document.removeEventListener("keydown", this.onkeydownListener);
+    }
+
+    onkeydownListener(ev: KeyboardEvent) {
+        let hasPrefix = (str: string, prefix: string) => {
+            if (str.length < prefix.length) {
+                return false;
+            }
+
+            for (let i = 0; i < prefix.length; i++) {
+                if (str[i] !== prefix[i]) {
+                    return false;
+                }
+            }
+            return true;
+        };
+
+        if (ev.ctrlKey || ev.altKey) {
+            return;
+        }
+
+        if (
+            ev.key.length === 1 &&
+            (hasPrefix(ev.code, "Key") ||
+                ev.key === "(" ||
+                ev.key === ")" ||
+                ev.key === "|" ||
+                hasPrefix(ev.code, "Numpad") ||
+                hasPrefix(ev.code, "Digit"))
+        ) {
+            this.expression = this.expression.substr(0, this.position) + ev.key + this.expression.substr(this.position);
+
+            this.position++;
+        } else if (hasPrefix(ev.code, "Arrow")) {
+            // Arrow
+            if (hasPrefix(ev.code, "ArrowLeft")) {
+                if (this.position > 0) {
+                    this.position--;
+                }
+            } else if (hasPrefix(ev.code, "ArrowRight")) {
+                if (this.position < this.expression.length) {
+                    this.position++;
+                }
+            }
+        } else if (hasPrefix(ev.code, "Backspace")) {
+            if (this.position === 0) {
+                return;
+            }
+            this.expression = this.expression.substr(0, this.position - 1) + this.expression.substr(this.position);
+            this.position--;
+        } else if (hasPrefix(ev.code, "Delete")) {
+            this.expression = this.expression.substr(0, this.position) + this.expression.substr(this.position + 1);
+        } else if (ev.code === "Home") {
+            this.position = 0;
+        } else if (ev.code === "End") {
+            this.position = this.expression.length;
         }
     }
-};
+}
 </script>

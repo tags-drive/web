@@ -1,7 +1,7 @@
 <template>
 	<div
-		id="background"
 		v-if="show"
+		id="background"
 		@click.self="hideWindow"
 	>
 		<div id="modal-window">
@@ -11,171 +11,41 @@
 			</div>
 			<!-- Global tags mode -->
 			<div v-else-if="globalTagsMode" class="modal-window__input">
-				<!-- Existed tags -->
-				<modifying-tags
-					v-for="(tag, index) in SharedStore.state.allTags"
-					:key="index"
-					:tag="tag"
-					></modifying-tags>
-				<p></p>
-
-				<input
-					class="btn"
-					style="width: 150px; height: 25px;"
-					type="button"
-					@click="newTag.name == undefined ? newTag = {'name': 'new tag', 'color': '#ffffff'} : {}"
-					value="Create new tag">
-				<p></p>
-
-				<!-- New tag -->
-				<modifying-tags
-					v-if="newTag.name !== undefined"
-					:tag="newTag"
-					:is-new-tag="true"
-				></modifying-tags>
+				<global-tags-changing></global-tags-changing>
 			</div>
 			<!-- Regular rename mode -->
 			<div v-else-if="regularRenameMode" class="modal-window__input">
-				<div style="margin-bottom: 5px;">Current filename: "{{file.filename}}"</div>
-				<input type="text" style="margin-bottom: 5px; width: 400px;" v-model="fileNewData.newFilename" placeholder="New filename">
-				<br>
-				<input class="btn" type="button" value="Rename" @click="filesAPI().rename()">
+				<regular-renaming :file="file"></regular-renaming>
 			</div>
 			<!-- Regular tags updating -->
 			<div v-else-if="regularFileTagsMode" class="modal-window__input">
-				<!-- Current tags -->
-				<div class="modal-window__tags-field" title="Tags of a file" @drop.prevent="tagsDragAndDrop().add($event)"
-				@dragover.prevent>
-					<tags-input
-						v-for="(tag, index) in fileNewData.newTags"
-						:key="index"
-						:tag="tag"
-					></tags-input>
-				</div>
-
-				<div style="border-bottom: 1px solid black; width: 90%; margin: 20px auto 20px auto;"></div>
-
-				<!-- All tags -->
-				<div class="modal-window__tags-field" title="Unused tags" @drop.prevent="tagsDragAndDrop().del($event)"
-				@dragover.prevent>
-					<tags-input
-						v-for="(tag, index) in fileNewData.unusedTags"
-						:key="index"
-						:tag="tag">
-					</tags-input>
-				</div>
-				<br>
-				<input class="btn" type="button" value="Change tags" @click="filesAPI().updateTags()">
+				<regular-tags-updating :file="file"></regular-tags-updating>
 			</div>
 			<!-- Regular description changing -->
 			<div v-else-if="regularDescriptionMode" class="modal-window__input">
-				<textarea
-					style="outline: none; margin-bottom: 5px;"
-					placeholder="Current description: empty"
-					readonly="readonly"
-					v-model="file.description"
-				></textarea>
-
-				<textarea
-					style="margin-bottom: 5px;"
-					placeholder="New description"
-					v-model="fileNewData.newDescription"
-				></textarea>
-
-				<input class="btn" type="button" value="Update" @click="filesAPI().updateDescription()">
+				<regular-description-changing :file="file"></regular-description-changing>
 			</div>
 			<!-- Regular delete mode -->
-			<div v-else-if="regularDeleteMode" class="modal-window__input">
-				<!-- Delete -->
-				<input v-if="!file.deleted"
-					type="button"
-					class="btn deleteBtn"
-					style="height: 50px; width: 120px;"
-					value="Add into Trash"
-					title="File will be deleted in 7 days"
-					@click="filesAPI().deleteFile()">
-				<!-- Recover -->
-				<input v-else
-					type="button"
-					class="btn recoverBtn"
-					style="height: 50px; width: 120px;"
-					value="Recover"
-					title="File will be removed from Trash"
-					@click="filesAPI().recoverFile()">
-
-				<br>
-
-				<!--  Force delete -->
-				<input
-					type="button"
-					class="btn deleteForeverBtn"
-					style="height: 30px; width: 120px; margin-top: 20px; left: 5px;"
-					value="Delete file forever"
-					title="This action can not be undone"
-					@click="filesAPI().deleteFileForever()">
+			<div v-else-if="regularDeleteMode" class="modal-window__input">`
+				<regular-file-deletnig :file="file"></regular-file-deletnig>
 			</div>
 			<!-- Select tags adding -->
 			<div v-else-if="selectFilesTagsAddMode" class="modal-window__input">
-				<div style="font-size: 20px;">Add tags</div>
-				<p></p>
-				<div style="margin-right: auto; margin-left: auto; width: 40%;">
-					<tags-manager
-						:tags="SharedStore.state.allTags"
-					></tags-manager>
-					<br>
-					<input class="btn" type="button" value="Add tags" @click="filesAPI().tagSelectedFiles()">
-				</div>
+				<select-tags-updating
+					:selectedFiles="selectedFiles"
+					mode="add-mode"
+				></select-tags-updating>
 			</div>
 			<!-- Select tags deleting -->
 			<div v-else-if="selectFilesTagsDeleteMode" class="modal-window__input">
-				<div style="font-size: 20px;">Delete tags</div>
-				<p></p>
-				<div style="margin-right: auto; margin-left: auto; width: 40%;">
-					<tags-manager
-						:tags="SharedStore.state.allTags"
-					></tags-manager>
-					<br>
-					<input class="btn" type="button" value="Delete tags" @click="filesAPI().untagSelectedFiles()">
-				</div>
+				<select-tags-updating
+					:selectedFiles="selectedFiles"
+					mode="delete-mode"
+				></select-tags-updating>
 			</div>
 			<!-- Select delete mode -->
 			<div v-else-if="selectDeleteMode" class="modal-window__input">
-				<div style="font-size: 20px;">Selected files:</div>
-				<br>
-				<div style="text-align: left; max-height: 160px; overflow-y: auto;">
-					<ul>
-						<li	v-for="(file, index) in selectedFiles" :key="index">{{file.filename}}</li>
-					</ul>
-				</div>
-
-				<div style="border-bottom: 1px solid black; width: 90%; margin: 20px auto 20px auto;"></div>
-
-				<input
-					type="button"
-					class="btn deleteBtn"
-					style="height: 50px; width: 120px;"
-					value="Add into Trash"
-					title="Files will be deleted in 7 days"
-					@click="filesAPI().deleteSelectedFiles()">
-
-				<input
-					type="button"
-					class="btn recoverBtn"
-					style="height: 50px; width: 120px; margin-left: 10px;"
-					value="Recover"
-					title="Files will be removed from Trash"
-					@click="filesAPI().recoverSelectedFiles()">
-
-				<br>
-
-				<!--  Force delete -->
-				<input
-					type="button"
-					class="btn deleteForeverBtn"
-					style="height: 30px; width: 130px; margin-top: 20px;"
-					value="Delete files forever"
-					title="This action can not be undone"
-					@click="filesAPI().deleteSelectedFilesForever()">
+				<select-files-deleting :selectedFiles="selectedFiles"></select-files-deleting>
 			</div>
 		</div>
 	</div>
@@ -211,731 +81,147 @@
     padding: 5px;
     text-align: center;
 }
-
-.modal-window__input > textarea {
-    display: block;
-    height: 70px;
-    margin: auto;
-    resize: none;
-    width: 400px;
-}
-
-.modal-window__tags-field {
-    border: 1px dashed var(--primary-border-color);
-    border-radius: 5px;
-    display: flex;
-    flex-wrap: wrap;
-    margin: 0 auto;
-    min-height: 40px;
-    padding: 10px;
-    width: 80%;
-}
-
-#modal-window__error {
-    background-color: rgba(255, 161, 161, 0.883);
-    border: 1.5px rgba(255, 0, 0, 0.65) solid;
-    border-radius: 5px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 10px;
-    padding: 5px;
-    width: 80%;
-}
-
-.deleteBtn {
-    background-color: rgba(255, 0, 0, 0.6);
-}
-
-.deleteBtn:hover {
-    background-color: rgba(255, 0, 0, 0.7);
-}
-
-.deleteForeverBtn {
-    background-color: rgba(222, 0, 0, 0.2);
-}
-
-.deleteForeverBtn:hover {
-    background-color: rgba(222, 0, 0, 0.7);
-}
-
-.recoverBtn {
-    background-color: rgba(0, 200, 0, 0.6);
-}
-
-.recoverBtn:hover {
-    background-color: rgba(0, 200, 0, 0.7);
-}
 </style>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
+import Component from "vue-class-component";
 // Components
-import TagsInput from "./components/TagsInput.vue";
-import TagsManager from "./components/TagsManager.vue";
-import ModifyingTags from "./components/ModifyingTags.vue";
-import Settings from "./components/Settings.vue";
-//
-import { Events, EventBus } from "./eventBus/eventBus";
+import Settings from "@components/ModalWindow/Settings.vue";
+import GlobalTagsChanging from "@components/ModalWindow/TagsChanging.vue";
+// Components: Regular Mode
+import RegularRenaming from "@components/ModalWindow/RegularMode/Rename.vue";
+import RegularTagsUpdating from "@components/ModalWindow/RegularMode/Tags.vue";
+import RegularDescriptionChanging from "@components/ModalWindow/RegularMode/Description.vue";
+import RegularFileDeletnig from "@components/ModalWindow/RegularMode/Delete.vue";
+// Components: Select Mode
+import SelectTagsUpdating from "@components/ModalWindow/SelectMode/Tags.vue";
+import SelectFilesDeleting from "@components/ModalWindow/SelectMode/FilesDeleting.vue";
+// Classes and types
+import { File } from "@app/index/global";
+// Shared data
+import SharedState from "@app/index/state";
+// Other
+import { Events, EventBus } from "@app/index/eventBus";
 
-export default {
-    data: function() {
-        return {
-            file: null,
-            show: false,
-            selectedFiles: [],
-            // Modes
-            settingsMode: false,
-            //
-            globalTagsMode: false,
-            //
-            regularRenameMode: false,
-            regularFileTagsMode: false,
-            regularDescriptionMode: false,
-            regularDeleteMode: false,
-            //
-            selectFilesTagsAddMode: false,
-            selectFilesTagsDeleteMode: false,
-            selectDeleteMode: false,
-            // For files API
-            fileNewData: {
-                newFilename: "",
-                unusedTags: [],
-                newTags: [],
-                newDescription: ""
-            },
-            // For tags API
-            newTag: {}
-        };
-    },
+@Component({
     components: {
-        "tags-input": TagsInput,
-        "tags-manager": TagsManager,
-        "modifying-tags": ModifyingTags,
-        "settings-menu": Settings
-    },
-    mounted: function() {
-        EventBus.$on(Events.SettingsMenu, () => {
-            this.showWindow().settings();
+        "settings-menu": Settings,
+        "global-tags-changing": GlobalTagsChanging,
+        // Regular mode
+        "regular-renaming": RegularRenaming,
+        "regular-tags-updating": RegularTagsUpdating,
+        "regular-description-changing": RegularDescriptionChanging,
+        "regular-file-deletnig": RegularFileDeletnig,
+        // Select mode
+        "select-tags-updating": SelectTagsUpdating,
+        "select-files-deleting": SelectFilesDeleting
+    }
+})
+export default class extends Vue {
+    file: File | null = null;
+    show: boolean = false;
+    selectedFiles: File[] = [];
+    // Modes
+    settingsMode: boolean = false;
+    globalTagsMode: boolean = false;
+    //
+    regularRenameMode: boolean = false;
+    regularFileTagsMode: boolean = false;
+    regularDescriptionMode: boolean = false;
+    regularDeleteMode: boolean = false;
+    //
+    selectFilesTagsAddMode: boolean = false;
+    selectFilesTagsDeleteMode: boolean = false;
+    selectDeleteMode: boolean = false;
+
+    created() {
+        EventBus.$on(Events.ModalWindow.HideWindow, () => {
+            this.hideWindow();
         });
-        EventBus.$on(Events.GlobalTagsChanging, () => {
-            this.showWindow().globalTagsUpdating();
+        //
+        EventBus.$on(Events.ModalWindow.ShowSettingsWindow, () => {
+            this.settingsMode = true;
+            this.showWindow();
+        });
+        EventBus.$on(Events.ModalWindow.ShowTagsChangingWindow, () => {
+            this.globalTagsMode = true;
+            this.showWindow();
         });
         // Regular
-        EventBus.$on(Events.RegularFileRenaming, payload => {
-            this.showWindow().regularRenaming(payload.file);
+        EventBus.$on(Events.ModalWindow.RegularMode.ShowFileRenamingWindow, (payload: any) => {
+            this.file = payload.file;
+            this.regularRenameMode = true;
+            this.showWindow();
         });
-        EventBus.$on(Events.RegularTagsChanging, payload => {
-            this.showWindow().regularFileTagsUpdating(payload.file);
+        EventBus.$on(Events.ModalWindow.RegularMode.ShowTagsChangingWindow, (payload: any) => {
+            this.file = payload.file;
+            this.regularFileTagsMode = true;
+            this.showWindow();
         });
-        EventBus.$on(Events.RegularDescriptionChanging, payload => {
-            this.showWindow().regularDescriptionChanging(payload.file);
+        EventBus.$on(Events.ModalWindow.RegularMode.ShowFileDescriptionChangingWindow, (payload: any) => {
+            this.file = payload.file;
+            this.regularDescriptionMode = true;
+            this.showWindow();
         });
-        EventBus.$on(Events.RegularFileDeleting, payload => {
-            this.showWindow().regularDeleting(payload.file);
+        EventBus.$on(Events.ModalWindow.RegularMode.ShowFileDeletingWindow, (payload: any) => {
+            this.file = payload.file;
+            this.regularDeleteMode = true;
+            this.showWindow();
         });
         // Selected
-        EventBus.$on(Events.SelectTagsAdding, payload => {
-            this.showWindow().selectFilesTagsAdding(payload.files);
+        EventBus.$on(Events.ModalWindow.SelectMode.ShowTagsAddingWindow, (payload: any) => {
+            this.selectedFiles = payload.files;
+            this.selectFilesTagsAddMode = true;
+            this.showWindow();
         });
-        EventBus.$on(Events.SelectTagsDeleting, payload => {
-            this.showWindow().selectFilesTagsDeleting(payload.files);
+        EventBus.$on(Events.ModalWindow.SelectMode.ShowTagsDeletingWindow, (payload: any) => {
+            this.selectedFiles = payload.files;
+            this.selectFilesTagsDeleteMode = true;
+            this.showWindow();
         });
-        EventBus.$on(Events.SelectFilesDeleting, payload => {
-            this.showWindow().selectDeleting(payload.files);
+        EventBus.$on(Events.ModalWindow.SelectMode.ShowFilesDeletingWindow, (payload: any) => {
+            this.selectedFiles = payload.files;
+            this.selectDeleteMode = true;
+            this.showWindow();
         });
-    },
-    methods: {
-        // UI
-        showWindow: function() {
-            return {
-                settings: () => {
-                    this.addListener();
-                    this.SharedState.commit("hideDropLayer");
+    }
 
-                    this.settingsMode = true;
+    // UI
+    showWindow() {
+        SharedState.commit("hideDropLayer");
+        this.addListener();
+        this.show = true;
+    }
+    hideWindow() {
+        this.settingsMode = false;
+        this.globalTagsMode = false;
+        this.regularRenameMode = false;
+        this.regularFileTagsMode = false;
+        this.regularDescriptionMode = false;
+        this.regularDeleteMode = false;
+        this.selectFilesTagsAddMode = false;
+        this.selectFilesTagsDeleteMode = false;
+        this.selectDeleteMode = false;
 
-                    this.show = true;
-                },
-                globalTagsUpdating: () => {
-                    this.addListener();
-                    this.SharedState.commit("hideDropLayer");
+        this.show = false;
 
-                    this.globalTagsMode = true;
+        this.removeListener();
 
-                    this.show = true;
-                },
-                // Regular mode
-                regularRenaming: file => {
-                    this.addListener();
-                    this.SharedState.commit("hideDropLayer");
+        SharedState.commit("showDropLayer");
+    }
 
-                    this.file = file;
-                    this.regularRenameMode = true;
-                    this.fileNewData.newFilename = file.filename;
-
-                    this.show = true;
-                },
-                regularFileTagsUpdating: file => {
-                    this.addListener();
-                    this.SharedState.commit("hideDropLayer");
-
-                    this.fileNewData.newTags = [];
-                    this.fileNewData.unusedTags = [];
-
-                    for (let id in this.SharedStore.state.allTags) {
-                        if (file.tags.includes(Number(id))) {
-                            this.fileNewData.newTags.push(this.SharedStore.state.allTags[id]);
-                        } else {
-                            this.fileNewData.unusedTags.push(this.SharedStore.state.allTags[id]);
-                        }
-                    }
-
-                    this.file = file;
-                    this.regularFileTagsMode = true;
-
-                    this.show = true;
-                },
-                regularDescriptionChanging: file => {
-                    this.addListener();
-                    this.SharedState.commit("hideDropLayer");
-
-                    this.file = file;
-                    this.fileNewData.unusedTags;
-                    this.regularDescriptionMode = true;
-
-                    this.show = true;
-                },
-                regularDeleting: file => {
-                    this.addListener();
-                    this.SharedState.commit("hideDropLayer");
-
-                    this.file = file;
-                    this.regularDeleteMode = true;
-
-                    this.show = true;
-                },
-                // Select mode
-                selectFilesTagsAdding: files => {
-                    this.addListener();
-                    this.SharedState.commit("hideDropLayer");
-
-                    this.selectedFiles = files;
-                    this.selectFilesTagsAddMode = true;
-
-                    this.show = true;
-                },
-                selectFilesTagsDeleting: files => {
-                    this.addListener();
-                    this.SharedState.commit("hideDropLayer");
-
-                    this.selectedFiles = files;
-                    this.selectFilesTagsDeleteMode = true;
-
-                    this.show = true;
-                },
-                selectDeleting: files => {
-                    this.addListener();
-                    this.SharedState.commit("hideDropLayer");
-
-                    this.selectedFiles = files;
-                    this.selectDeleteMode = true;
-
-                    this.show = true;
-                }
-            };
-        },
-        hideWindow: function() {
-            this.removeListener();
-            this.settingsMode = false;
-            this.globalTagsMode = false;
-            this.regularRenameMode = false;
-            this.regularFileTagsMode = false;
-            this.regularDescriptionMode = false;
-            this.regularDeleteMode = false;
-            this.selectFilesTagsAddMode = false;
-            this.selectFilesTagsDeleteMode = false;
-            this.selectDeleteMode = false;
-            this.show = false;
-
-            this.SharedState.commit("showDropLayer");
-        },
-        // Drag and drop
-        tagsDragAndDrop: function() {
-            return {
-                add: ev => {
-                    let tagID = Number(ev.dataTransfer.getData("tagID"));
-                    let index = -1;
-                    for (let i in this.fileNewData.unusedTags) {
-                        if (this.fileNewData.unusedTags[i].id == tagID) {
-                            index = i;
-                            break;
-                        }
-                    }
-                    if (index == -1) {
-                        return;
-                    }
-                    this.fileNewData.newTags.push(this.fileNewData.unusedTags[index]);
-                    this.fileNewData.unusedTags.splice(index, 1);
-                },
-                del: ev => {
-                    let tagID = ev.dataTransfer.getData("tagID");
-                    let index = -1;
-                    for (let i in this.fileNewData.newTags) {
-                        if (this.fileNewData.newTags[i].id == tagID) {
-                            index = i;
-                            break;
-                        }
-                    }
-                    if (index == -1) {
-                        return;
-                    }
-                    this.fileNewData.unusedTags.push(this.fileNewData.newTags[index]);
-                    this.fileNewData.newTags.splice(index, 1);
-                }
-            };
-        },
-        // Files API
-        filesAPI: function() {
-            return {
-                // Regular mode
-                rename: () => {
-                    let params = new URLSearchParams();
-                    params.append("file", this.file.filename);
-                    params.append("new-name", this.fileNewData.newFilename);
-
-                    fetch(this.Params.Host + "/api/files/name", {
-                        method: "PUT",
-                        body: params,
-                        credentials: "same-origin"
-                    })
-                        .then(resp => {
-                            if (this.isErrorStatusCode(resp.status)) {
-                                resp.text().then(text => {
-                                    this.logError(text);
-                                });
-                                return;
-                            }
-                            // Refresh list of files
-                            EventBus.$emit(Events.UsualSearch);
-                            this.hideWindow();
-                        })
-                        .catch(err => {
-                            this.logError(err);
-                        });
-                },
-                updateTags: () => {
-                    let params = new URLSearchParams();
-                    let tags = this.fileNewData.newTags.map(tag => tag.id);
-                    params.append("file", this.file.filename);
-                    params.append("tags", tags.join(","));
-
-                    fetch(this.Params.Host + "/api/files/tags", {
-                        method: "PUT",
-                        body: params,
-                        credentials: "same-origin"
-                    })
-                        .then(resp => {
-                            if (this.isErrorStatusCode(resp.status)) {
-                                resp.text().then(text => {
-                                    this.logError(text);
-                                });
-                                return;
-                            }
-                            // Refresh list of files
-                            EventBus.$emit(Events.UsualSearch);
-                            this.hideWindow();
-                        })
-                        .catch(err => {
-                            this.logError(err);
-                        });
-                },
-                updateDescription: () => {
-                    let params = new URLSearchParams();
-                    params.append("file", this.file.filename);
-                    params.append("description", this.fileNewData.newDescription);
-
-                    fetch(this.Params.Host + "/api/files/description", {
-                        method: "PUT",
-                        body: params,
-                        credentials: "same-origin"
-                    })
-                        .then(resp => {
-                            if (this.isErrorStatusCode(resp.status)) {
-                                resp.text().then(text => {
-                                    this.logError(text);
-                                });
-                                return;
-                            }
-                            // Refresh list of files
-                            EventBus.$emit(Events.UsualSearch);
-                            this.hideWindow();
-                        })
-                        .catch(err => {
-                            this.logError(err);
-                        });
-                },
-                deleteFile: force => {
-                    let params = new URLSearchParams();
-                    params.append("file", this.file.filename);
-                    if (force === true) {
-                        params.append("force", "true");
-                    }
-
-                    fetch(this.Params.Host + "/api/files?" + params, {
-                        method: "DELETE",
-                        credentials: "same-origin"
-                    })
-                        .then(resp => {
-                            if (this.isErrorStatusCode(resp.status)) {
-                                resp.text().then(text => {
-                                    this.logError(text);
-                                });
-                                return;
-                            }
-
-                            // Refresh list of files
-                            EventBus.$emit(Events.UsualSearch);
-                            this.hideWindow();
-                            return resp.json();
-                        })
-                        .then(log => {
-                            if (log === undefined) {
-                                return;
-                            }
-                            /* Schema:
-                            [
-                                {
-                                    filename: string,
-                                    isError: boolean,
-                                    error: string (when isError == true),
-                                    status: string (when isError == false)
-                                }
-                            ]
-                            */
-                            for (let i in log) {
-                                let msg = log[i].filename;
-                                if (log[i].isError) {
-                                    msg += " " + log[i].error;
-                                } else {
-                                    msg += " " + log[i].status;
-                                }
-
-                                if (log[i].isError) {
-                                    this.logError(msg);
-                                } else {
-                                    this.logInfo(msg);
-                                }
-                            }
-                        })
-                        .catch(err => this.logError(err));
-                },
-                // deleteFileForever is a wrapper over deleteFile
-                deleteFileForever: () => {
-                    this.filesAPI().deleteFile(true);
-                },
-                recoverFile: () => {
-                    let params = new URLSearchParams();
-                    params.append("file", this.file.filename);
-
-                    fetch(this.Params.Host + "/api/files/recover", {
-                        body: params,
-                        method: "POST",
-                        credentials: "same-origin"
-                    })
-                        .then(resp => {
-                            if (this.isErrorStatusCode(resp.status)) {
-                                resp.text().then(text => {
-                                    this.logError(text);
-                                });
-                                return;
-                            }
-
-                            // Refresh list of files
-                            EventBus.$emit(Events.UsualSearch);
-                            EventBus.$emit(Events.UnselectAllFiles);
-                            this.hideWindow();
-                        })
-                        .then(this.logInfo("File was recovered"))
-                        .catch(err => this.logError(err));
-                },
-                // Select mode
-                tagSelectedFiles: () => {
-                    if (this.$children.length == 0 || this.$children[0].selectedTags === undefined) {
-                        return;
-                    }
-
-                    let tagIDs = this.$children[0].selectedTags;
-                    if (tagIDs.length == 0) {
-                        return;
-                    }
-
-                    // Update tags and refresh list of files after all changes
-                    (async () => {
-                        for (let file of this.selectedFiles) {
-                            let tags = new Set(file.tags);
-                            for (let tag of tagIDs) {
-                                tags.add(tag);
-                            }
-
-                            let params = new URLSearchParams();
-                            params.append("file", file.filename);
-                            params.append("tags", Array.from(tags).join(","));
-
-                            await fetch(this.Params.Host + "/api/files/tags", {
-                                method: "PUT",
-                                body: params
-                            })
-                                .then(resp => {
-                                    if (this.isErrorStatusCode(resp.status)) {
-                                        resp.text().then(text => {
-                                            this.logError(text);
-                                        });
-                                        return;
-                                    }
-                                })
-                                .catch(err => this.logError(err));
-                        }
-                    })()
-                        .then(() => {
-                            // Refresh list of files
-                            EventBus.$emit(Events.UnselectAllFiles);
-                            EventBus.$emit(Events.UsualSearch);
-                            this.hideWindow();
-                        })
-                        .catch(err => this.logError(err));
-                },
-                untagSelectedFiles: () => {
-                    if (this.$children.length == 0 || this.$children[0].selectedTags === undefined) {
-                        return;
-                    }
-
-                    let tagIDs = this.$children[0].selectedTags;
-                    if (tagIDs.length == 0) {
-                        return;
-                    }
-
-                    // Update tags and refresh list of files after all changes
-                    (async () => {
-                        for (let file of this.selectedFiles) {
-                            let tags = new Set(file.tags);
-                            for (let tag of tagIDs) {
-                                tags.delete(tag);
-                            }
-
-                            let params = new URLSearchParams();
-                            params.append("file", file.filename);
-                            params.append("tags", Array.from(tags).join(","));
-
-                            await fetch(this.Params.Host + "/api/files/tags", {
-                                method: "PUT",
-                                body: params
-                            })
-                                .then(resp => {
-                                    if (this.isErrorStatusCode(resp.status)) {
-                                        resp.text().then(text => {
-                                            this.logError(text);
-                                        });
-                                    }
-                                })
-                                .catch(err => this.logError(err));
-                        }
-                    })()
-                        .then(() => {
-                            // Refresh list of files
-                            EventBus.$emit(Events.UnselectAllFiles);
-                            EventBus.$emit(Events.UsualSearch);
-                            this.hideWindow();
-                        })
-                        .catch(err => this.logError(err));
-                },
-                deleteSelectedFiles: force => {
-                    let params = new URLSearchParams();
-                    for (let f of this.selectedFiles) {
-                        params.append("file", f.filename);
-                    }
-                    if (force === true) {
-                        params.append("force", "true");
-                    }
-
-                    fetch(this.Params.Host + "/api/files?" + params, {
-                        method: "DELETE",
-                        credentials: "same-origin"
-                    })
-                        .then(resp => {
-                            if (this.isErrorStatusCode(resp.status)) {
-                                resp.text().then(text => {
-                                    this.logError(text);
-                                });
-                                return;
-                            }
-
-                            // Refresh list of files
-                            EventBus.$emit(Events.UsualSearch);
-                            this.hideWindow();
-                            return resp.json();
-                        })
-                        .then(log => {
-                            if (log === undefined) {
-                                return;
-                            }
-                            /* Schema:
-                            [
-                                {
-                                    filename: string,
-                                    isError: boolean,
-                                    error: string (when isError == true),
-                                    status: string (when isError == false)
-                                }
-                            ]
-                            */
-                            for (let i in log) {
-                                let msg = log[i].filename;
-                                if (log[i].isError) {
-                                    msg += " " + log[i].error;
-                                } else {
-                                    msg += " " + log[i].status;
-                                }
-
-                                if (log[i].isError) {
-                                    this.logError(msg);
-                                } else {
-                                    this.logInfo(msg);
-                                }
-                            }
-                        })
-                        .catch(err => this.logError(err));
-
-                    // If we don't call this function, next files will become selected.
-                    EventBus.$emit(Events.UnselectAllFiles);
-                },
-                // deleteSelectedFilesForever is a wrapper over deleteFile
-                deleteSelectedFilesForever: () => {
-                    this.filesAPI().deleteSelectedFiles(true);
-                },
-                recoverSelectedFiles: () => {
-                    let params = new URLSearchParams();
-                    for (let f of this.selectedFiles) {
-                        params.append("file", f.filename);
-                    }
-
-                    fetch(this.Params.Host + "/api/files/recover", {
-                        body: params,
-                        method: "POST",
-                        credentials: "same-origin"
-                    })
-                        .then(resp => {
-                            if (this.isErrorStatusCode(resp.status)) {
-                                resp.text().then(text => {
-                                    this.logError(text);
-                                });
-                                return;
-                            }
-
-                            // Refresh list of files
-                            EventBus.$emit(Events.UsualSearch);
-                            EventBus.$emit(Events.UnselectAllFiles);
-                            this.hideWindow();
-                        })
-                        .then(this.logInfo("Files were recovered"))
-                        .catch(err => this.logError(err));
-                }
-            };
-        },
-        // Tags API
-        tagsAPI: function() {
-            return {
-                // Requests
-                add: (name, color) => {
-                    let params = new URLSearchParams();
-                    params.append("name", name);
-                    params.append("color", color);
-
-                    fetch(this.Params.Host + "/api/tags", {
-                        method: "POST",
-                        body: params,
-                        credentials: "same-origin"
-                    })
-                        .then(resp => {
-                            if (this.isErrorStatusCode(resp.status)) {
-                                resp.text().then(text => {
-                                    this.logError(text);
-                                });
-                                return;
-                            }
-
-                            this.tagsAPI().delNewTag();
-                            this.SharedStore.commit("updateTags");
-                        })
-                        .catch(err => {
-                            this.logError(err);
-                        });
-                },
-                change: (tagID, newName, newColor) => {
-                    let params = new URLSearchParams();
-                    params.append("id", tagID);
-                    params.append("name", newName);
-                    params.append("color", newColor);
-
-                    fetch(this.Params.Host + "/api/tags", {
-                        method: "PUT",
-                        body: params,
-                        credentials: "same-origin"
-                    })
-                        .then(resp => {
-                            if (this.isErrorStatusCode(resp.status)) {
-                                resp.text().then(text => {
-                                    this.logError(text);
-                                });
-                                return;
-                            }
-
-                            this.SharedStore.commit("updateTags");
-                        })
-                        .catch(err => {
-                            this.logError(err);
-                        });
-                },
-                del: tagID => {
-                    let params = new URLSearchParams();
-                    params.append("id", tagID);
-
-                    fetch(this.Params.Host + "/api/tags?" + params, {
-                        method: "DELETE",
-                        credentials: "same-origin"
-                    })
-                        .then(resp => {
-                            if (this.isErrorStatusCode(resp.status)) {
-                                resp.text().then(text => {
-                                    this.logError(text);
-                                });
-                                return;
-                            }
-
-                            this.SharedStore.commit("updateTags");
-                            // Need to update files to remove deleted tag
-                            EventBus.$emit(Events.UsualSearch);
-                            return resp.text();
-                        })
-                        .catch(err => {
-                            this.logError(err);
-                        });
-                },
-                // delNewTag deletes tag from tagsNewData.newTag
-                delNewTag: () => {
-                    this.newTag = {};
-                }
-            };
-        },
-        addListener: function() {
-            document.addEventListener("keydown", this.onkeydownListener);
-        },
-        removeListener: function() {
-            document.removeEventListener("keydown", this.onkeydownListener);
-        },
-        onkeydownListener: function(event) {
-            if (event.key == "Escape") {
-                this.hideWindow();
-            }
+    // Listener
+    addListener() {
+        document.addEventListener("keydown", this.onkeydownListener);
+    }
+    removeListener() {
+        document.removeEventListener("keydown", this.onkeydownListener);
+    }
+    onkeydownListener(event: KeyboardEvent) {
+        if (event.key === "Escape") {
+            this.hideWindow();
         }
     }
-};
+}
 </script>

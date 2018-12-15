@@ -1,11 +1,12 @@
 import Vue from "vue";
-import Vuex from "vuex";
+import Vuex, { StoreOptions } from "vuex";
+import { State } from "./types";
 
 Vue.use(Vuex);
 
 const settingsKey = "settings";
 
-export default new Vuex.Store({
+const state: StoreOptions<State> = {
     state: {
         showDropLayer: true, // when we show modal-window with tags showDropLayer is false
         selectMode: false,
@@ -35,7 +36,7 @@ export default new Vuex.Store({
                 return;
             }
 
-            let settings = JSON.parse(localStorage.getItem(settingsKey));
+            let settings = JSON.parse(localStorage.getItem(settingsKey)!);
             // Cope defined settings into state
             Object.assign(state.settings, settings);
         },
@@ -46,4 +47,6 @@ export default new Vuex.Store({
             localStorage.setItem(settingsKey, JSON.stringify(state.settings));
         }
     }
-});
+};
+
+export default new Vuex.Store(state);

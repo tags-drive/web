@@ -2,15 +2,15 @@
 	<div
 		id="context-menu"
 		v-if="show"
-		:style="{'top': top, 'left': left}"
+		:style="{'top': top + 'px', 'left': left + 'px'}"
 	>
-		<div v-on-clickaway="hideMenu">
+		<div>
 			<!-- Rename -->
-			<div v-if="!SharedState.state.selectMode">
+			<div v-if="!State.selectMode">
 				<input type="button" class="btn" @click="regularMode().changeName()" value="Rename">
 			</div>
 			<!-- Tags -->
-			<div v-if="!SharedState.state.selectMode">
+			<div v-if="!State.selectMode">
 				<input type="button" class="btn" @click="regularMode().changeTags()" value="Update tags">
 			</div>
 			<div v-else>
@@ -18,23 +18,23 @@
 				<input type="button" class="btn" @click="selectMode().deleteTags()" value="Delete tags">
 			</div>
 			<!-- Description -->
-			<div v-if="!SharedState.state.selectMode">
+			<div v-if="!State.selectMode">
 				<input type="button" class="btn" @click="regularMode().changeDescription()" value="Update description">
 			</div>
 			<!-- Download -->
 			<div
 				class="btn"
 				style="box-sizing : border-box;"
-				v-if="!SharedState.state.selectMode"
+				v-if="!State.selectMode"
 				@click="hideMenu"
 			>
-				<a class="btn--href" download :href="Params.Host + '/' + file.origin">Download</a>
+				<a class="btn--href" download :href="downloadLink">Download</a>
 			</div>
 			<div v-else>
 				<input type="button" class="btn" @click="selectMode().downloadFiles()" value="Download selected files">
 			</div>
 			<!-- Delete -->
-			<div v-if="!SharedState.state.selectMode">
+			<div v-if="!State.selectMode">
 				<input type="button" class="btn" @click="regularMode().deleteFile()" value="Delete menu" style="margin-bottom: 0px;">
 			</div>
 			<div v-else>
@@ -86,111 +86,158 @@
 }
 </style>
 
-<script>
-import VueClickaway from "vue-clickaway2";
-//
-import { Events, EventBus } from "./eventBus/eventBus";
+<script lang="ts">
+import Vue from "vue";
+import Components from "vue-class-component";
+// Classes and types
+import { File } from "@app/index/global";
+// Shared data
+import SharedStore from "@app/index/store";
+import SharedState from "@app/index/state";
+import { State } from "@app/index/state/types";
+// Other
+import { Events, EventBus } from "@app/index/eventBus";
+import { Params } from "@app/global";
 
-function getSelectedFiles() {
-    this.SharedStore.commit("clearSelectedFiles");
-    EventBus.$emit(Events.UpdateSelectedFiles);
-
-    // Lock
-    while (this.SharedStore.state.selectedFiles == null);
-
-    return this.SharedStore.state.selectedFiles;
+interface Payload {
+    file: File;
+    x: number;
+    y: number;
 }
 
-export default {
-    mixins: [VueClickaway.mixin],
-    data: function() {
-        return {
-            file: null,
-            // Style
-            top: "0px",
-            left: "0px",
-            show: false,
-            // For calculation of position
-            divWidth: 140,
-            divHeight: 125
-        };
-    },
-    mounted: function() {
-        EventBus.$on(Events.ShowContextMenu, payload => {
+function getSelectedFiles(): Promise<File[]> {
+    // Set SharedStore.state.selectedFilesReady to false
+    SharedStore.commit("clearSelectedFiles");
+
+    EventBus.$emit(Events.UpdateSelectedFiles);
+
+    return new Promise<File[]>(function(resolve, reject) {
+        let t = setInterval(() => {
+            if (SharedStore.state.selectedFilesReady) {
+                resolve(SharedStore.state.selectedFiles);
+                clearInterval(t);
+            }
+        }, 20);
+    });
+}
+
+@Components({})
+export default class extends Vue {
+    file: File | null = null;
+    // Style
+    top: number = 0;
+    left: number = 0;
+    show: boolean = false;
+    // For calculation of position
+    divWidth: number = 140;
+    divHeight: number = 125;
+    //
+    State: State = SharedState.state;
+
+    get downloadLink(): string {
+        if (this.file === null) {
+            return "";
+        }
+
+        return Params.Host + "/" + this.file.origin;
+    }
+
+    created() {
+        EventBus.$on(Events.ShowContextMenu, (payload: Payload) => {
             this.setFile(payload.file);
             this.showMenu(payload.x, payload.y);
         });
-    },
-    methods: {
-        setFile: function(file) {
-            this.file = file;
-        },
-        // UI
-        showMenu: function(x, y) {
-            const offset = 10;
-            x += offset;
-            y += offset;
-            if (x + this.divWidth > window.innerWidth) {
-                x -= offset * 2;
-                x -= this.divWidth;
-            }
-            if (y + this.divHeight > window.innerHeight) {
-                y -= offset * 2;
-                y -= this.divHeight;
-            }
-            this.left = x + "px";
-            this.top = y + "px";
-            this.show = true;
-        },
-        hideMenu: function() {
-            this.show = false;
-        },
-        // Options of context menu
-        regularMode: function() {
-            return {
-                changeName: () => {
-                    this.show = false;
-                    EventBus.$emit(Events.RegularFileRenaming, { file: this.file });
-                },
-                changeTags: () => {
-                    this.show = false;
-                    EventBus.$emit(Events.RegularTagsChanging, { file: this.file });
-                },
-                changeDescription: () => {
-                    this.show = false;
-                    EventBus.$emit(Events.RegularDescriptionChanging, { file: this.file });
-                },
-                deleteFile: () => {
-                    this.show = false;
-                    EventBus.$emit(Events.RegularFileDeleting, { file: this.file });
+
+        document.addEventListener("click", event => {
+            let ev = event as any;
+            // We need to use type any because EventMouse hasn't property path, composedPath and composedPath().
+            // Nevertheless, it's a cross browser way to get path.
+            let path = ev.path || (ev.composedPath && ev.composedPath());
+
+            for (let i in path) {
+                if (path[i].id === "context-menu") {
+                    return;
                 }
-            };
-        },
-        // Options of context menu (select mode)
-        selectMode: function() {
-            return {
-                addTags: () => {
-                    this.show = false;
+            }
 
-                    let files = getSelectedFiles.call(this);
-                    EventBus.$emit(Events.SelectTagsAdding, { files: files });
-                },
-                deleteTags: () => {
-                    this.show = false;
+            this.hideMenu();
+        });
+    }
 
-                    let files = getSelectedFiles.call(this);
-                    EventBus.$emit(Events.SelectTagsDeleting, { files: files });
-                },
-                downloadFiles: () => {
-                    let params = new URLSearchParams();
-                    let files = getSelectedFiles.call(this);
+    setFile(file: File) {
+        this.file = file;
+    }
 
+    showMenu(x: number, y: number) {
+        const offset = 10;
+        x += offset;
+        y += offset;
+        if (x + this.divWidth > window.innerWidth) {
+            x -= offset * 2;
+            x -= this.divWidth;
+        }
+        if (y + this.divHeight > window.innerHeight) {
+            y -= offset * 2;
+            y -= this.divHeight;
+        }
+        this.left = x;
+        this.top = y;
+        this.show = true;
+    }
+
+    hideMenu() {
+        this.show = false;
+    }
+
+    // Options of context menu
+    regularMode() {
+        return {
+            changeName: () => {
+                this.show = false;
+                EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileRenamingWindow, { file: this.file });
+            },
+            changeTags: () => {
+                this.show = false;
+                EventBus.$emit(Events.ModalWindow.RegularMode.ShowTagsChangingWindow, { file: this.file });
+            },
+            changeDescription: () => {
+                this.show = false;
+                EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileDescriptionChangingWindow, { file: this.file });
+            },
+            deleteFile: () => {
+                this.show = false;
+                EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileDeletingWindow, { file: this.file });
+            }
+        };
+    }
+
+    // Options of context menu (select mode)
+    selectMode() {
+        return {
+            addTags: () => {
+                this.show = false;
+
+                getSelectedFiles().then(files =>
+                    EventBus.$emit(Events.ModalWindow.SelectMode.ShowTagsAddingWindow, { files: files })
+                );
+            },
+            deleteTags: () => {
+                this.show = false;
+
+                getSelectedFiles().then(files =>
+                    EventBus.$emit(Events.ModalWindow.SelectMode.ShowTagsDeletingWindow, { files: files })
+                );
+            },
+            downloadFiles: () => {
+                let params = new URLSearchParams();
+
+                getSelectedFiles().then(files => {
                     for (let file of files) {
                         // need to use link to a file, not filename
                         params.append("file", file.origin);
                     }
 
-                    fetch(this.Params.Host + "/api/files/download?" + params, {
+                    fetch(Params.Host + "/api/files/download?" + params, {
                         method: "GET",
                         credentials: "same-origin"
                     }).then(resp => {
@@ -207,14 +254,15 @@ export default {
                             window.URL.revokeObjectURL(url);
                         });
                     });
-                },
-                deleteFiles: () => {
-                    this.show = false;
-                    let files = getSelectedFiles.call(this);
-                    EventBus.$emit(Events.SelectFilesDeleting, { files: files });
-                }
-            };
-        }
+                });
+            },
+            deleteFiles: () => {
+                this.show = false;
+                getSelectedFiles().then(files =>
+                    EventBus.$emit(Events.ModalWindow.SelectMode.ShowFilesDeletingWindow, { files: files })
+                );
+            }
+        };
     }
-};
+}
 </script>

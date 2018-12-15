@@ -1,5 +1,6 @@
 import Vue from "vue";
-import LoginForm from "./LoginForm.vue";
+// Components
+import LoginForm from "@app/login/LoginForm.vue";
 
 new Vue({
     el: "#login-form",
