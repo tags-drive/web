@@ -9,7 +9,7 @@ module.exports = {
             filename: "index.html"
         },
         login: {
-            entry: "src/login/index.js",
+            entry: "src/login/index.ts",
             template: "public/login.html",
             filename: "login.html"
         }
