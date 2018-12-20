@@ -48,6 +48,14 @@ function objectToFile(f: any, skipTimeParsing?: boolean): File | null {
     return file;
 }
 
+function objectToTag(f: any): Tag | null {
+    if (f === undefined || f.name === undefined || f.color === undefined) {
+        return null;
+    }
+
+    return new Tag(<string>f.name, <string>f.color);
+}
+
 const store: StoreOptions<Store> = {
     state: {
         allFiles: [],
@@ -124,10 +132,10 @@ const store: StoreOptions<Store> = {
                             continue;
                         }
 
-                        let t = new Tag();
-                        t.name = tags[id].name;
-                        t.color = tags[id].color;
-                        state.allTags.set(Number(id), t);
+                        let t = objectToTag(tags[id]);
+                        if (t !== null) {
+                            state.allTags.set(Number(id), t);
+                        }
                     }
 
                     state.tagsReady = true;
