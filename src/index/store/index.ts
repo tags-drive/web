@@ -13,6 +13,7 @@ Vue.use(Vuex);
 function objectToFile(f: any, skipTimeParsing?: boolean): File | null {
     if (
         f === undefined ||
+        f.id === undefined ||
         f.type === undefined ||
         f.filename === undefined ||
         f.origin === undefined ||
@@ -28,6 +29,7 @@ function objectToFile(f: any, skipTimeParsing?: boolean): File | null {
     }
 
     let file: File = new File();
+    file.id = <number>f.id;
     file.type = <string>f.type;
     file.filename = <string>f.filename;
     file.origin = <string>f.origin;
