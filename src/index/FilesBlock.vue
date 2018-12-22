@@ -11,13 +11,15 @@
 					title="Select all"
 					v-model="allSelected"
 					:indeterminate.prop="
-						selectCount > 0 &&
-						selectCount !== allFiles.length"
+						selectedFilesCounter > 0 &&
+						selectedFilesCounter !== allFiles.length"
 					@click="toggleAllFiles"
 				></th>
-			<th>
-				<!-- Preview image -->
-			</th>
+			<th
+				style="width: 50px; cursor: default; font-weight: normal;"
+				title="Selected files"
+			>{{selectedFilesCounter}}</th>
+
 			<th class="noselect" style="width: 210px;">
 				Filename
 				<i
@@ -91,11 +93,11 @@ export default class extends Vue {
     lastSortType: string = Const.sortType.name;
     //
     allSelected: boolean = false;
-    selectCount: number = 0;
+    selectedFilesCounter: number = 0;
     // For updating selected files in SharedStore
     selectedFiles: File[] = [];
     // This counter == this.$childre.length, it reduces on every "sendFile" event
-    selectedFilesCounter: number = 0;
+    leftSelectedFilesCounter: number = 0;
 
     get allFiles() {
         // For reactive updating (see @app/index/store/types.ts for more information)
@@ -125,7 +127,7 @@ export default class extends Vue {
             if (payload.selected && payload.file) {
                 this.selectedFiles.push(payload.file);
             }
-            this.selectedFilesCounter--;
+            this.leftSelectedFilesCounter--;
         });
     }
 
@@ -204,7 +206,7 @@ export default class extends Vue {
     // Select mode
     toggleAllFiles() {
         if (!this.allSelected) {
-            this.selectCount = SharedStore.state.allFiles.length;
+            this.selectedFilesCounter = SharedStore.state.allFiles.length;
             this.allSelected = true;
             SharedState.commit("setSelectMode");
 
@@ -212,7 +214,7 @@ export default class extends Vue {
                 this.$children[i].$emit("select");
             }
         } else {
-            this.selectCount = 0;
+            this.selectedFilesCounter = 0;
             this.allSelected = false;
             SharedState.commit("unsetSelectMode");
 
@@ -228,15 +230,15 @@ export default class extends Vue {
         }
         this.allSelected = false;
         SharedState.commit("unsetSelectMode");
-        this.selectCount = 0;
+        this.selectedFilesCounter = 0;
     }
 
     // updateSelectedFiles updates list of selectedFiles
-    // We use this.selectedFilesCounter to count number of $on("sendFile") events
-    // After this.selectedFilesCounter == 0, we update SharedStore
+    // We use this.leftSelectedFilesCounter to count number of $on("sendFile") events
+    // After this.leftSelectedFilesCounter == 0, we update SharedStore
     updateSelectedFiles() {
         this.selectedFiles = [];
-        this.selectedFilesCounter = this.$children.length;
+        this.leftSelectedFilesCounter = this.$children.length;
 
         for (let i = 0; i < this.$children.length; i++) {
             this.$children[i].$emit("getFile");
@@ -244,7 +246,7 @@ export default class extends Vue {
 
         let t = setInterval(() => {
             // Wait for all children call this.parent.$emit("sendFile")
-            if (this.selectedFilesCounter === 0) {
+            if (this.leftSelectedFilesCounter === 0) {
                 SharedStore.commit("setSelectedFiles", this.selectedFiles);
                 clearInterval(t);
             }
@@ -253,17 +255,17 @@ export default class extends Vue {
 
     // For children
     selectFile() {
-        this.selectCount++;
+        this.selectedFilesCounter++;
         SharedState.commit("setSelectMode");
-        if (this.selectCount === Object.keys(SharedStore.state.allFiles).length) {
+        if (this.selectedFilesCounter === Object.keys(SharedStore.state.allFiles).length) {
             this.allSelected = true;
         }
     }
 
     unselectFile() {
-        this.selectCount--;
+        this.selectedFilesCounter--;
         this.allSelected = false;
-        if (this.selectCount === 0) {
+        if (this.selectedFilesCounter === 0) {
             SharedState.commit("unsetSelectMode");
         }
     }
