@@ -232,10 +232,9 @@ export default class extends Vue {
                 let params = new URLSearchParams();
 
                 getSelectedFiles().then(files => {
-                    for (let file of files) {
-                        // need to use link to a file, not filename
-                        params.append("file", file.origin);
-                    }
+                    let ids: number[] = [];
+                    files.forEach(elem => ids.push(elem.id));
+                    params.append("ids", ids.join(","));
 
                     fetch(Params.Host + "/api/files/download?" + params, {
                         method: "GET",

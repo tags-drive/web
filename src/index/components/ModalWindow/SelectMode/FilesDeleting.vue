@@ -83,9 +83,10 @@ export default class extends Vue {
 
     deleteSelectedFiles(force: boolean) {
         let params = new URLSearchParams();
-        for (let f of this.selectedFiles) {
-            params.append("file", f.filename);
-        }
+
+        let ids: number[] = [];
+        this.selectedFiles.forEach(elem => ids.push(elem.id));
+        params.append("ids", ids.join(","));
         if (force === true) {
             params.append("force", "true");
         }
@@ -149,9 +150,9 @@ export default class extends Vue {
 
     recoverSelectedFiles() {
         let params = new URLSearchParams();
-        for (let f of this.selectedFiles) {
-            params.append("file", f.filename);
-        }
+        let ids: number[] = [];
+        this.selectedFiles.forEach(elem => ids.push(elem.id));
+        params.append("ids", ids.join(","));
 
         fetch(Params.Host + "/api/files/recover?" + params, {
             method: "POST",

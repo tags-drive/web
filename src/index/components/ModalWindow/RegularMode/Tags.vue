@@ -83,7 +83,7 @@ export default class extends Vue {
         this.tags.filter(tag => tag.selected).forEach(tag => ids.push(tag.id));
 
         let params = new URLSearchParams();
-        params.append("file", this.file.filename);
+        params.append("id", String(this.file.id));
         params.append("tags", ids.join(","));
 
         fetch(Params.Host + "/api/files/tags?" + params, {

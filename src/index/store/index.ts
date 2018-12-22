@@ -13,6 +13,7 @@ Vue.use(Vuex);
 function objectToFile(f: any, skipTimeParsing?: boolean): File | null {
     if (
         f === undefined ||
+        f.id === undefined ||
         f.type === undefined ||
         f.filename === undefined ||
         f.origin === undefined ||
@@ -28,6 +29,7 @@ function objectToFile(f: any, skipTimeParsing?: boolean): File | null {
     }
 
     let file: File = new File();
+    file.id = <number>f.id;
     file.type = <string>f.type;
     file.filename = <string>f.filename;
     file.origin = <string>f.origin;
@@ -46,6 +48,14 @@ function objectToFile(f: any, skipTimeParsing?: boolean): File | null {
     file.timeToDelete = <number>f.timeToDelete;
 
     return file;
+}
+
+function objectToTag(f: any): Tag | null {
+    if (f === undefined || f.name === undefined || f.color === undefined) {
+        return null;
+    }
+
+    return new Tag(<string>f.name, <string>f.color);
 }
 
 const store: StoreOptions<Store> = {
@@ -124,10 +134,10 @@ const store: StoreOptions<Store> = {
                             continue;
                         }
 
-                        let t = new Tag();
-                        t.name = tags[id].name;
-                        t.color = tags[id].color;
-                        state.allTags.set(Number(id), t);
+                        let t = objectToTag(tags[id]);
+                        if (t !== null) {
+                            state.allTags.set(Number(id), t);
+                        }
                     }
 
                     state.tagsReady = true;
