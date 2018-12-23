@@ -1,4 +1,5 @@
 export class File {
+    id: number = 0;
     type: string = "file";
     filename: string = "";
     description: string = "";

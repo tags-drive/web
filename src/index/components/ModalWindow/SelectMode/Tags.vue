@@ -93,7 +93,7 @@ export default class extends Vue {
                 }
 
                 let params = new URLSearchParams();
-                params.append("file", file.filename);
+                params.append("id", String(file.id));
                 params.append("tags", Array.from(tags).join(","));
 
                 await fetch(Params.Host + "/api/files/tags?" + params, {

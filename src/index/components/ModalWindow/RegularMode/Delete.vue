@@ -75,7 +75,7 @@ export default class extends Vue {
 
     deleteFile(force: boolean) {
         let params = new URLSearchParams();
-        params.append("file", this.file.filename);
+        params.append("ids", String(this.file.id));
         if (force === true) {
             params.append("force", "true");
         }
@@ -136,7 +136,7 @@ export default class extends Vue {
 
     recoverFile() {
         let params = new URLSearchParams();
-        params.append("file", this.file.filename);
+        params.append("ids", String(this.file.id));
 
         fetch(Params.Host + "/api/files/recover?" + params, {
             method: "POST",
