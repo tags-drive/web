@@ -55,7 +55,7 @@
 		</tr>
 
 		<files
-			v-for="(file, index) in allFiles"
+			v-for="(file, index) in displayedFiles"
 			:key="index"
 			:file="file"
 		></files>
@@ -69,6 +69,7 @@ import Component from "vue-class-component";
 import Files from "@components/Files/Files.vue";
 // Classes and types
 import { File } from "@app/index/global";
+import { TableFile } from "@components/Files/types";
 // Shared data
 import SharedStore from "@app/index/store";
 import SharedState from "@app/index/state";
@@ -76,6 +77,8 @@ import { State } from "@app/index/state/types";
 // Other
 import { Const } from "@app/index/const";
 import { Events, EventBus } from "@app/index/eventBus";
+
+const deltaOffset = 13;
 
 @Component({
     components: {
@@ -98,10 +101,30 @@ export default class extends Vue {
     selectedFiles: File[] = [];
     // This counter == this.$childre.length, it reduces on every "sendFile" event
     leftSelectedFilesCounter: number = 0;
+    //
+    offet: number = 0;
 
-    get allFiles() {
+    get displayedFiles(): TableFile[] {
+        let result: TableFile[] = [];
+
+        for (let i = this.offet; i < this.offet + deltaOffset && i < this.allFiles.length; i++) {
+            result.push(new TableFile(this.allFiles[i]));
+        }
+
+        return result;
+    }
+
+    get allFiles(): TableFile[] {
         // For reactive updating (see @app/index/store/types.ts for more information)
-        return SharedStore.state.allFilesChangesCounter && SharedStore.state.allFiles;
+        let reactive = SharedStore.state.allFilesChangesCounter;
+
+        let result: TableFile[] = [];
+
+        for (let i = 0; i < SharedStore.state.allFiles.length; i++) {
+            result.push(new TableFile(SharedStore.state.allFiles[i]));
+        }
+
+        return result;
     }
 
     created() {
