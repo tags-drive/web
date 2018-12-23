@@ -2,7 +2,7 @@
 	<div>
 		<div id="top-bar"></div>
 
-		<div style="height: 93vh; overflow: auto; width: 100%;">
+		<div id="files-block-wrapper" style="height: 93vh; overflow: auto; width: 100%;">
 			<div id="files-block"></div>
 		</div>
 

@@ -77,6 +77,7 @@ import { State } from "@app/index/state/types";
 // Other
 import { Const } from "@app/index/const";
 import { Events, EventBus } from "@app/index/eventBus";
+import { isElementInPath } from "@app/index/tools";
 
 const maxDisplayedFiles = 13;
 const deltaOffset = 5;
@@ -107,6 +108,11 @@ export default class extends Vue {
     get displayedFiles(): TableFile[] {
         let result: TableFile[] = [];
         let reactive = this.selectedFilesIDsCounter;
+
+        // Search response can contain less files. So we have to update offset
+        if (this.offset >= this.allFiles.length) {
+            this.offset = 0;
+        }
 
         for (let i = this.offset; i < this.offset + maxDisplayedFiles && i < this.allFiles.length; i++) {
             let f = new TableFile(this.allFiles[i]);
@@ -150,6 +156,10 @@ export default class extends Vue {
         });
 
         document.addEventListener("wheel", ev => {
+            if (!isElementInPath(ev, "files-block-wrapper")) {
+                return true;
+            }
+
             if (ev.deltaY > 0) {
                 if (this.offset + deltaOffset <= this.allFiles.length) {
                     this.offset += deltaOffset;
