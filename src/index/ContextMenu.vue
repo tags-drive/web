@@ -98,6 +98,7 @@ import { State } from "@app/index/state/types";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
+import { isElementInPath } from "@app/index/tools";
 
 interface Payload {
     file: File;
@@ -149,18 +150,9 @@ export default class extends Vue {
         });
 
         document.addEventListener("click", event => {
-            let ev = event as any;
-            // We need to use type any because EventMouse hasn't property path, composedPath and composedPath().
-            // Nevertheless, it's a cross browser way to get path.
-            let path = ev.path || (ev.composedPath && ev.composedPath());
-
-            for (let i in path) {
-                if (path[i].id === "context-menu") {
-                    return;
-                }
+            if (!isElementInPath(event, "context-menu")) {
+                this.hideMenu();
             }
-
-            this.hideMenu();
         });
     }
 
