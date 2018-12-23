@@ -152,6 +152,20 @@ export default class extends Vue {
             }
             this.leftSelectedFilesCounter--;
         });
+
+        document.addEventListener("wheel", ev => {
+            if (ev.deltaY > 0) {
+                if (this.offet + deltaOffset <= this.allFiles.length) {
+                    this.offet += deltaOffset;
+                }
+            } else if (ev.deltaY < 0) {
+                if (this.offet - deltaOffset < 0) {
+                    this.offet = 0;
+                } else {
+                    this.offet -= deltaOffset;
+                }
+            }
+        });
     }
 
     // Sorts
