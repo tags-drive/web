@@ -78,7 +78,8 @@ import { State } from "@app/index/state/types";
 import { Const } from "@app/index/const";
 import { Events, EventBus } from "@app/index/eventBus";
 
-const deltaOffset = 13;
+const maxDisplayedFiles = 13;
+const deltaOffset = 5;
 
 @Component({
     components: {
@@ -86,6 +87,14 @@ const deltaOffset = 13;
     }
 })
 export default class extends Vue {
+    offset: number = 0;
+    // For select mode
+    allSelected: boolean = false;
+    selectedFilesCounter: number = 0;
+    //
+    selectedFilesIDs: Set<number> = new Set();
+    selectedFilesIDsCounter: number = 0; // for reactive selectedFilesIDs
+    // Sort modes
     sortModeByName: boolean = true;
     sortModeBySize: boolean = false;
     sortModeByTime: boolean = false;
@@ -94,37 +103,25 @@ export default class extends Vue {
     sortOrderDesc: boolean = false;
     //
     lastSortType: string = Const.sortType.name;
-    //
-    allSelected: boolean = false;
-    selectedFilesCounter: number = 0;
-    // For updating selected files in SharedStore
-    selectedFiles: File[] = [];
-    // This counter == this.$childre.length, it reduces on every "sendFile" event
-    leftSelectedFilesCounter: number = 0;
-    //
-    offet: number = 0;
 
     get displayedFiles(): TableFile[] {
         let result: TableFile[] = [];
+        let reactive = this.selectedFilesIDsCounter;
 
-        for (let i = this.offet; i < this.offet + deltaOffset && i < this.allFiles.length; i++) {
-            result.push(new TableFile(this.allFiles[i]));
+        for (let i = this.offset; i < this.offset + maxDisplayedFiles && i < this.allFiles.length; i++) {
+            let f = new TableFile(this.allFiles[i]);
+            f.selected = this.selectedFilesIDs.has(this.allFiles[i].id);
+            result.push(f);
         }
 
         return result;
     }
 
-    get allFiles(): TableFile[] {
+    get allFiles(): File[] {
         // For reactive updating (see @app/index/store/types.ts for more information)
         let reactive = SharedStore.state.allFilesChangesCounter;
 
-        let result: TableFile[] = [];
-
-        for (let i = 0; i < SharedStore.state.allFiles.length; i++) {
-            result.push(new TableFile(SharedStore.state.allFiles[i]));
-        }
-
-        return result;
+        return SharedStore.state.allFiles;
     }
 
     created() {
@@ -135,34 +132,33 @@ export default class extends Vue {
             this.updateSelectedFiles();
         });
         //
-        EventBus.$on(Events.FilesBlock.SelectFile, () => {
-            this.selectFile();
+        EventBus.$on(Events.FilesBlock.SelectFile, (payload: any) => {
+            if (payload.id === undefined) {
+                return;
+            }
+            this.selectFile(<number>payload.id);
         });
-        EventBus.$on(Events.FilesBlock.UnselectFile, () => {
-            this.unselectFile();
+        EventBus.$on(Events.FilesBlock.UnselectFile, (payload: any) => {
+            if (payload.id === undefined) {
+                return;
+            }
+            this.unselectFile(<number>payload.id);
         });
         //
         EventBus.$on(Events.FilesBlock.RestoreSortParams, () => {
             this.sort().restoreDefault();
         });
 
-        this.$on("sendFile", (payload: any) => {
-            if (payload.selected && payload.file) {
-                this.selectedFiles.push(payload.file);
-            }
-            this.leftSelectedFilesCounter--;
-        });
-
         document.addEventListener("wheel", ev => {
             if (ev.deltaY > 0) {
-                if (this.offet + deltaOffset <= this.allFiles.length) {
-                    this.offet += deltaOffset;
+                if (this.offset + deltaOffset <= this.allFiles.length) {
+                    this.offset += deltaOffset;
                 }
             } else if (ev.deltaY < 0) {
-                if (this.offet - deltaOffset < 0) {
-                    this.offet = 0;
+                if (this.offset - deltaOffset < 0) {
+                    this.offset = 0;
                 } else {
-                    this.offet -= deltaOffset;
+                    this.offset -= deltaOffset;
                 }
             }
         });
@@ -247,61 +243,53 @@ export default class extends Vue {
             this.allSelected = true;
             SharedState.commit("setSelectMode");
 
-            for (let i in this.$children) {
-                this.$children[i].$emit("select");
-            }
+            this.allFiles.forEach(f => {
+                this.selectedFilesIDs.add(f.id);
+            });
+            this.selectedFilesIDsCounter++;
         } else {
-            this.selectedFilesCounter = 0;
-            this.allSelected = false;
-            SharedState.commit("unsetSelectMode");
-
-            for (let i in this.$children) {
-                this.$children[i].$emit("unselect");
-            }
+            this.unselectAllFiles();
         }
     }
 
     unselectAllFiles() {
-        for (let i in this.$children) {
-            this.$children[i].$emit("unselect");
-        }
+        this.selectedFilesCounter = 0;
+        this.selectedFilesIDs.clear();
+        this.selectedFilesIDsCounter++;
+
         this.allSelected = false;
         SharedState.commit("unsetSelectMode");
-        this.selectedFilesCounter = 0;
     }
 
     // updateSelectedFiles updates list of selectedFiles
-    // We use this.leftSelectedFilesCounter to count number of $on("sendFile") events
-    // After this.leftSelectedFilesCounter == 0, we update SharedStore
     updateSelectedFiles() {
-        this.selectedFiles = [];
-        this.leftSelectedFilesCounter = this.$children.length;
+        let selectedFiles: File[] = [];
 
-        for (let i = 0; i < this.$children.length; i++) {
-            this.$children[i].$emit("getFile");
-        }
-
-        let t = setInterval(() => {
-            // Wait for all children call this.parent.$emit("sendFile")
-            if (this.leftSelectedFilesCounter === 0) {
-                SharedStore.commit("setSelectedFiles", this.selectedFiles);
-                clearInterval(t);
+        this.allFiles.forEach(f => {
+            if (this.selectedFilesIDs.has(f.id)) {
+                selectedFiles.push(f);
             }
-        }, 20);
+        });
+
+        SharedStore.commit("setSelectedFiles", selectedFiles);
     }
 
     // For children
-    selectFile() {
+    selectFile(id: number) {
         this.selectedFilesCounter++;
         SharedState.commit("setSelectMode");
-        if (this.selectedFilesCounter === Object.keys(SharedStore.state.allFiles).length) {
+        this.selectedFilesIDs.add(id);
+        this.selectedFilesIDsCounter++;
+        if (this.selectedFilesCounter === SharedStore.state.allFiles.length) {
             this.allSelected = true;
         }
     }
 
-    unselectFile() {
+    unselectFile(id: number) {
         this.selectedFilesCounter--;
         this.allSelected = false;
+        this.selectedFilesIDs.delete(id);
+        this.selectedFilesIDsCounter++;
         if (this.selectedFilesCounter === 0) {
             SharedState.commit("unsetSelectMode");
         }

@@ -12,7 +12,7 @@
 			<input
 				type="checkbox"
 				style="height: 15px; width: 15px;"
-				v-model="selected"
+				v-model="file.selected"
 				@change="toggleSelect">
 		</td>
 		<td
@@ -78,6 +78,9 @@ import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 // Components
 import TagComponent from "@components/Tag/Tag.vue";
+// Classes and types
+import { Tag } from "@app/index/global";
+import { TableFile } from "@app/index/components/Files/types";
 // Shared data
 import SharedStore from "@app/index/store";
 import { Store } from "@app/index/store/types";
@@ -85,7 +88,6 @@ import SharedState from "@app/index/state";
 import { State } from "@app/index/state/types";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
-import { File, Tag } from "@app/index/global";
 import { Params } from "@app/global";
 
 @Component({
@@ -94,20 +96,19 @@ import { Params } from "@app/global";
     }
 })
 export default class extends Vue {
-    @Prop() file!: File;
+    @Prop() file!: TableFile;
     hover: boolean = false;
-    selected: boolean = false;
     //
     Store: Store = SharedStore.state;
     State: State = SharedState.state;
 
     get stylesObject() {
         let bgColor = "white";
-        if (this.hover || this.selected) {
+        if (this.hover || this.file.selected) {
             bgColor = "rgba(0, 0, 0, 0.1)";
         }
         return {
-            opacity: this.file.deleted && !this.selected ? 0.4 : 1,
+            opacity: this.file.deleted && !this.file.selected ? 0.4 : 1,
             "background-color": bgColor
         };
     }
@@ -143,26 +144,6 @@ export default class extends Vue {
         return Params.Host + "/ext/" + this.file.filename.split(".").pop();
     }
 
-    created() {
-        /* For the parent */
-        this.$on("select", () => {
-            this.selected = true;
-        });
-
-        this.$on("unselect", () => {
-            this.selected = false;
-        });
-
-        this.$on("getFile", () => {
-            if (this.selected) {
-                this.$parent.$emit("sendFile", { selected: true, file: this.file });
-            } else {
-                // Can skip file
-                this.$parent.$emit("sendFile", { selected: false });
-            }
-        });
-    }
-
     showContextMenu(event: MouseEvent) {
         EventBus.$emit(Events.ShowContextMenu, { file: this.file, x: event.x, y: event.y });
     }
@@ -175,10 +156,10 @@ export default class extends Vue {
         // We can skip changing this.selected, because a checkbox is bound to this.selected
 
         // The function is called after changing this.selected
-        if (this.selected) {
-            EventBus.$emit(Events.FilesBlock.SelectFile);
+        if (this.file.selected) {
+            EventBus.$emit(Events.FilesBlock.SelectFile, { id: this.file.id });
         } else {
-            EventBus.$emit(Events.FilesBlock.UnselectFile);
+            EventBus.$emit(Events.FilesBlock.UnselectFile, { id: this.file.id });
         }
     }
 }
