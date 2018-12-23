@@ -19,4 +19,21 @@ function logInfo(msg: string) {
     EventBus.$emit(Events.LogEvent, { type: Const.logType.info, msg: msg });
 }
 
-export { isErrorStatusCode, logError, logInfo, Const };
+function isElementInPath(event: Event, id: string): boolean {
+    // We need to use type any because Event hasn't property path, composedPath and composedPath().
+    // Nevertheless, it's a cross browser way to get path.
+    let path = (<any>event).path || ((<any>event).composedPath && (<any>event).composedPath());
+    if (path === undefined || path.length === undefined) {
+        return false;
+    }
+
+    for (let i = 0; i < path.length; i++) {
+        if (path[i].id === id) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+export { isErrorStatusCode, isElementInPath, logError, logInfo, Const };

@@ -253,7 +253,7 @@ import SharedStore from "@app/index/store";
 import { Store } from "@app/index/store/types";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
-import { isErrorStatusCode, logError, logInfo } from "@app/index/tools";
+import { isErrorStatusCode, logError, logInfo, isElementInPath } from "@app/index/tools";
 import { Params } from "@app/global";
 
 const fontWidth = 18 * 0.6; // px * em
@@ -305,20 +305,10 @@ export default class TopBar extends Vue {
         });
 
         document.addEventListener("click", event => {
-            let ev = event as any;
-            // We need to use type any because EventMouse hasn't property path, composedPath and composedPath().
-            // Nevertheless, it's a cross browser way to get path.
-            let path = ev.path || (ev.composedPath && ev.composedPath());
-
-            for (let i in path) {
-                // We don't render expression or close tags list if there's element with id == "expression" in path
-                if (path[i].id === "expression") {
-                    return;
-                }
+            if (!isElementInPath(event, "expression")) {
+                this.focused = false;
+                this.removeListener();
             }
-
-            this.focused = false;
-            this.removeListener();
         });
     }
 
