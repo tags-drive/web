@@ -99,10 +99,9 @@ let getBestColor = (hexColor: string): string => {
 @Component({})
 export default class extends Vue {
     @Prop() tag!: Tag;
-    nameColor: string = "white";
 
-    created() {
-        this.nameColor = getBestColor(this.tag.color);
+    get nameColor(): string {
+        return getBestColor(this.tag.color);
     }
 }
 </script>
