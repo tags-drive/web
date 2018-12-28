@@ -27,9 +27,7 @@
 					<span
 						v-if="focused"
 						style="line-height: 25px; font-size: 18px;"
-					>
-						{{expression}}
-					</span>
+					>{{expression}}</span>
 					<div
 						v-if="!focused"
 						style="height: inherit;"
