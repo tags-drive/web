@@ -16,25 +16,14 @@
 				@change="toggleSelect">
 		</td>
 		<td
-			v-if="file.type === 'image'"
 			title="Show preview"
-			style="width: 50px; text-align: center; cursor: pointer;"
+			style="cursor: pointer;"
 			@click="showPreview"
 		>
-			<img
-				style="display: inline-block; height: auto; max-height: 100%; max-width: 100%; width: auto;"	
-				:src="previewLink">
+			<div class="image-wrapper">
+				<img :src="previewLink">
+			</div>
 		</td>
-		<td
-			v-else
-			style="width: 50px; text-align: center; cursor: pointer;"
-			title="Show preview"
-			@click="showPreview"
-		>
-			<img
-				style="width: 30px; cursor: pointer;"
-				:src="previewLink">
-		</td>	
 		<td>
 			<div class="filename" :title="file.filename">
 				{{file.filename}}
@@ -68,6 +57,19 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     width: 200px;
+}
+
+.image-wrapper {
+    height: inherit;
+    text-align: center;
+}
+
+.image-wrapper > img {
+    display: inline-block;
+    height: auto;
+    max-height: 100%;
+    max-width: 100%;
+    width: auto;
 }
 </style>
 

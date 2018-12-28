@@ -54,6 +54,10 @@ body {
     vertical-align: middle;
 }
 
+.file-info {
+    height: 50px;
+}
+
 /* Files in table */
 .file-info > td,
 th {
