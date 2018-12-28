@@ -79,8 +79,16 @@ import { Const } from "@app/index/const";
 import { Events, EventBus } from "@app/index/eventBus";
 import { isElementInPath } from "@app/index/tools";
 
-const maxDisplayedFiles = 13;
 const deltaOffset = 5;
+const trTableHeight = 50;
+
+let customRound = (n: number, greater: number): number => {
+    if ((n * 10) % 10 > greater) {
+        return Math.ceil(n);
+    } else {
+        return Math.floor(n);
+    }
+};
 
 @Component({
     components: {
@@ -88,7 +96,9 @@ const deltaOffset = 5;
     }
 })
 export default class extends Vue {
-    offset: number = 0;
+    offset: number = 0; // current offset
+    lastAllFilesLength: number = 0; // for reactive files update
+    tableClientHeight: number = 0; // for reactive number of displayed files
     // For select mode
     allSelected: boolean = false;
     selectedFilesCounter: number = 0;
@@ -108,24 +118,35 @@ export default class extends Vue {
     get displayedFiles(): TableFile[] {
         let result: TableFile[] = [];
         let reactive = this.selectedFilesIDsCounter;
+        let allFiles = this.allFiles;
 
-        // Search response can contain less files. So we have to update offset
-        if (this.offset >= this.allFiles.length) {
-            this.offset = 0;
-        }
-
-        for (let i = this.offset; i < this.offset + maxDisplayedFiles && i < this.allFiles.length; i++) {
-            let f = new TableFile(this.allFiles[i]);
-            f.selected = this.selectedFilesIDs.has(this.allFiles[i].id);
+        for (let i = this.offset; i < this.offset + this.maxDisplayedFiles && i < allFiles.length; i++) {
+            let f = new TableFile(allFiles[i]);
+            f.selected = this.selectedFilesIDs.has(allFiles[i].id);
             result.push(f);
         }
 
         return result;
     }
 
+    get maxDisplayedFiles(): number {
+        let tableClientHeight = this.tableClientHeight;
+        if (tableClientHeight === 0) {
+            return 10;
+        }
+
+        return customRound(tableClientHeight / trTableHeight, 7);
+    }
+
     get allFiles(): File[] {
         // For reactive updating (see @app/index/store/types.ts for more information)
         let reactive = SharedStore.state.allFilesChangesCounter;
+
+        if (SharedStore.state.allFiles.length !== this.lastAllFilesLength) {
+            // Reset offset
+            this.offset = 0;
+            this.lastAllFilesLength = SharedStore.state.allFiles.length;
+        }
 
         return SharedStore.state.allFiles;
     }
@@ -155,13 +176,14 @@ export default class extends Vue {
             this.sort().restoreDefault();
         });
 
+        // Event Listener for offset update
         document.addEventListener("wheel", ev => {
             if (!isElementInPath(ev, "files-block-wrapper")) {
                 return true;
             }
 
             if (ev.deltaY > 0) {
-                if (this.offset + deltaOffset <= this.allFiles.length) {
+                if (this.offset + deltaOffset < this.allFiles.length) {
                     this.offset += deltaOffset;
                 }
             } else if (ev.deltaY < 0) {
@@ -171,6 +193,28 @@ export default class extends Vue {
                     this.offset -= deltaOffset;
                 }
             }
+        });
+
+        // Update tableClientHeight after page is loaded and #top-bar is created
+        let t = setInterval(() => {
+            let elem = document.getElementById("top-bar");
+            if (elem === null) {
+                return;
+            }
+
+            this.tableClientHeight = window.innerHeight - trTableHeight - elem!.clientHeight;
+            clearInterval(t);
+        }, 10);
+
+        // Update tableClientHeight on window resize
+        window.addEventListener("resize", ev => {
+            let topBarHeight: number = 0;
+            if (document.getElementById("top-bar") !== null) {
+                topBarHeight = document.getElementById("top-bar")!.clientHeight;
+            }
+
+            // Without header and #top-bar
+            this.tableClientHeight = window.innerHeight - trTableHeight - topBarHeight;
         });
     }
 
