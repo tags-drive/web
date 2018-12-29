@@ -108,7 +108,6 @@ import { Const } from "@app/index/const";
 import { Events, EventBus } from "@app/index/eventBus";
 import { isElementInPath } from "@app/index/tools";
 
-const deltaOffset = 5;
 const trTableHeight = 50;
 const maxLastIDs = 10;
 
@@ -263,6 +262,8 @@ export default class extends Vue {
             if (ev.ctrlKey || ev.altKey || ev.shiftKey || ev.buttons === 2) {
                 return;
             }
+
+            let deltaOffset: number = SharedState.state.settings.scrollOffset;
 
             if (ev.deltaY > 0) {
                 if (this.offset + deltaOffset < this.allFiles.length) {
