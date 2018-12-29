@@ -29,8 +29,16 @@
 				{{file.filename}}
 			</div>
 		</td>
-		<td>
-			<div style="display: flex; flex-wrap: wrap;">
+		<td
+			ref="tags-list-wrapper"
+		>
+			<div
+				style="display: flex; flex-wrap: wrap; height: inherit; overflow-y: hidden;"
+				ref="tags-list"
+				@mouseover="tagsListHover = true;"
+				@mouseleave="tagsListHover = false;"
+				:style="tagsStyle"
+			>
 				<tag
 					v-for="(id, index) in file.tags"
 					style="margin-top: 3px; margin-bottom: 3px;"
@@ -92,6 +100,8 @@ import { State } from "@app/index/state/types";
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
 
+const tagsListPadding = 4;
+
 @Component({
     components: {
         tag: TagComponent
@@ -100,6 +110,7 @@ import { Params } from "@app/global";
 export default class extends Vue {
     @Prop() file!: TableFile;
     hover: boolean = false;
+    tagsListHover: boolean = false;
     //
     Store: Store = SharedStore.state;
     State: State = SharedState.state;
@@ -144,6 +155,63 @@ export default class extends Vue {
         }
 
         return Params.Host + "/ext/" + this.file.filename.split(".").pop();
+    }
+
+    get tagsStyle() {
+        if (!this.tagsListHover) {
+            return;
+        }
+
+        let list = <HTMLElement>this.$refs["tags-list"];
+        if (list === undefined || list.clientHeight >= list.scrollHeight) {
+            return;
+        }
+
+        let wrapper = <HTMLElement>this.$refs["tags-list-wrapper"];
+        if (wrapper === undefined) {
+            return;
+        }
+
+        let rect = wrapper.getBoundingClientRect();
+
+        return {
+            "background-color": "white",
+            border: "1px solid #00000080",
+            "border-radius": "5px",
+            height: "auto",
+            left: rect.left - 1 + "px", // minus border width
+            padding: tagsListPadding + "px",
+            position: "fixed",
+            top: rect.top + "px",
+            width: rect.width - tagsListPadding * 2 + "px"
+        };
+    }
+
+    created() {
+        let func = () => {
+            let list = <HTMLElement>this.$refs["tags-list"];
+            if (list === undefined) {
+                return;
+            }
+
+            if (list.scrollTop + list.clientHeight >= list.scrollHeight) {
+                list.scrollTop = 0;
+                // Show top
+                setTimeout(func, 1500);
+                return;
+            }
+
+            list.scrollTop++;
+            if (list.scrollTop + list.clientHeight >= list.scrollHeight) {
+                // Show bottom
+                setTimeout(func, 1000);
+                return;
+            }
+
+            setTimeout(func, 30);
+        };
+
+        setTimeout(func, 1500);
     }
 
     showContextMenu(event: MouseEvent) {
