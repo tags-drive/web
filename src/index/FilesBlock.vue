@@ -1,4 +1,5 @@
 <template>
+<div>
 	<table
 		id="file-table"
 		style="border-collapse: collapse; width: 100%;"
@@ -60,7 +61,35 @@
 			:file="file"
 		></files>
 	</table>
+
+	<!-- Progress bar -->
+	<div id="progress-bar">
+		<i
+			v-for="i in 10"
+			:key="i"
+			class="material-icons noselect"
+			:style="[currentProgress === i ? {'opacity': 0.5} : {}]"
+			@click="goto(i)"
+		>fiber_manual_record</i>
+	</div>
+</div>
 </template>
+
+<style scoped>
+#progress-bar {
+    display: grid;
+    position: fixed;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#progress-bar > i {
+    cursor: pointer;
+    font-size: 15px;
+    opacity: 0.2;
+}
+</style>
 
 <script lang="ts">
 import Vue from "vue";
@@ -149,6 +178,10 @@ export default class extends Vue {
         }
 
         return SharedStore.state.allFiles;
+    }
+
+    get currentProgress(): number {
+        return Math.floor((this.offset / this.allFiles.length) * 10) + 1;
     }
 
     created() {
@@ -347,6 +380,16 @@ export default class extends Vue {
         if (this.selectedFilesCounter === 0) {
             SharedState.commit("unsetSelectMode");
         }
+    }
+
+    // goto updates offset
+    // tenPercents - number in [1; 10].
+    goto(tenPercents: number) {
+        if (tenPercents < 1 || tenPercents > 10) {
+            return;
+        }
+
+        this.offset = Math.ceil(((tenPercents - 1) * this.allFiles.length) / 10);
     }
 }
 </script>
