@@ -95,10 +95,10 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 // Components
-import Files from "@components/Files/Files.vue";
+import Files from "@components/File/File.vue";
 // Classes and types
 import { File } from "@app/index/global";
-import { TableFile } from "@components/Files/types";
+import { TableFile } from "@components/File/types";
 // Shared data
 import SharedStore from "@app/index/store";
 import SharedState from "@app/index/state";
