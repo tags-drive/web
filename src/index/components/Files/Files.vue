@@ -53,7 +53,7 @@
 				(file.description.length > 20) ? file.description.slice(0, 20) + '...' : file.description
 			}}
 		</td>
-		<td>{{(file.size / (1024 * 1024)).toFixed(1)}}</td>
+		<td>{{(file.size / (1024 * 1024)).toFixed(2)}}</td>
 		<td>{{file.addTime}}</td>
 	</tr>
 </template>
@@ -80,7 +80,6 @@
     width: auto;
 }
 </style>
-
 
 <script lang="ts">
 import Vue from "vue";

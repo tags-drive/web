@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div style="min-width: 900px;">
 		<div id="top-bar"></div>
 
 		<!-- We have to set height for correct scroll -->
