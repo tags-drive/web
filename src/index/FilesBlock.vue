@@ -212,7 +212,12 @@ export default class extends Vue {
         // Event Listener for offset update
         document.addEventListener("wheel", ev => {
             if (!isElementInPath(ev, "files-block-wrapper")) {
-                return true;
+                return;
+            }
+
+            // Prevent scroll if special keys or right mouse button are pressed
+            if (ev.ctrlKey || ev.altKey || ev.shiftKey || ev.buttons === 2) {
+                return;
             }
 
             if (ev.deltaY > 0) {
