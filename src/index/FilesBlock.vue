@@ -110,6 +110,7 @@ import { isElementInPath } from "@app/index/tools";
 
 const deltaOffset = 5;
 const trTableHeight = 50;
+const maxLastIDs = 10;
 
 let customRound = (n: number, greater: number): number => {
     if ((n * 10) % 10 > greater) {
@@ -119,6 +120,20 @@ let customRound = (n: number, greater: number): number => {
     }
 };
 
+let areEqualArrays = (a: any[], b: any[]): boolean => {
+    if (a.length !== b.length) {
+        return false;
+    }
+
+    for (let i = 0; i < a.length; i++) {
+        if (a[i] !== b[i]) {
+            return false;
+        }
+    }
+
+    return true;
+};
+
 @Component({
     components: {
         files: Files
@@ -126,8 +141,15 @@ let customRound = (n: number, greater: number): number => {
 })
 export default class extends Vue {
     offset: number = 0; // current offset
-    lastAllFilesLength: number = 0; // for reactive files update
     tableClientHeight: number = 0; // for reactive number of displayed files
+    // We want to update offset when number or order of files were changed.
+    // We can't emit event in TopBar search functions to update offset
+    // because it would emit event after every file change. We would prefer not to update
+    // offset when only files data were changed. So we have to have special vars to
+    // determine were order or number of files changed.
+    lastAllFilesLength: number = 0;
+    lastFirstFilesIDS: number[] = []; // last maxLastIDs ids
+    //
     // For select mode
     allSelected: boolean = false;
     selectedFilesCounter: number = 0;
@@ -171,13 +193,35 @@ export default class extends Vue {
         // For reactive updating (see @app/index/store/types.ts for more information)
         let reactive = SharedStore.state.allFilesChangesCounter;
 
-        if (SharedStore.state.allFiles.length !== this.lastAllFilesLength) {
+        let allFiles = SharedStore.state.allFiles;
+
+        // Determine should we reset offset
+        if (allFiles.length !== this.lastAllFilesLength) {
             // Reset offset
             this.offset = 0;
-            this.lastAllFilesLength = SharedStore.state.allFiles.length;
+            this.lastAllFilesLength = allFiles.length;
+            this.lastFirstFilesIDS = [];
+            for (let i = 0; i < maxLastIDs && i < allFiles.length; i++) {
+                this.lastFirstFilesIDS.push(allFiles[i].id);
+            }
+        } else {
+            let newIDs: number[] = [];
+            for (let i = 0; i < maxLastIDs && i < allFiles.length; i++) {
+                newIDs.push(allFiles[i].id);
+            }
+
+            if (!areEqualArrays(newIDs, this.lastFirstFilesIDS)) {
+                // Order of files was changed. We have to reset offset.
+                this.offset = 0;
+                // We are able not to change lastAllFilesLength
+                this.lastFirstFilesIDS = [];
+                for (let i = 0; i < maxLastIDs && i < allFiles.length; i++) {
+                    this.lastFirstFilesIDS.push(allFiles[i].id);
+                }
+            }
         }
 
-        return SharedStore.state.allFiles;
+        return allFiles;
     }
 
     get currentProgress(): number {
