@@ -9,11 +9,7 @@
 		></modifying-tags>
 		<p></p>
 
-		<input
-			class="btn"
-			style="width: 150px; height: 25px;"
-			type="button"
-			value="Create new tag">
+		<span style="font-size: 18px;">New tag creation</span>
 		<p></p>
 
 		<!-- New tag -->
