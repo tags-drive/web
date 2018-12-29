@@ -2,7 +2,8 @@
 	<div>
 		<div id="top-bar"></div>
 
-		<div id="files-block-wrapper" style="overflow: hidden; width: 100%;">
+		<!-- We have to set height for correct scroll -->
+		<div id="files-block-wrapper" style="height: 95vh; overflow: hidden; width: 100%;">
 			<div id="files-block"></div>
 		</div>
 
