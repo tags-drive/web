@@ -33,7 +33,7 @@
 			ref="tags-list-wrapper"
 		>
 			<div
-				style="display: flex; flex-wrap: wrap; height: inherit; overflow-y: hidden;"
+				class="tags-list-wrapper"
 				ref="tags-list"
 				@mouseover="tagsListHover = true;"
 				@mouseleave="tagsListHover = false;"
@@ -79,6 +79,20 @@
     max-width: 100%;
     width: auto;
 }
+
+.tags-list-wrapper {
+    /*
+		If there are too many tags, we change color of left border.
+		Without border-left in style there are some layout bugs.
+	*/
+    border-left: 1px solid #00000000;
+    display: flex;
+    flex-wrap: wrap;
+    height: inherit;
+    overflow-y: hidden;
+    padding-left: 3px;
+    position: relative;
+}
 </style>
 
 <script lang="ts">
@@ -109,7 +123,10 @@ const tagsListPadding = 4;
 export default class extends Vue {
     @Prop() file!: TableFile;
     hover: boolean = false;
+    overflow: boolean = false;
     tagsListHover: boolean = false;
+    // setInterval id
+    overflowChecker: number = -1;
     //
     Store: Store = SharedStore.state;
     State: State = SharedState.state;
@@ -117,7 +134,7 @@ export default class extends Vue {
     get stylesObject() {
         let bgColor = "white";
         if (this.hover || this.file.selected) {
-            bgColor = "rgba(0, 0, 0, 0.1)";
+            bgColor = "#d3d3d3";
         }
         return {
             opacity: this.file.deleted && !this.file.selected ? 0.4 : 1,
@@ -157,8 +174,8 @@ export default class extends Vue {
     }
 
     get tagsStyle() {
-        if (!this.tagsListHover) {
-            return;
+        if (!this.tagsListHover && this.overflow) {
+            return { "border-left-color": "red" };
         }
 
         let list = <HTMLElement>this.$refs["tags-list"];
@@ -182,35 +199,25 @@ export default class extends Vue {
             padding: tagsListPadding + "px",
             position: "fixed",
             top: rect.top + "px",
-            width: rect.width - tagsListPadding * 2 + "px"
+            width: rect.width - tagsListPadding * 2 + "px",
+            "z-index": 6
         };
     }
 
     created() {
-        let func = () => {
+        this.overflowChecker = setInterval(() => {
             let list = <HTMLElement>this.$refs["tags-list"];
             if (list === undefined) {
+                this.overflow = false;
                 return;
             }
 
-            if (list.scrollTop + list.clientHeight >= list.scrollHeight) {
-                list.scrollTop = 0;
-                // Show top
-                setTimeout(func, 1500);
-                return;
-            }
+            this.overflow = list.scrollHeight > list.clientHeight;
+        }, 10);
+    }
 
-            list.scrollTop++;
-            if (list.scrollTop + list.clientHeight >= list.scrollHeight) {
-                // Show bottom
-                setTimeout(func, 1000);
-                return;
-            }
-
-            setTimeout(func, 30);
-        };
-
-        setTimeout(func, 1500);
+    destroyed() {
+        clearInterval(this.overflowChecker);
     }
 
     showContextMenu(event: MouseEvent) {
