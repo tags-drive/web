@@ -11,6 +11,21 @@
 					class="vertically"
 					v-model="settings.showDeletedFiles">
 			</div>
+
+			<p></p>
+
+			<!-- Number of scrolled files by one scroll -->
+			<div
+				class="setting"
+				:title="'Current: ' + String(settings.scrollOffset)"
+			>
+				<span>Scroll offset:</span>
+				<input
+					type="range"
+					min="1"
+					max="10"
+					v-model.number="settings.scrollOffset">
+			</div>
 		</div>
 
 		<p></p>
@@ -42,8 +57,11 @@ h2 {
     margin-bottom: 10px;
 }
 
-input[type="checkbox"] {
+input {
     vertical-align: middle;
+}
+
+input[type="checkbox"] {
     transform: scale(1.4);
 }
 </style>
@@ -60,14 +78,14 @@ import { Events, EventBus } from "@app/index/eventBus";
 
 @Component({})
 export default class extends Vue {
-    settings: Settings = { showDeletedFiles: false };
+    settings: Settings = { showDeletedFiles: false, scrollOffset: 0 };
 
     created() {
         this.$nextTick(function() {
             // Add onchange handlers to input["checkbox"]
-            let checkboxes = document.getElementById("settings")!.getElementsByTagName("input");
-            for (let i = 0; i < checkboxes.length; i++) {
-                checkboxes[i].onchange = () => this.apply();
+            let elements = document.getElementById("settings")!.getElementsByTagName("input");
+            for (let i = 0; i < elements.length; i++) {
+                elements[i].onchange = () => this.apply();
             }
         });
 

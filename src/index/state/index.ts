@@ -12,7 +12,8 @@ const state: StoreOptions<State> = {
         selectMode: false,
         // settings
         settings: {
-            showDeletedFiles: false
+            showDeletedFiles: false,
+            scrollOffset: 5
         }
     },
     mutations: {

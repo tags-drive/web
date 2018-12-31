@@ -1,8 +1,9 @@
 <template>
-	<div>
+	<div style="min-width: 900px;">
 		<div id="top-bar"></div>
 
-		<div style="height: 93vh; overflow: auto; width: 100%;">
+		<!-- We have to set height for correct scroll -->
+		<div id="files-block-wrapper" style="height: 95vh; overflow: hidden; width: 100%;">
 			<div id="files-block"></div>
 		</div>
 
@@ -30,6 +31,7 @@
 
 body {
     margin: 0;
+    overflow-y: hidden;
     padding: 0;
 }
 
@@ -52,6 +54,10 @@ body {
     display: inline-flex;
     justify-content: center;
     vertical-align: middle;
+}
+
+.file-info {
+    height: 50px;
 }
 
 /* Files in table */
