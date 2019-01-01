@@ -435,6 +435,10 @@ export default class extends Vue {
                 this.previousPreview();
                 break;
             case "Escape":
+                if (this.fullscreenMode) {
+                    this.fullscreenMode = false;
+                    break;
+                }
                 this.window().hide();
                 break;
         }
