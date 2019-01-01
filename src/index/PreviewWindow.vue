@@ -75,6 +75,14 @@
 					<br>
 					<span>Preview for this file is unsupported</span>
 				</div>
+
+				<!-- Filename (only in fullscreen mode) -->
+				<div
+					id="fullscreen-filename"
+					v-show="fullscreenMode"
+				>
+					<span>{{file.filename}}</span>
+				</div>
 			</div>
 
 			<!-- Info -->
@@ -191,6 +199,17 @@
 #turn-off-fullscreen-button:hover {
     background-color: #00000020;
     opacity: 0.8;
+}
+
+#fullscreen-filename {
+    background-color: #00000040;
+    border-radius: 3px;
+    color: #ffffffd0;
+    height: auto;
+    margin: auto;
+    margin-top: 5px;
+    padding: 3px;
+    width: fit-content;
 }
 
 #text-preview,
