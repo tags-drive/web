@@ -119,10 +119,12 @@
 .switch-button {
     border-radius: 5px;
     cursor: pointer;
-    height: 100%;
+    height: 70%;
     opacity: 0.3;
     position: absolute;
-    width: 15%;
+	top: 50%;
+	transform: translateY(-50%);
+    width: 80px;
 }
 
 .switch-button:hover {
@@ -132,10 +134,11 @@
 
 .switch-button__arrow {
     font-size: 50px;
-    left: calc(50% - 25px);
+    left: 50%;
     opacity: inherit;
     position: absolute;
-    top: calc(50% - 25px);
+    top: 50%;
+	transform: translate(-50%, -50%);
 }
 
 #text-preview,
