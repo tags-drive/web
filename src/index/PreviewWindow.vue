@@ -44,11 +44,15 @@
 				<!-- Turn off fullscreen button -->
 				<div
 					v-show="fullscreenMode"
-					id="turn-off-fullscreen-button"
-					title="Close fullscreen window"
-					@click="fullscreenMode = false;"
+					id="turn-off-fullscreen-button__wrapper"
 				>
-					<i style="font-size: 50px; opacity: inherit;" class="material-icons noselect">close</i>
+					<div
+						id="turn-off-fullscreen-button"
+						title="Close fullscreen window"
+						@click="fullscreenMode = false;"
+					>
+						<i style="font-size: 50px; opacity: inherit;" class="material-icons noselect">close</i>
+					</div>
 				</div>
 
 				<!-- Text -->
@@ -183,14 +187,20 @@
     width: 80px;
 }
 
+#turn-off-fullscreen-button__wrapper {
+    position: absolute;
+    right: 0;
+    top: 0;
+    /* Same as width of switch-button */
+    width: 80px;
+}
+
 #turn-off-fullscreen-button {
     border-radius: 5px;
     cursor: pointer;
+    margin: auto;
     opacity: 0.3;
-    position: fixed;
-    right: 10px;
     text-align: center;
-    top: 10px;
     width: 50px;
 }
 
@@ -215,15 +225,23 @@
 #text-preview,
 #image-preview {
     height: 100%;
-    width: 100%;
+    margin: auto;
+    width: 80%;
 }
 
-#text-preview {
-    /* If width == 100%, buttons cover text */
-    width: 70%;
-    margin: auto;
+#text-preview,
+#unsopported-format {
     background-color: white;
     border-radius: 5px;
+    height: 100%;
+    margin: auto;
+    /* If width == 100%, buttons cover text */
+    width: 70%;
+}
+
+#unsopported-format {
+    font-size: 30px;
+    text-align: center;
 }
 
 #text-preview > pre {
@@ -249,13 +267,6 @@
     display: inline-block;
     height: 100%;
     vertical-align: middle;
-}
-
-#unsopported-format {
-    background-color: white;
-    font-size: 30px;
-    height: 100%;
-    text-align: center;
 }
 
 /* Info block */
@@ -349,7 +360,8 @@ export default class extends Vue {
         return {
             height: "90%",
             margin: "auto",
-            width: "90%"
+            "margin-top": "30px",
+            width: "96%"
         };
     }
 
