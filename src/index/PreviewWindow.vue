@@ -25,6 +25,14 @@
 				>
 					<i class="material-icons noselect switch-button__arrow">keyboard_arrow_right</i>
 				</div>
+				<!-- Full screen button -->
+				<div
+					id="fullscreen-button"
+					title="Fullscreen mode"
+					@click="toggleFullscreenMode"
+				>
+					<i style="font-size: 50px;" class="material-icons noselect">fullscreen</i>
+				</div>
 
 				<!-- Text -->
 				<div
@@ -122,8 +130,8 @@
     height: 70%;
     opacity: 0.3;
     position: absolute;
-	top: 50%;
-	transform: translateY(-50%);
+    top: 50%;
+    transform: translateY(-50%);
     width: 80px;
 }
 
@@ -138,7 +146,23 @@
     opacity: inherit;
     position: absolute;
     top: 50%;
-	transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+#fullscreen-button {
+    border-radius: 5px;
+    bottom: 10px;
+    cursor: pointer;
+    opacity: 0.3;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    width: 80px;
+}
+
+#fullscreen-button:hover {
+    background-color: #00000020;
+    opacity: 0.8;
 }
 
 #text-preview,
@@ -342,6 +366,10 @@ export default class extends Vue {
                     .catch(err => logError(err));
             }
         }
+    }
+
+    toggleFullscreenMode() {
+        console.log("Fullscreen mode");
     }
 
     onkeydownListener(event: KeyboardEvent) {
