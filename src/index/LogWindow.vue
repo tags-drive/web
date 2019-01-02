@@ -1,11 +1,20 @@
 <template>
 	<div
 		id="log-window"
-		v-if="show"
-		:style="{'opacity': opacity}"
+		:style="logWindowStyles"
 		@mouseenter="window().mouseEnter()"
 		@mouseleave="window().mouseLeave()"
 	>
+		<div
+			v-show="!show"
+			id="open-button"
+		>
+			<i
+				class="material-icons btn noselect"
+				@click="window().show()"
+			>keyboard_arrow_left</i>
+		</div>
+
 		<div id="close-button">
 			<i
 				class="material-icons btn noselect"
@@ -51,11 +60,25 @@
     z-index: 3;
 }
 
+#open-button {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translate(-100%, -50%);
+}
+
+#open-button > i {
+    border-radius: 5px 0px 0px 5px;
+    border-right: none;
+    height: 80px;
+    width: 20px;
+}
+
 #close-button {
     left: 0;
     position: absolute;
     top: 50%;
-	transform: translateY(-50%);
+    transform: translateY(-50%);
     width: 100%;
 }
 
@@ -136,8 +159,9 @@ interface logEvent {
     time: string;
 }
 
-const hideTimeout = 5 * 1000; // 5s in milliseconds
-const msTimeout = 50; // 50ms is good enough. When 100, FPS is too low
+const hideTimeout = 5 * 1000; // 5s
+const animationStart = 500; // 500ms
+const msTimeout = 20; // 20ms is good enough
 
 @Component({})
 export default class extends Vue {
@@ -146,21 +170,27 @@ export default class extends Vue {
     // States
     show: boolean = false;
     isMouseInside: boolean = false; // if isMouseInside, hideAfter isn't changed
-    hideAfter: number = hideTimeout;
-    // UI
-    opacity: number = 1;
-    lastScrollHeight: number = 0;
+    hideAfter: number = 0;
     // Data
-    /* events - array of objects:
-	{
-		type: string,
-		msg: string,
-		time: string
-	}
-	*/
     events: logEvent[] = [];
 
-    mounted() {}
+    get logWindowStyles() {
+        if (this.show) {
+            if (this.isMouseInside || this.hideAfter > 1000) {
+                return {};
+            }
+        }
+
+        let transform: number = 0;
+        if (0 <= this.hideAfter && this.hideAfter <= animationStart) {
+            transform = 100 - Math.ceil((this.hideAfter / animationStart) * 100);
+        }
+
+        return {
+            right: 0,
+            transform: `translateX(${transform}%)`
+        };
+    }
 
     created() {
         EventBus.$on(Events.LogEvent, (payload: any) => {
@@ -178,13 +208,13 @@ export default class extends Vue {
             if (this.isMouseInside) {
                 return;
             }
-            if (this.hideAfter < 0) {
+
+            if (this.hideAfter <= 0) {
                 this.show = false;
+                return;
             }
+
             this.hideAfter -= msTimeout;
-            if (this.hideAfter < 1000) {
-                this.opacity = this.hideAfter / 1000;
-            }
         }, msTimeout);
     }
 
@@ -192,17 +222,18 @@ export default class extends Vue {
     window() {
         return {
             show: () => {
-                this.opacity = 1;
                 this.hideAfter = hideTimeout;
                 this.show = true;
             },
             hide: () => {
-                this.show = false;
+                this.hideAfter = animationStart;
                 this.isMouseInside = false;
             },
             mouseEnter: () => {
-                this.isMouseInside = true;
-                this.window().show(); // update opacity and hideAfter
+                // Don't interrupt animation
+                if (this.hideAfter > animationStart) {
+                    this.isMouseInside = true;
+                }
             },
             mouseLeave: () => {
                 this.isMouseInside = false;
