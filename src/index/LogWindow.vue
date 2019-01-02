@@ -191,7 +191,7 @@ export default class extends Vue {
         }
 
         return {
-            right: 0,
+            right: transform === 0 ? "25px" : "0",
             transform: `translateX(${transform}%)`
         };
     }
@@ -236,6 +236,7 @@ export default class extends Vue {
             mouseEnter: () => {
                 // Don't interrupt animation
                 if (this.hideAfter > animationStart) {
+                    this.hideAfter = hideTimeout;
                     this.isMouseInside = true;
                 }
             },
@@ -272,4 +273,3 @@ export default class extends Vue {
     }
 }
 </script>
-
