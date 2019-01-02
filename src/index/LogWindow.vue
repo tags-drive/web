@@ -22,7 +22,10 @@
 			>keyboard_arrow_right</i>
 		</div>
 
-		<div id="events">
+		<div
+			id="events"
+			ref="events"
+		>
 			<div
 				class="event"
 				v-for="(event, index) in events"
@@ -239,7 +242,15 @@ export default class extends Vue {
                 this.isMouseInside = false;
             },
             scrollToEnd: () => {
-                this.$el.scrollTop = this.$el.scrollHeight;
+                let elem = <HTMLElement>this.$refs["events"];
+                if (elem === undefined) {
+                    return;
+                }
+
+                // We have to wait for render of a new element
+                setTimeout(() => {
+                    elem.scrollTop = elem.scrollHeight;
+                }, 20);
             }
         };
     }
