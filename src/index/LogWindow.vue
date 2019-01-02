@@ -6,40 +6,119 @@
 		@mouseenter="window().mouseEnter()"
 		@mouseleave="window().mouseLeave()"
 	>
-		<div style="float: right;">
+		<div id="close-button">
 			<i
 				class="material-icons btn noselect"
 				@click="window().hide()"
-			>close</i>
+			>keyboard_arrow_right</i>
 		</div>
 
-		<div
-			style="margin-bottom: 5px;"
-			v-for="(event, index) in events"
-			:key="index"
-		>
-			{{event.time}}
-			<span v-if="event.type === errorType" style="color: red;">[Error] </span>
-			<span v-else-if="event.type === infoType" style="color: blue;">[Info] </span>
-			{{event.msg}}
+		<div id="events">
+			<div
+				class="event"
+				v-for="(event, index) in events"
+				:key="index"
+			>
+				<div
+					class="indicator"
+					:style="[event.type === errorType ? {'background-color': '#d32f2f'} : {'background-color': '#1976d2'}]"
+				></div>
+
+				<div class="message-block">
+					<div style="font-size: 16px;">{{event.time}}</div>
+
+					<div class="message">
+						{{event.msg}}
+					</div>	
+				</div>
+
+			</div>
 		</div>
 	</div>
 </template>
 
 <style scoped>
 #log-window {
-    background-color: var(--secondary-color);
-    border: 1px var(--primary-border-color) solid;
+    background-color: #f7f7f7;
+    border: 1px solid #00000050;
     border-radius: 5px;
     bottom: 10px;
-    height: 200px;
-    left: 10px;
-    z-index: 3;
-    overflow: auto;
+    height: 450px;
     padding: 10px;
     position: fixed;
-    width: 350px;
+    right: 25px;
+    width: 30%;
+    z-index: 3;
+}
+
+#close-button {
+    left: 0;
+    position: absolute;
+    top: 50%;
+	transform: translateY(-50%);
+    width: 100%;
+}
+
+#close-button > i {
+    border-radius: 0px 5px 5px 0px;
+    border-left: none;
+    height: 80px;
+    width: 20px;
+}
+
+#events {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    height: 100%;
+    margin-left: 15px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-right: 3px;
+}
+
+.event {
+    background-color: white;
+    border: 1px solid #00000012;
+    border-bottom: 1px solid #00000060;
+    border-radius: 3px;
+    margin-bottom: 5px;
+    padding-bottom: 3px;
+    padding-top: 3px;
+    position: relative;
+}
+
+.indicator {
+    border-radius: 30px;
+    height: 90%;
+    margin-left: 5px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+}
+
+.message-block {
+    margin-left: 13px; /* 5 + 5 + 5 - 2*/
+    width: calc(100% - 13px);
+}
+
+.message {
+    color: #000000b0;
+    font-size: 14px;
+    margin-left: 2px;
     word-wrap: break-word;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: inherit;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 5px;
 }
 </style>
 
