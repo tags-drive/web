@@ -4,9 +4,15 @@
 		@click.self="window().hide()"
 		v-if="show"
 	>
-		<div id="preview-window">
+		<div
+			id="preview-window"
+			:style="previewWindowStyle"
+		>
 			<!-- Preview -->
-			<div id="preview">
+			<div
+				id="preview"
+				:style="previewStyle"
+			>
 				<!-- Previous button -->
 				<div
 					v-if="fileIndex > 0"
@@ -24,6 +30,29 @@
 					@click="nextPreview"
 				>
 					<i class="material-icons noselect switch-button__arrow">keyboard_arrow_right</i>
+				</div>
+
+				<!-- Turn on fullscreen button -->
+				<div
+					v-show="!fullscreenMode"
+					id="turn-on-fullscreen-button"
+					title="Fullscreen mode"
+					@click="fullscreenMode = true;"
+				>
+					<i style="font-size: 50px; opacity: inherit;" class="material-icons noselect">fullscreen</i>
+				</div>
+				<!-- Turn off fullscreen button -->
+				<div
+					v-show="fullscreenMode"
+					id="turn-off-fullscreen-button__wrapper"
+				>
+					<div
+						id="turn-off-fullscreen-button"
+						title="Close fullscreen window"
+						@click="fullscreenMode = false;"
+					>
+						<i style="font-size: 50px; opacity: inherit;" class="material-icons noselect">close</i>
+					</div>
 				</div>
 
 				<!-- Text -->
@@ -50,10 +79,21 @@
 					<br>
 					<span>Preview for this file is unsupported</span>
 				</div>
+
+				<!-- Filename (only in fullscreen mode) -->
+				<div
+					id="fullscreen-filename"
+					v-show="fullscreenMode"
+				>
+					<span>{{file.filename}}</span>
+				</div>
 			</div>
 
 			<!-- Info -->
-			<div id="info">
+			<div
+				v-show="!fullscreenMode"
+				id="info"
+			>
 				<!-- Filename -->
 				<div class="header noselect" style="margin-top: 0; border-radius: inherit;">Filename</div>
 				<div class="content">
@@ -119,37 +159,89 @@
 .switch-button {
     border-radius: 5px;
     cursor: pointer;
-    height: 100%;
+    height: 70%;
     opacity: 0.3;
     position: absolute;
-    width: 15%;
-}
-
-.switch-button:hover {
-    background-color: #00000020;
-    opacity: 0.8;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 80px;
 }
 
 .switch-button__arrow {
     font-size: 50px;
-    left: calc(50% - 25px);
+    left: 50%;
     opacity: inherit;
     position: absolute;
-    top: calc(50% - 25px);
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#turn-on-fullscreen-button {
+    border-radius: 5px;
+    bottom: 10px;
+    cursor: pointer;
+    opacity: 0.3;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    width: 80px;
+}
+
+#turn-off-fullscreen-button__wrapper {
+    position: absolute;
+    right: 0;
+    top: 0;
+    /* Same as width of switch-button */
+    width: 80px;
+}
+
+#turn-off-fullscreen-button {
+    border-radius: 5px;
+    cursor: pointer;
+    margin: auto;
+    opacity: 0.3;
+    text-align: center;
+    width: 50px;
+}
+
+.switch-button:hover,
+#turn-on-fullscreen-button:hover,
+#turn-off-fullscreen-button:hover {
+    background-color: #00000020;
+    opacity: 0.8;
+}
+
+#fullscreen-filename {
+    background-color: #00000040;
+    border-radius: 3px;
+    color: #ffffffd0;
+    height: auto;
+    margin: auto;
+    margin-top: 5px;
+    padding: 3px;
+    width: fit-content;
 }
 
 #text-preview,
 #image-preview {
     height: 100%;
-    width: 100%;
+    margin: auto;
+    width: 80%;
 }
 
-#text-preview {
-    /* If width == 100%, buttons cover text */
-    width: 70%;
-    margin: auto;
+#text-preview,
+#unsopported-format {
     background-color: white;
     border-radius: 5px;
+    height: 100%;
+    margin: auto;
+    /* If width == 100%, buttons cover text */
+    width: 70%;
+}
+
+#unsopported-format {
+    font-size: 30px;
+    text-align: center;
 }
 
 #text-preview > pre {
@@ -175,13 +267,6 @@
     display: inline-block;
     height: 100%;
     vertical-align: middle;
-}
-
-#unsopported-format {
-    background-color: white;
-    font-size: 30px;
-    height: 100%;
-    text-align: center;
 }
 
 /* Info block */
@@ -233,6 +318,7 @@ import { logError } from "@app/index/tools";
 })
 export default class extends Vue {
     show: boolean = false;
+    fullscreenMode: boolean = false;
     // File
     fileIndex: number = 0;
     file: File = new File();
@@ -248,6 +334,35 @@ export default class extends Vue {
 
     get imageLink(): string {
         return Params.Host + "/" + this.file.origin;
+    }
+
+    get previewWindowStyle() {
+        if (!this.fullscreenMode) {
+            return {};
+        }
+
+        return {
+            "background-color": "gray",
+            "border-radius": "0px",
+            height: "100%",
+            "max-width": "none",
+            padding: "0px",
+            top: "0",
+            width: "100%"
+        };
+    }
+
+    get previewStyle() {
+        if (!this.fullscreenMode) {
+            return {};
+        }
+
+        return {
+            height: "90%",
+            margin: "auto",
+            "margin-top": "30px",
+            width: "96%"
+        };
     }
 
     created() {
@@ -294,6 +409,7 @@ export default class extends Vue {
             hide: () => {
                 SharedState.commit("showDropLayer");
                 document.removeEventListener("keydown", this.onkeydownListener);
+                this.fullscreenMode = false;
                 this.show = false;
             }
         };
@@ -350,6 +466,10 @@ export default class extends Vue {
                 this.previousPreview();
                 break;
             case "Escape":
+                if (this.fullscreenMode) {
+                    this.fullscreenMode = false;
+                    break;
+                }
                 this.window().hide();
                 break;
         }
