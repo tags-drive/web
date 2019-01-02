@@ -165,6 +165,7 @@ interface logEvent {
 const hideTimeout = 5 * 1000; // 5s
 const animationStart = 500; // 500ms
 const msTimeout = 20; // 20ms is good enough
+const maxEventsNumber = 1000;
 
 @Component({})
 export default class extends Vue {
@@ -262,9 +263,10 @@ export default class extends Vue {
         this.events.push(obj);
 
         // Remove old events
-        while (this.events.length > 10) {
+        while (this.events.length > maxEventsNumber) {
             this.events.splice(0, 1);
         }
+
         this.window().show();
         this.window().scrollToEnd();
     }
