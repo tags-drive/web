@@ -107,6 +107,7 @@ import { State } from "@app/index/state/types";
 import { Const } from "@app/index/const";
 import { Events, EventBus } from "@app/index/eventBus";
 import { isElementInPath } from "@app/index/tools";
+import { Params } from "@app/global";
 
 const trTableHeight = 50;
 const maxLastIDs = 10;
@@ -131,6 +132,14 @@ let areEqualArrays = (a: any[], b: any[]): boolean => {
     }
 
     return true;
+};
+
+let preloadImages = async (urls: string[]) => {
+    let host = Params.Host;
+    for (let i = 0; i < urls.length; i++) {
+        let img = new Image();
+        img.src = host + "/" + urls[i];
+    }
 };
 
 @Component({
@@ -166,15 +175,28 @@ export default class extends Vue {
     lastSortType: string = Const.sortType.name;
 
     get displayedFiles(): TableFile[] {
-        let result: TableFile[] = [];
-        let reactive = this.selectedFilesIDsCounter;
-        let allFiles = this.allFiles;
+        let result: TableFile[] = [],
+            reactive = this.selectedFilesIDsCounter,
+            allFiles = this.allFiles,
+            start = this.offset,
+            stop = Math.min(this.offset + this.maxDisplayedFiles, allFiles.length);
 
-        for (let i = this.offset; i < this.offset + this.maxDisplayedFiles && i < allFiles.length; i++) {
+        for (let i = start; i < stop; i++) {
             let f = new TableFile(allFiles[i]);
             f.selected = this.selectedFilesIDs.has(allFiles[i].id);
             result.push(f);
         }
+
+        let nextImagesURLs: string[] = [];
+        start = Math.min(this.offset + this.maxDisplayedFiles, allFiles.length);
+        stop = Math.min(start + SharedState.state.settings.scrollOffset, allFiles.length);
+        for (let i = start; i < stop; i++) {
+            if (allFiles[i].preview !== "") {
+                nextImagesURLs.push(allFiles[i].preview);
+            }
+        }
+
+        preloadImages(nextImagesURLs);
 
         return result;
     }
