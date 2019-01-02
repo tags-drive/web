@@ -1,45 +1,150 @@
 <template>
 	<div
 		id="log-window"
-		v-if="show"
-		:style="{'opacity': opacity}"
+		:style="logWindowStyles"
 		@mouseenter="window().mouseEnter()"
 		@mouseleave="window().mouseLeave()"
 	>
-		<div style="float: right;">
+		<div
+			v-show="!show"
+			id="open-button"
+		>
+			<i
+				class="material-icons btn noselect"
+				@click="window().show()"
+			>keyboard_arrow_left</i>
+		</div>
+
+		<div id="close-button">
 			<i
 				class="material-icons btn noselect"
 				@click="window().hide()"
-			>close</i>
+			>keyboard_arrow_right</i>
 		</div>
 
 		<div
-			style="margin-bottom: 5px;"
-			v-for="(event, index) in events"
-			:key="index"
+			id="events"
+			ref="events"
 		>
-			{{event.time}}
-			<span v-if="event.type === errorType" style="color: red;">[Error] </span>
-			<span v-else-if="event.type === infoType" style="color: blue;">[Info] </span>
-			{{event.msg}}
+			<div
+				class="event"
+				v-for="(event, index) in events"
+				:key="index"
+			>
+				<div
+					class="indicator"
+					:style="[event.type === errorType ? {'background-color': '#d32f2f'} : {'background-color': '#1976d2'}]"
+				></div>
+
+				<div class="message-block">
+					<div style="font-size: 16px;">{{event.time}}</div>
+
+					<div class="message">
+						{{event.msg}}
+					</div>	
+				</div>
+
+			</div>
 		</div>
 	</div>
 </template>
 
 <style scoped>
 #log-window {
-    background-color: var(--secondary-color);
-    border: 1px var(--primary-border-color) solid;
+    background-color: #f7f7f7;
+    border: 1px solid #00000050;
     border-radius: 5px;
     bottom: 10px;
-    height: 200px;
-    left: 10px;
-    z-index: 3;
-    overflow: auto;
+    height: 450px;
     padding: 10px;
     position: fixed;
-    width: 350px;
+    right: 25px;
+    width: 30%;
+    z-index: 3;
+}
+
+#open-button {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translate(-100%, -50%);
+}
+
+#open-button > i {
+    border-radius: 5px 0px 0px 5px;
+    border-right: none;
+    height: 80px;
+    width: 20px;
+}
+
+#close-button {
+    left: 0;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+}
+
+#close-button > i {
+    border-radius: 0px 5px 5px 0px;
+    border-left: none;
+    height: 80px;
+    width: 20px;
+}
+
+#events {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    height: 100%;
+    margin-left: 15px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-right: 3px;
+}
+
+.event {
+    background-color: white;
+    border: 1px solid #00000012;
+    border-bottom: 1px solid #00000060;
+    border-radius: 3px;
+    margin-bottom: 5px;
+    padding-bottom: 3px;
+    padding-top: 3px;
+    position: relative;
+}
+
+.indicator {
+    border-radius: 30px;
+    height: 90%;
+    margin-left: 5px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+}
+
+.message-block {
+    margin-left: 13px; /* 5 + 5 + 5 - 2*/
+    width: calc(100% - 13px);
+}
+
+.message {
+    color: #000000b0;
+    font-size: 14px;
+    margin-left: 2px;
     word-wrap: break-word;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: inherit;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 5px;
 }
 </style>
 
@@ -57,8 +162,10 @@ interface logEvent {
     time: string;
 }
 
-const hideTimeout = 5 * 1000; // 5s in milliseconds
-const msTimeout = 50; // 50ms is good enough. When 100, FPS is too low
+const hideTimeout = 5 * 1000; // 5s
+const animationStart = 500; // 500ms
+const msTimeout = 20; // 20ms is good enough
+const maxEventsNumber = 1000;
 
 @Component({})
 export default class extends Vue {
@@ -67,21 +174,27 @@ export default class extends Vue {
     // States
     show: boolean = false;
     isMouseInside: boolean = false; // if isMouseInside, hideAfter isn't changed
-    hideAfter: number = hideTimeout;
-    // UI
-    opacity: number = 1;
-    lastScrollHeight: number = 0;
+    hideAfter: number = 0;
     // Data
-    /* events - array of objects:
-	{
-		type: string,
-		msg: string,
-		time: string
-	}
-	*/
     events: logEvent[] = [];
 
-    mounted() {}
+    get logWindowStyles() {
+        if (this.show) {
+            if (this.isMouseInside || this.hideAfter > 1000) {
+                return {};
+            }
+        }
+
+        let transform: number = 0;
+        if (0 <= this.hideAfter && this.hideAfter <= animationStart) {
+            transform = 100 - Math.ceil((this.hideAfter / animationStart) * 100);
+        }
+
+        return {
+            right: transform === 0 ? "25px" : "0",
+            transform: `translateX(${transform}%)`
+        };
+    }
 
     created() {
         EventBus.$on(Events.LogEvent, (payload: any) => {
@@ -99,13 +212,13 @@ export default class extends Vue {
             if (this.isMouseInside) {
                 return;
             }
-            if (this.hideAfter < 0) {
+
+            if (this.hideAfter <= 0) {
                 this.show = false;
+                return;
             }
+
             this.hideAfter -= msTimeout;
-            if (this.hideAfter < 1000) {
-                this.opacity = this.hideAfter / 1000;
-            }
         }, msTimeout);
     }
 
@@ -113,23 +226,33 @@ export default class extends Vue {
     window() {
         return {
             show: () => {
-                this.opacity = 1;
                 this.hideAfter = hideTimeout;
                 this.show = true;
             },
             hide: () => {
-                this.show = false;
+                this.hideAfter = animationStart;
                 this.isMouseInside = false;
             },
             mouseEnter: () => {
-                this.isMouseInside = true;
-                this.window().show(); // update opacity and hideAfter
+                // Don't interrupt animation
+                if (this.hideAfter > animationStart) {
+                    this.hideAfter = hideTimeout;
+                    this.isMouseInside = true;
+                }
             },
             mouseLeave: () => {
                 this.isMouseInside = false;
             },
             scrollToEnd: () => {
-                this.$el.scrollTop = this.$el.scrollHeight;
+                let elem = <HTMLElement>this.$refs["events"];
+                if (elem === undefined) {
+                    return;
+                }
+
+                // We have to wait for render of a new element
+                setTimeout(() => {
+                    elem.scrollTop = elem.scrollHeight;
+                }, 20);
             }
         };
     }
@@ -141,12 +264,12 @@ export default class extends Vue {
         this.events.push(obj);
 
         // Remove old events
-        while (this.events.length > 10) {
+        while (this.events.length > maxEventsNumber) {
             this.events.splice(0, 1);
         }
+
         this.window().show();
         this.window().scrollToEnd();
     }
 }
 </script>
-
