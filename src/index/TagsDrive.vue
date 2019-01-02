@@ -79,7 +79,7 @@ th {
 }
 
 .btn:hover {
-    background-color: var(--secondary-element-color);
+    background-color: #dfdfdf;
 }
 
 /* Scrollbar */
