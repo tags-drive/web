@@ -215,6 +215,9 @@ export default class extends Vue {
         let reactive = SharedStore.state.allFilesChangesCounter;
 
         let allFiles = SharedStore.state.allFiles;
+        if (!SharedState.state.settings.showDeletedFiles) {
+            allFiles = allFiles.filter(f => !f.deleted);
+        }
 
         // Determine should we reset offset
         if (allFiles.length !== this.lastAllFilesLength) {
@@ -398,7 +401,7 @@ export default class extends Vue {
     // Select mode
     toggleAllFiles() {
         if (!this.allSelected) {
-            this.selectedFilesCounter = SharedStore.state.allFiles.length;
+            this.selectedFilesCounter = this.allFiles.length;
             this.allSelected = true;
             SharedState.commit("setSelectMode");
 
@@ -439,7 +442,7 @@ export default class extends Vue {
         SharedState.commit("setSelectMode");
         this.selectedFilesIDs.add(id);
         this.selectedFilesIDsCounter++;
-        if (this.selectedFilesCounter === SharedStore.state.allFiles.length) {
+        if (this.selectedFilesCounter === this.allFiles.length) {
             this.allSelected = true;
         }
     }
