@@ -88,7 +88,7 @@
 		title="Change tags"
 		@click="management().globalTags()"
 	>
-		<img src="/static/icons/tag.png">
+		<i style="font-size: 30px;" class="material-icons">local_offer</i>
 	</div>
 
 	<!-- Settings -->
@@ -213,29 +213,17 @@ div#search-button > i {
 
 #tag-editing-button {
     cursor: pointer;
-    height: 80%;
     margin-left: 10px;
-    position: relative;
-    width: 30px;
-    margin-right: 5px;
-}
-
-#tag-editing-button > img {
-    /* middle */
-    bottom: 0;
-    margin: auto;
-    position: absolute;
-    top: 0;
-    width: 100%;
 }
 
 #settings-button {
     cursor: pointer;
+    margin-left: 5px;
 }
 
 #logout {
-    margin-left: 5px;
     cursor: pointer;
+    margin-left: 5px;
     width: 35px;
 }
 </style>
