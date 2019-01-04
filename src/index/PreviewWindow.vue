@@ -93,31 +93,41 @@
 			<div
 				v-show="!fullscreenMode"
 				id="info"
-			>
+			>	
 				<!-- Filename -->
-				<div class="header noselect" style="margin-top: 0; border-radius: inherit;">Filename</div>
-				<div class="content">
-					{{file.filename}} <span v-if="file.deleted" style="color: red">(in Trash)</span>
+				<div class="card">
+					<div class="card__header noselect">Filename</div>
+					<div class="card__data">
+						{{file.filename}} <span v-if="file.deleted" style="color: red">(in Trash)</span>
+					</div>
 				</div>
 
-				<!-- Tags -->
-				<div class="header noselect">Tags</div>
-				<div class="content" style="min-height: 30px;">
-					<div v-if="file.tags.length === 0">Empty</div>
-					<div v-else id="tags">
-						<tag
-							v-for="(id, index) in file.tags"
-							:key="index"
-							:tag="Store.allTags.get(id)"
-							style="margin-bottom: 3px;"
-						></tag>
+				<!-- Tags -->				
+				<div class="card">
+					<div class="card__header noselect">Tags</div>
+					<div class="card__data" style="font-size: initial;">
+						<div v-if="file.tags.length === 0">Empty</div>
+						<div
+							v-else
+							id="tags"
+							style="display: flex; flex-wrap: wrap;"
+						>
+							<tag
+								v-for="(id, index) in file.tags"
+								:key="index"
+								:tag="Store.allTags.get(id)"
+								style="margin-bottom: 3px;"
+							></tag>
+						</div>
 					</div>
 				</div>
 
 				<!-- Description -->
-				<div class="header noselect">Description</div>
-				<div class="content">
-					{{file.description === "" ? 'Empty' : file.description}}
+				<div class="card">
+					<div class="card__header noselect">Description</div>
+					<div class="card__data">
+						{{file.description === "" ? 'Empty' : file.description}}
+					</div>
 				</div>
 			</div>
 		</div>
@@ -269,29 +279,36 @@
     vertical-align: middle;
 }
 
-/* Info block */
 #info {
-    background-color: white;
+    background-color: #f7f7f7;
     border-radius: 5px;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     width: 24%;
 }
 
-#tags {
-    display: flex;
-    flex-wrap: wrap;
+/* Info blocks */
+.card {
+    background-color: white;
+    border: 1px solid #00000012;
+    border-bottom: 1px solid #00000060;
+    border-radius: 3px;
+    margin: 5px;
+    margin-bottom: 7px;
+    padding: 3px;
 }
 
-.header {
-    background-image: linear-gradient(white, #00000015, white);
-    font-size: 20px;
-    margin-top: 10px;
+.card__header {
+    border-bottom: 1px solid #00000060;
+    border-radius: 3px;
+    font-size: 18px;
+    margin: auto;
     text-align: center;
 }
 
-.content {
-    font-size: 18px;
+.card__data {
+    font-size: 14px;
     padding: 5px;
-    word-break: break-all;
+    word-wrap: break-word;
 }
 </style>
 
