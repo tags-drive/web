@@ -444,6 +444,18 @@ export default class extends Vue {
 
             this.window().show();
         });
+
+        // When ModalWindow is closed the file was already changed, but we have to
+        // wait for loading of all files
+        EventBus.$on(Events.ModalWindow.HideWindow, () => {
+            if (this.file === null || !this.show) {
+                return;
+            }
+
+            setTimeout(() => {
+                this.updatePreview();
+            }, 100); // 100ms is enough for 3G and faster
+        });
     }
 
     window() {
@@ -465,10 +477,13 @@ export default class extends Vue {
     edit() {
         return {
             filename: () => {
+                EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileRenamingWindow, { file: this.file });
             },
             tags: () => {
+                EventBus.$emit(Events.ModalWindow.RegularMode.ShowTagsChangingWindow, { file: this.file });
             },
             description: () => {
+                EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileDescriptionChangingWindow, { file: this.file });
             }
         };
     }
@@ -519,6 +534,21 @@ export default class extends Vue {
                     .then(resp => resp.text())
                     .then(text => (this.textFileContent = text))
                     .catch(err => logError(err));
+            }
+        }
+    }
+
+    updatePreview() {
+        if (this.file === null) {
+            return;
+        }
+
+        for (let i = 0; i < SharedStore.state.allFiles.length; i++) {
+            if (SharedStore.state.allFiles[i].id === this.file.id) {
+                // Updating fileIndex is confusing. So it's better not to change it
+                // this.fileIndex = i;
+                this.file = SharedStore.state.allFiles[i];
+                break;
             }
         }
     }
