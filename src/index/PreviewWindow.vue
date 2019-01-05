@@ -368,7 +368,7 @@ export default class extends Vue {
     fullscreenMode: boolean = false;
     // File
     fileIndex: number = 0;
-    file: File = new File();
+    file: File | null = null;
     // Data
     textFileContent: string = "";
     //
@@ -380,7 +380,7 @@ export default class extends Vue {
     }
 
     get imageLink(): string {
-        return Params.Host + "/" + this.file.origin;
+        return Params.Host + "/" + this.file!.origin;
     }
 
     get previewWindowStyle() {
@@ -425,7 +425,7 @@ export default class extends Vue {
 
             // Define fileIndex
             for (let i = 0; i < SharedStore.state.allFiles.length; i++) {
-                if (SharedStore.state.allFiles[i].id === this.file.id) {
+                if (SharedStore.state.allFiles[i].id === this.file!.id) {
                     this.fileIndex = i;
                     break;
                 }
@@ -433,7 +433,7 @@ export default class extends Vue {
 
             this.textFileContent = "";
             if (this.isTextFile()) {
-                fetch(Params.Host + "/" + this.file.origin, {
+                fetch(Params.Host + "/" + this.file!.origin, {
                     method: "GET",
                     credentials: "same-origin"
                 })
@@ -474,11 +474,19 @@ export default class extends Vue {
     }
 
     isTextFile() {
+        if (this.file === null) {
+            return "";
+        }
+
         let ext = this.file.filename.split(".").pop();
         return ext === "txt";
     }
 
     isImage() {
+        if (this.file === null) {
+            return "";
+        }
+
         return this.file.type === "image";
         // return ext === "jpg" || ext === "jpeg" || ext === "png" || ext === "gif";
     }
