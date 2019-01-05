@@ -395,7 +395,7 @@ export default class extends Vue {
 
             // Define fileIndex
             for (let i = 0; i < SharedStore.state.allFiles.length; i++) {
-                if (SharedStore.state.allFiles[i].filename === this.file.filename) {
+                if (SharedStore.state.allFiles[i].id === this.file.id) {
                     this.fileIndex = i;
                     break;
                 }
