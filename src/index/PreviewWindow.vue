@@ -554,6 +554,10 @@ export default class extends Vue {
     }
 
     onkeydownListener(event: KeyboardEvent) {
+        if (SharedState.state.showModalWindow) {
+            return;
+        }
+
         switch (event.key) {
             case "ArrowRight":
                 this.nextPreview();

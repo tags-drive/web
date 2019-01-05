@@ -10,6 +10,7 @@ const state: StoreOptions<State> = {
     state: {
         showDropLayer: true, // when we show modal-window with tags showDropLayer is false
         selectMode: false,
+        showModalWindow: false,
         // settings
         settings: {
             showDeletedFiles: false,
@@ -28,6 +29,12 @@ const state: StoreOptions<State> = {
         },
         unsetSelectMode(state) {
             state.selectMode = false;
+        },
+        showModalWindow(state) {
+            state.showModalWindow = true;
+        },
+        hideModalWindow(state) {
+            state.showModalWindow = false;
         },
         // settings
         readSettings(state) {

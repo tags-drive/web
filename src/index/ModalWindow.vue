@@ -189,6 +189,7 @@ export default class extends Vue {
     // UI
     showWindow() {
         SharedState.commit("hideDropLayer");
+        SharedState.commit("showModalWindow");
         this.addListener();
         this.show = true;
     }
@@ -208,6 +209,7 @@ export default class extends Vue {
         this.removeListener();
 
         SharedState.commit("showDropLayer");
+        SharedState.commit("hideModalWindow");
     }
 
     // Listener
