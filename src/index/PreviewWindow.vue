@@ -96,6 +96,14 @@
 			>
 				<!-- Filename -->
 				<div class="card">
+					<div class="card__header noselect">File ID</div>
+					<div class="card__data">
+						{{file.id}}
+					</div>
+				</div>
+
+				<!-- Filename -->
+				<div class="card">
 					<div class="card__header noselect">
 						Filename
 						<i
