@@ -93,10 +93,17 @@
 			<div
 				v-show="!fullscreenMode"
 				id="info"
-			>	
+			>
 				<!-- Filename -->
 				<div class="card">
-					<div class="card__header noselect">Filename</div>
+					<div class="card__header noselect">
+						Filename
+						<i
+							class="material-icons noselect"
+							title="Edit filename"
+							@click="edit().filename()"
+						>edit</i>
+					</div>
 					<div class="card__data">
 						{{file.filename}} <span v-if="file.deleted" style="color: red">(in Trash)</span>
 					</div>
@@ -104,7 +111,14 @@
 
 				<!-- Tags -->				
 				<div class="card">
-					<div class="card__header noselect">Tags</div>
+					<div class="card__header noselect">
+						Tags
+						<i
+							class="material-icons noselect"
+							title="Edit tags"
+							@click="edit().tags()"
+						>edit</i>
+					</div>
 					<div class="card__data" style="font-size: initial;">
 						<div v-if="file.tags.length === 0">Empty</div>
 						<div
@@ -124,7 +138,14 @@
 
 				<!-- Description -->
 				<div class="card">
-					<div class="card__header noselect">Description</div>
+					<div class="card__header noselect">
+						Description
+						<i
+							class="material-icons noselect"
+							title="Edit description"
+							@click="edit().description()"
+						>edit</i>
+					</div>
 					<div class="card__data">
 						{{file.description === "" ? 'Empty' : file.description}}
 					</div>
@@ -302,7 +323,16 @@
     border-radius: 3px;
     font-size: 18px;
     margin: auto;
+    position: relative;
     text-align: center;
+}
+
+.card__header > i {
+    cursor: pointer;
+    font-size: 20px;
+    position: absolute;
+    right: 0;
+    top: 0;
 }
 
 .card__data {
@@ -428,6 +458,17 @@ export default class extends Vue {
                 document.removeEventListener("keydown", this.onkeydownListener);
                 this.fullscreenMode = false;
                 this.show = false;
+            }
+        };
+    }
+
+    edit() {
+        return {
+            filename: () => {
+            },
+            tags: () => {
+            },
+            description: () => {
             }
         };
     }
