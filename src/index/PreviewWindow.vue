@@ -95,29 +95,68 @@
 				id="info"
 			>
 				<!-- Filename -->
-				<div class="header noselect" style="margin-top: 0; border-radius: inherit;">Filename</div>
-				<div class="content">
-					{{file.filename}} <span v-if="file.deleted" style="color: red">(in Trash)</span>
+				<div class="card">
+					<div class="card__header noselect">File ID</div>
+					<div class="card__data">
+						{{file.id}}
+					</div>
 				</div>
 
-				<!-- Tags -->
-				<div class="header noselect">Tags</div>
-				<div class="content" style="min-height: 30px;">
-					<div v-if="file.tags.length === 0">Empty</div>
-					<div v-else id="tags">
-						<tag
-							v-for="(id, index) in file.tags"
-							:key="index"
-							:tag="Store.allTags.get(id)"
-							style="margin-bottom: 3px;"
-						></tag>
+				<!-- Filename -->
+				<div class="card">
+					<div class="card__header noselect">
+						Filename
+						<i
+							class="material-icons noselect"
+							title="Edit filename"
+							@click="edit().filename()"
+						>edit</i>
+					</div>
+					<div class="card__data">
+						{{file.filename}} <span v-if="file.deleted" style="color: red">(in Trash)</span>
+					</div>
+				</div>
+
+				<!-- Tags -->				
+				<div class="card">
+					<div class="card__header noselect">
+						Tags
+						<i
+							class="material-icons noselect"
+							title="Edit tags"
+							@click="edit().tags()"
+						>edit</i>
+					</div>
+					<div class="card__data" style="font-size: initial;">
+						<div v-if="file.tags.length === 0">Empty</div>
+						<div
+							v-else
+							id="tags"
+							style="display: flex; flex-wrap: wrap;"
+						>
+							<tag
+								v-for="(id, index) in file.tags"
+								:key="index"
+								:tag="Store.allTags.get(id)"
+								style="margin-bottom: 3px;"
+							></tag>
+						</div>
 					</div>
 				</div>
 
 				<!-- Description -->
-				<div class="header noselect">Description</div>
-				<div class="content">
-					{{file.description === "" ? 'Empty' : file.description}}
+				<div class="card">
+					<div class="card__header noselect">
+						Description
+						<i
+							class="material-icons noselect"
+							title="Edit description"
+							@click="edit().description()"
+						>edit</i>
+					</div>
+					<div class="card__data">
+						{{file.description === "" ? 'Empty' : file.description}}
+					</div>
 				</div>
 			</div>
 		</div>
@@ -269,29 +308,45 @@
     vertical-align: middle;
 }
 
-/* Info block */
 #info {
-    background-color: white;
+    background-color: #f7f7f7;
     border-radius: 5px;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     width: 24%;
 }
 
-#tags {
-    display: flex;
-    flex-wrap: wrap;
+/* Info blocks */
+.card {
+    background-color: white;
+    border: 1px solid #00000012;
+    border-bottom: 1px solid #00000060;
+    border-radius: 3px;
+    margin: 5px;
+    margin-bottom: 7px;
+    padding: 3px;
 }
 
-.header {
-    background-image: linear-gradient(white, #00000015, white);
-    font-size: 20px;
-    margin-top: 10px;
+.card__header {
+    border-bottom: 1px solid #00000060;
+    border-radius: 3px;
+    font-size: 18px;
+    margin: auto;
+    position: relative;
     text-align: center;
 }
 
-.content {
-    font-size: 18px;
+.card__header > i {
+    cursor: pointer;
+    font-size: 20px;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.card__data {
+    font-size: 14px;
     padding: 5px;
-    word-break: break-all;
+    word-wrap: break-word;
 }
 </style>
 
@@ -321,7 +376,7 @@ export default class extends Vue {
     fullscreenMode: boolean = false;
     // File
     fileIndex: number = 0;
-    file: File = new File();
+    file: File | null = null;
     // Data
     textFileContent: string = "";
     //
@@ -333,7 +388,7 @@ export default class extends Vue {
     }
 
     get imageLink(): string {
-        return Params.Host + "/" + this.file.origin;
+        return Params.Host + "/" + this.file!.origin;
     }
 
     get previewWindowStyle() {
@@ -378,7 +433,7 @@ export default class extends Vue {
 
             // Define fileIndex
             for (let i = 0; i < SharedStore.state.allFiles.length; i++) {
-                if (SharedStore.state.allFiles[i].filename === this.file.filename) {
+                if (SharedStore.state.allFiles[i].id === this.file!.id) {
                     this.fileIndex = i;
                     break;
                 }
@@ -386,7 +441,7 @@ export default class extends Vue {
 
             this.textFileContent = "";
             if (this.isTextFile()) {
-                fetch(Params.Host + "/" + this.file.origin, {
+                fetch(Params.Host + "/" + this.file!.origin, {
                     method: "GET",
                     credentials: "same-origin"
                 })
@@ -396,6 +451,18 @@ export default class extends Vue {
             }
 
             this.window().show();
+        });
+
+        // When ModalWindow is closed the file was already changed, but we have to
+        // wait for loading of all files
+        EventBus.$on(Events.ModalWindow.HideWindow, () => {
+            if (this.file === null || !this.show) {
+                return;
+            }
+
+            setTimeout(() => {
+                this.updatePreview();
+            }, 100); // 100ms is enough for 3G and faster
         });
     }
 
@@ -415,12 +482,34 @@ export default class extends Vue {
         };
     }
 
+    edit() {
+        return {
+            filename: () => {
+                EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileRenamingWindow, { file: this.file });
+            },
+            tags: () => {
+                EventBus.$emit(Events.ModalWindow.RegularMode.ShowTagsChangingWindow, { file: this.file });
+            },
+            description: () => {
+                EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileDescriptionChangingWindow, { file: this.file });
+            }
+        };
+    }
+
     isTextFile() {
+        if (this.file === null) {
+            return "";
+        }
+
         let ext = this.file.filename.split(".").pop();
         return ext === "txt";
     }
 
     isImage() {
+        if (this.file === null) {
+            return "";
+        }
+
         return this.file.type === "image";
         // return ext === "jpg" || ext === "jpeg" || ext === "png" || ext === "gif";
     }
@@ -457,7 +546,26 @@ export default class extends Vue {
         }
     }
 
+    updatePreview() {
+        if (this.file === null) {
+            return;
+        }
+
+        for (let i = 0; i < SharedStore.state.allFiles.length; i++) {
+            if (SharedStore.state.allFiles[i].id === this.file.id) {
+                // Updating fileIndex is confusing. So it's better not to change it
+                // this.fileIndex = i;
+                this.file = SharedStore.state.allFiles[i];
+                break;
+            }
+        }
+    }
+
     onkeydownListener(event: KeyboardEvent) {
+        if (SharedState.state.showModalWindow) {
+            return;
+        }
+
         switch (event.key) {
             case "ArrowRight":
                 this.nextPreview();

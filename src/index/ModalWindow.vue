@@ -61,7 +61,7 @@
     position: fixed;
     top: 0;
     width: 100vw;
-    z-index: 2;
+    z-index: 6;
 }
 
 #modal-window {
@@ -74,7 +74,6 @@
     position: relative;
     top: 10vh;
     width: 600px;
-    z-index: 3;
 }
 
 .modal-window__input {
@@ -190,6 +189,7 @@ export default class extends Vue {
     // UI
     showWindow() {
         SharedState.commit("hideDropLayer");
+        SharedState.commit("showModalWindow");
         this.addListener();
         this.show = true;
     }
@@ -209,6 +209,7 @@ export default class extends Vue {
         this.removeListener();
 
         SharedState.commit("showDropLayer");
+        SharedState.commit("hideModalWindow");
     }
 
     // Listener
