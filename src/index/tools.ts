@@ -46,7 +46,8 @@ function isElementInPath(event: Event, id: string): boolean {
     return false;
 }
 
-async function preloadImages(urls: string[]) {
+// urls are links without domain (/data/...)
+async function preloadImages(...urls: string[]) {
     for (let i = 0; i < urls.length; i++) {
         let img = new Image();
         img.src = Params.Host + "/" + urls[i];

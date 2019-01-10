@@ -187,7 +187,7 @@ export default class extends Vue {
             }
         }
 
-        preloadImages(nextImagesURLs);
+        preloadImages(...nextImagesURLs);
 
         return result;
     }
