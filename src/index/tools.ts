@@ -5,10 +5,19 @@ function isErrorStatusCode(code: number): boolean {
     return code >= 400;
 }
 
-function logError(msg: string) {
+function logError(msg: string | TypeError) {
     /* eslint-disable no-console */
     console.error(msg);
     /* eslint-enable no-console */
+
+    if (
+        msg instanceof TypeError &&
+        (msg.message === "Failed to fetch" || // Chrome
+            msg.message === "NetworkError when attempting to fetch resource.") // Firefox
+    ) {
+        msg = "Can't load data. Check network connection or server status.";
+    }
+
     EventBus.$emit(Events.LogEvent, { type: Const.logType.error, msg: msg });
 }
 
