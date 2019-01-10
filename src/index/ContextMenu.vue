@@ -22,13 +22,8 @@
 				<input type="button" class="btn" @click="regularMode().changeDescription()" value="Update description">
 			</div>
 			<!-- Download -->
-			<div
-				class="btn"
-				style="box-sizing : border-box;"
-				v-if="!State.selectMode"
-				@click="hideMenu"
-			>
-				<a class="btn--href" download :href="downloadLink">Download</a>
+			<div v-if="!State.selectMode">
+				<input type="button" class="btn" @click="selectMode().downloadSingleFile()" value="Download">
 			</div>
 			<div v-else>
 				<input type="button" class="btn" @click="selectMode().downloadFiles()" value="Download selected files">
@@ -98,7 +93,7 @@ import { State } from "@app/index/state/types";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
-import { isElementInPath } from "@app/index/tools";
+import { isElementInPath, isErrorStatusCode, logError } from "@app/index/tools";
 
 interface Payload {
     file: File;
@@ -219,6 +214,34 @@ export default class extends Vue {
                 getSelectedFiles().then(files =>
                     EventBus.$emit(Events.ModalWindow.SelectMode.ShowTagsDeletingWindow, { files: files })
                 );
+            },
+            downloadSingleFile: () => {
+                fetch(Params.Host + "/data/" + this.file!.id, {
+                    method: "GET",
+                    credentials: "same-origin"
+                })
+                    .then(resp => {
+                        if (isErrorStatusCode(resp.status)) {
+                            resp.text().then(text => {
+                                logError(text);
+                            });
+                            return;
+                        }
+
+                        resp.blob().then(file => {
+                            let a = document.createElement("a"),
+                                url = URL.createObjectURL(file);
+
+                            a.href = url;
+                            a.download = this.file!.filename;
+                            document.body.appendChild(a);
+                            a.click();
+
+                            document.body.removeChild(a);
+                            window.URL.revokeObjectURL(url);
+                        });
+                    })
+                    .catch(err => logError(err));
             },
             downloadFiles: () => {
                 let params = new URLSearchParams();
