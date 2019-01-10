@@ -1,5 +1,6 @@
 import { EventBus, Events } from "@app/index/eventBus";
 import { Const } from "@app/index/const";
+import { Params } from "@app/global";
 
 function isErrorStatusCode(code: number): boolean {
     return code >= 400;
@@ -45,4 +46,12 @@ function isElementInPath(event: Event, id: string): boolean {
     return false;
 }
 
-export { isErrorStatusCode, isElementInPath, logError, logInfo, Const };
+// urls are links without domain (/data/...)
+async function preloadImages(...urls: string[]) {
+    for (let i = 0; i < urls.length; i++) {
+        let img = new Image();
+        img.src = Params.Host + "/" + urls[i];
+    }
+}
+
+export { isErrorStatusCode, isElementInPath, logError, logInfo, preloadImages };

@@ -364,7 +364,7 @@ import SharedState from "@app/index/state";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
-import { logError } from "@app/index/tools";
+import { logError, preloadImages } from "@app/index/tools";
 
 @Component({
     components: {
@@ -517,6 +517,9 @@ export default class extends Vue {
     nextPreview() {
         if (this.fileIndex < SharedStore.state.allFiles.length - 1) {
             this.file = SharedStore.state.allFiles[++this.fileIndex];
+            if (this.fileIndex < SharedStore.state.allFiles.length - 1) {
+                preloadImages(SharedStore.state.allFiles[this.fileIndex + 1].origin);
+            }
 
             if (this.isTextFile()) {
                 fetch(Params.Host + "/" + this.file.origin, {
@@ -533,6 +536,9 @@ export default class extends Vue {
     previousPreview() {
         if (this.fileIndex > 0) {
             this.file = SharedStore.state.allFiles[--this.fileIndex];
+            if (this.fileIndex > 0) {
+                preloadImages(SharedStore.state.allFiles[this.fileIndex - 1].origin);
+            }
 
             if (this.isTextFile()) {
                 fetch(Params.Host + "/" + this.file.origin, {

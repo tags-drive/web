@@ -106,8 +106,7 @@ import { State } from "@app/index/state/types";
 // Other
 import { Const } from "@app/index/const";
 import { Events, EventBus } from "@app/index/eventBus";
-import { isElementInPath } from "@app/index/tools";
-import { Params } from "@app/global";
+import { isElementInPath, preloadImages } from "@app/index/tools";
 
 const trTableHeight = 50;
 const maxLastIDs = 10;
@@ -132,14 +131,6 @@ let areEqualArrays = (a: any[], b: any[]): boolean => {
     }
 
     return true;
-};
-
-let preloadImages = async (urls: string[]) => {
-    let host = Params.Host;
-    for (let i = 0; i < urls.length; i++) {
-        let img = new Image();
-        img.src = host + "/" + urls[i];
-    }
 };
 
 @Component({
@@ -196,7 +187,7 @@ export default class extends Vue {
             }
         }
 
-        preloadImages(nextImagesURLs);
+        preloadImages(...nextImagesURLs);
 
         return result;
     }
