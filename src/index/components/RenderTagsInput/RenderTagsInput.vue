@@ -1,5 +1,5 @@
 <template>
-	<div style="display: flex;">
+	<div style="display: flex; flex-wrap: wrap;">
 		<span v-if="elements.length === 0">Logical expression</span>
 		<div
 			v-for="(elem, index) in elements"
