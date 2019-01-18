@@ -30,6 +30,10 @@
 
 		<p></p>
 
+		<span class="noselect">Tags Drive {{version}} (<a href="https://github.com/tags-drive">github.com/tags-drive</a>)</span>
+
+		<p></p>
+
 		<div>
 			<input
 				type="button"
@@ -75,10 +79,12 @@ import { Settings } from "@app/index/state/types";
 import SharedState from "@app/index/state";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
+import { Version } from "@app/global";
 
 @Component({})
 export default class extends Vue {
     settings: Settings = { showDeletedFiles: false, scrollOffset: 0 };
+    version: string = Version;
 
     created() {
         this.$nextTick(function() {
