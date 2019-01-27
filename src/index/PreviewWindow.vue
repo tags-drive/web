@@ -496,13 +496,13 @@ export default class extends Vue {
         };
     }
 
-    isTextFile() {
+    isTextFile(): boolean {
         if (this.file === null) {
-            return "";
+            return false;
         }
 
         let ext = this.file.filename.split(".").pop();
-        return ext === "txt";
+        return this.file.type === "file" && ext === "txt";
     }
 
     isImage() {
