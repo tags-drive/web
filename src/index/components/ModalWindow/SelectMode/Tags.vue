@@ -93,10 +93,9 @@ export default class extends Vue {
                 }
 
                 let params = new URLSearchParams();
-                params.append("id", String(file.id));
                 params.append("tags", Array.from(tags).join(","));
 
-                await fetch(Params.Host + "/api/files/tags?" + params, {
+                await fetch(Params.Host + `/api/file/${file.id}/tags?` + params, {
                     method: "PUT"
                 })
                     .then(resp => {

@@ -36,10 +36,10 @@ export default class extends Vue {
 
     rename() {
         let params = new URLSearchParams();
-        params.append("id", String(this.file.id));
+        let id = this.file.id;
         params.append("new-name", this.newFilename);
 
-        fetch(Params.Host + "/api/files/name?" + params, {
+        fetch(Params.Host + `/api/file/${id}/name` + params, {
             method: "PUT",
             credentials: "same-origin"
         })
