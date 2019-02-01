@@ -72,46 +72,36 @@ export default class extends Vue {
     }
 
     processSelectedFiles() {
-        let ids: number[] = [];
-        this.tags.filter(tag => tag.selected).forEach(tag => ids.push(tag.id));
+        let method = "POST";
+        if (this.mode === DeleteMode) {
+            method = "DELETE";
+        }
 
-        if (ids.length === 0) {
+        let tagIDs: number[] = [];
+        this.tags.filter(tag => tag.selected).forEach(tag => tagIDs.push(tag.id));
+        let fileIDs: number[] = [];
+        this.selectedFiles.forEach(file => fileIDs.push(file.id));
+
+        if (tagIDs.length === 0 || fileIDs.length === 0) {
             return;
         }
 
-        // Update tags and refresh list of files after all changes
-        (async () => {
-            for (let file of this.selectedFiles) {
-                // Merge tags of file and new tags
-                let tags = new Set(file.tags);
-                for (let i = 0; i < ids.length; i++) {
-                    if (this.mode === AddMode) {
-                        tags.add(ids[i]);
-                    } else if (this.mode === DeleteMode) {
-                        tags.delete(ids[i]);
-                    }
+        let params = new URLSearchParams();
+        params.append("files", fileIDs.join(","));
+        params.append("tags", tagIDs.join(","));
+
+        fetch(Params.Host + `/api/files/tags?` + params, {
+            method: method
+        })
+            .then(resp => {
+                if (isErrorStatusCode(resp.status)) {
+                    resp.text().then(text => {
+                        logError(text);
+                    });
+
+                    return;
                 }
 
-                let params = new URLSearchParams();
-                params.append("id", String(file.id));
-                params.append("tags", Array.from(tags).join(","));
-
-                await fetch(Params.Host + "/api/files/tags?" + params, {
-                    method: "PUT"
-                })
-                    .then(resp => {
-                        if (isErrorStatusCode(resp.status)) {
-                            resp.text().then(text => {
-                                logError(text);
-                            });
-                            return;
-                        }
-                    })
-                    .catch(err => logError(err));
-            }
-        })()
-            .then(() => {
-                // Refresh list of files
                 EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
                 EventBus.$emit(Events.Search.Usual);
                 this.hideWindow();

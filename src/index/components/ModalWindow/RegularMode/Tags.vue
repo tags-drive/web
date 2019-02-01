@@ -83,10 +83,10 @@ export default class extends Vue {
         this.tags.filter(tag => tag.selected).forEach(tag => ids.push(tag.id));
 
         let params = new URLSearchParams();
-        params.append("id", String(this.file.id));
+        let id = this.file.id;
         params.append("tags", ids.join(","));
 
-        fetch(Params.Host + "/api/files/tags?" + params, {
+        fetch(Params.Host + `/api/file/${id}/tags?` + params, {
             method: "PUT",
             credentials: "same-origin"
         })

@@ -49,10 +49,10 @@ export default class extends Vue {
 
     updateDescription() {
         let params = new URLSearchParams();
-        params.append("id", String(this.file.id));
+        let id = this.file.id;
         params.append("description", this.newDescription);
 
-        fetch(Params.Host + "/api/files/description?" + params, {
+        fetch(Params.Host + `/api/file/${id}/description?` + params, {
             method: "PUT",
             credentials: "same-origin"
         })
