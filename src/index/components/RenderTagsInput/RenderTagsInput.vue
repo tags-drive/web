@@ -22,7 +22,7 @@
 <style scoped>
 .input-tag {
     font-size: 18px;
-    height: 16px;
+    height: 15px;
     line-height: 16px;
     margin: auto 0;
 }
