@@ -25,6 +25,7 @@
 					id="expression-input"
 					type="text"
 					placeholder="Enter logical expression"
+					ref="expression-input"
 					v-model="expression">
 			</div>
 			<div
@@ -35,6 +36,27 @@
 				<render-tags-input
 					:expression="expression"
 				></render-tags-input>
+			</div>
+
+			<div
+				v-show="focused"
+				id="tags-list"
+			>
+				<div
+					v-for="(id, index) in allTagsIDs"
+					style="display: flex; margin: 5px;"
+					:key="index"
+				>
+					<!-- @click in tag component doesn't work, so we need a wrapper -->
+					<div @click="addTagID(id)">
+						<tag
+						style="cursor: pointer;"
+						title="Paste tag"
+							:tag="Store.allTags.get(id)"
+						></tag>
+					</div>
+					<i style="line-height: 28px;">id: {{id}}</i>
+				</div>
 			</div>
 		</div>
 
@@ -147,6 +169,20 @@
     width: 500px;
 }
 
+#search-input > #tags-list {
+    background-color: white;
+    border: 1px solid #88888880;
+    border-radius: 0px 0px 5px 5px;
+    border-top: none;
+    height: auto;
+    max-height: 500px;
+    overflow-y: auto;
+    position: absolute;
+    top: 100%;
+    width: 250px;
+    z-index: 2;
+}
+
 #options {
     display: flex;
 }
@@ -246,7 +282,7 @@ export default class TopBar extends Vue {
         });
 
         document.addEventListener("click", event => {
-            if (!isElementInPath(event, "render-wrapper", "input-wrapper")) {
+            if (!isElementInPath(event, "render-wrapper", "input-wrapper", "tags-list")) {
                 this.focused = false;
             }
         });
@@ -364,11 +400,29 @@ export default class TopBar extends Vue {
         };
     }
 
+    addTagID(argID: number) {
+		let id = String(argID);
+        let elem: HTMLInputElement = <HTMLInputElement>this.$refs["expression-input"];
+        if (!(this.$refs["expression-input"] instanceof HTMLInputElement)) {
+            return;
+        }
+
+        let l = elem.selectionStart!,
+            r = elem.selectionEnd!;
+
+        this.expression = this.expression.slice(0, l) + id + this.expression.slice(r);
+
+        this.$nextTick(() => {
+            elem.focus();
+            elem.setSelectionRange(l + id.length, l + id.length);
+        });
+    }
+
     focusInput() {
         this.focused = true;
         this.$nextTick(() => {
-            let elem = document.getElementById("expression-input");
-            if (elem !== null) elem.focus();
+            let elem = this.$refs["expression-input"];
+            if (elem instanceof HTMLElement) elem.focus();
         });
     }
 }
