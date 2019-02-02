@@ -4,52 +4,76 @@
 	<div id="logo"><span class="noselect">Tags Drive</span></div>
 
 	<div id="search-wrapper">
+		<div
+			id="search-button"
+			class="noselect vertically button"
+		>
+			<div>
+				<i
+					class="material-icons noselect"
+					@click="search().usual()"
+				>search</i>
+			</div>
+		</div>
 
+		<div id="search-input">
+
+		</div>
+
+		<div id="advanced-options">
+
+		</div>
 	</div>
 
-	<!-- Global Tag editing -->
-	<div
-		id="tag-editing-button"
-		class="vertically noselect"
-		title="Change tags"
-		@click="management().globalTags()"
-	>
-		<i style="font-size: 30px;" class="material-icons">local_offer</i>
-	</div>
+	<div id="options">
+		<!-- Global Tag editing -->
+		<div
+			id="tag-editing-button"
+			class="vertically noselect button"
+			title="Change tags"
+			@click="management().globalTags()"
+		>
+			<div>
+				<i class="material-icons">local_offer</i>
+			</div>
+		</div>
 
-	<!-- Settings -->
-	<div
-		id="settings-button"
-		class="vertically noselect"
-		title="Settings"
-		@click="management().settings()"
-	>
-		<i style="font-size: 30px;" class="material-icons">settings</i>
-	</div>
+		<!-- Settings -->
+		<div
+			id="settings-button"
+			class="vertically noselect button"
+			title="Settings"
+			@click="management().settings()"
+		>
+			<div>
+				<i class="material-icons">settings</i>
+			</div>
+		</div>
 
-	<!-- Log out -->
-	<div
-		id="logout"
-		class="vertically noselect"
-		title="Log out"
-		@click="management().logout()"
-	>
-		<i class="material-icons" style="font-size: 30px;">exit_to_app</i>
+		<!-- Log out -->
+		<div
+			id="logout"
+			class="vertically noselect button"
+			title="Log out"
+			@click="management().logout()"
+		>
+			<div>
+				<i class="material-icons">exit_to_app</i>
+			</div>
+		</div>
 	</div>
 </div>
 </template>
 
 <style scoped>
 #top-bar {
-    background-color: var(--primary-color);
+    background-color: white;
     border-bottom: 1px solid #0000002f;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     height: 50px;
-    position: sticky;
     top: 0;
     width: 100%;
-    z-index: 1;
 }
 
 #logo {
@@ -61,20 +85,56 @@
     vertical-align: middle;
 }
 
-#tag-editing-button {
-    cursor: pointer;
-    margin-left: 10px;
+#search-wrapper {
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px 0px #888888;
+    display: flex;
+    height: 80%;
+    margin: auto 0 auto 0;
+    width: 600px;
 }
 
-#settings-button {
-    cursor: pointer;
-    margin-left: 5px;
-}
-
-#logout {
-    cursor: pointer;
+#search-wrapper > #search-button {
+    height: 35px;
     margin-left: 5px;
     width: 35px;
+}
+
+#options {
+    display: flex;
+}
+
+.button {
+    border-radius: 50%;
+    cursor: pointer;
+    height: 40px;
+    line-height: 40px;
+    margin-right: 5px;
+    position: relative;
+    text-align: center;
+    width: 40px;
+}
+
+.button > div {
+    height: 30px;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+}
+
+.button div > i {
+    font-size: 30px;
+    vertical-align: baseline;
+}
+
+.button:hover {
+    background-color: #88888840;
+}
+
+.button:last-child {
+    margin-right: 0;
 }
 </style>
 
