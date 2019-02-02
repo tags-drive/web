@@ -82,6 +82,31 @@
 			</div>
 		</div>
 
+		<!-- Advanced options -->
+		<div
+			id="advanced-options"
+			v-if="showAdvancedOptions"
+		></div>
+
+		<!-- Show advanced options -->
+		<div
+			id="search-button"
+			class="noselect vertically button buttons__search"
+		>
+			<div>
+				<i
+					v-if="!showAdvancedOptions"
+					class="material-icons noselect"
+					title="Show advanced options"
+					@click="turnOnAdvancedOptions"
+				>arrow_drop_down</i>
+				<i
+					v-else
+					class="material-icons noselect"
+					title="Hide advanced options"
+					@click="turnOffAdvancedOptions"
+				>arrow_drop_up</i>
+			</div>
 		</div>
 	</div>
 
@@ -219,6 +244,19 @@
     display: flex;
 }
 
+#search-bar-wrapper > #advanced-options {
+    background-color: white;
+    border: 1px solid #88888880;
+    border-radius: 0px 0px 5px 5px;
+    border-top: none;
+    height: 200px;
+    position: absolute;
+    right: 5px;
+    top: 100%;
+    width: 400px;
+    z-index: 2;
+}
+
 #options {
     display: flex;
 }
@@ -288,6 +326,7 @@ export default class TopBar extends Vue {
     position: number;
     showTagsList: boolean;
     focused: boolean;
+    showAdvancedOptions: boolean;
     // Text search
     text: string;
     Store: Store;
@@ -304,6 +343,7 @@ export default class TopBar extends Vue {
         this.position = 0;
         this.showTagsList = false;
         this.focused = false;
+        this.showAdvancedOptions = false;
         this.text = "";
         this.Store = SharedStore.state;
     }
@@ -469,6 +509,26 @@ export default class TopBar extends Vue {
             let elem = this.$refs["expression-input"];
             if (elem instanceof HTMLElement) elem.focus();
         });
+    }
+
+    turnOnAdvancedOptions() {
+        this.showAdvancedOptions = true;
+        this.$nextTick(() => {
+            document.addEventListener("click", this.advancedOptionsListener);
+        });
+    }
+
+    turnOffAdvancedOptions() {
+        this.showAdvancedOptions = false;
+        this.$nextTick(() => {
+            document.removeEventListener("click", this.advancedOptionsListener);
+        });
+    }
+
+    advancedOptionsListener(event: MouseEvent) {
+        if (!isElementInPath(event, "advanced-options")) {
+            this.turnOffAdvancedOptions();
+        }
     }
 }
 </script>
