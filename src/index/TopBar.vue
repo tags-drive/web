@@ -3,7 +3,7 @@
 	<!-- Logo -->
 	<div id="logo"><span class="noselect">Tags Drive</span></div>
 
-	<div id="search-wrapper">
+	<div id="search-bar-wrapper">
 		<!-- Search button -->
 		<div
 			class="noselect vertically button buttons__search"
@@ -18,61 +18,58 @@
 		</div>
 
 		<!-- Search block -->
-		<div id="search-input">
-			<!-- Input -->
-			<div
-				v-show="focused || expression === ''"
-				id="input-wrapper"
-			>
-				<input
-					id="expression-input"
-					type="text"
-					placeholder="Enter logical expression"
-					ref="expression-input"
-					v-model="expression">
-			</div>
-			<!-- Render -->
-			<div
-				v-show="!focused"
-				id="render-wrapper"
-				@click="focusInput"
-			>
-				<render-tags-input
-					:expression="expression"
-				></render-tags-input>
-			</div>
-
-			<!-- List of tags -->
-			<div
-				v-show="focused"
-				id="tags-list"
-			>
+		<div id="search-input-wrapper">
+			<div id="search-input">
+				<!-- Input -->
 				<div
-					v-for="(id, index) in allTagsIDs"
-					style="display: flex; margin: 5px;"
-					:key="index"
+					v-show="focused || expression === ''"
+					id="input-wrapper"
+					@click="focused = true"
 				>
-					<!-- @click in tag component doesn't work, so we need a wrapper -->
-					<div @click="addTagID(id)">
-						<tag
-						style="cursor: pointer;"
-						title="Paste tag"
-							:tag="Store.allTags.get(id)"
-						></tag>
+					<input
+						id="expression-input"
+						type="text"
+						placeholder="Enter logical expression"
+						ref="expression-input"
+						v-model="expression">
+				</div>
+				<!-- Render -->
+				<div
+					v-show="!focused"
+					id="render-wrapper"
+					@click="focusInput"
+				>
+					<render-tags-input
+						:expression="expression"
+					></render-tags-input>
+				</div>
+
+				<!-- List of tags -->
+				<div
+					v-show="focused"
+					id="tags-list"
+				>
+					<div
+						v-for="(id, index) in allTagsIDs"
+						style="display: flex; margin: 5px;"
+						:key="index"
+					>
+						<!-- @click in tag component doesn't work, so we need a wrapper -->
+						<div @click="addTagID(id)">
+							<tag
+							style="cursor: pointer;"
+							title="Paste tag"
+								:tag="Store.allTags.get(id)"
+							></tag>
+						</div>
+						<i style="line-height: 28px;">id: {{id}}</i>
 					</div>
-					<i style="line-height: 28px;">id: {{id}}</i>
 				</div>
 			</div>
-		</div>
 
-		<div id="advanced-options">
-
-		</div>
-
-		<div id="search-additional-buttons">
 			<!-- Reset input -->
 			<div
-				id="search-button"
+				id="reset-input-button"
 				class="noselect vertically button buttons__search"
 			>
 				<div>
@@ -83,6 +80,7 @@
 					>close</i>
 				</div>
 			</div>
+		</div>
 
 		</div>
 	</div>
@@ -148,22 +146,41 @@
     vertical-align: middle;
 }
 
-#search-wrapper {
+#search-bar-wrapper {
     border-radius: 5px;
     box-shadow: 0px 0px 5px 0px #888888;
     display: flex;
-    height: 80%;
-    position: relative;
+    height: 40px;
+    justify-content: space-around;
     margin: auto 0 auto 0;
+    position: relative;
     width: 600px;
 }
 
-#search-input > #input-wrapper {
-    height: 30px;
+#search-input-wrapper {
+    display: flex;
+    height: 40px;
+    margin: auto 0;
+    justify-content: space-around;
+    width: 500px;
+}
+
+#search-input {
+    margin: auto 0;
+    height: 40px;
+    position: relative;
+    width: 450px;
+}
+
+#search-input > #input-wrapper,
+#render-wrapper {
+    box-sizing: border-box;
+    cursor: text;
+    height: -webkit-fill-available;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 450px;
+    width: 100%;
 }
 
 #search-input > #input-wrapper > #expression-input {
@@ -175,14 +192,9 @@
     width: inherit;
 }
 
-#search-input > #render-wrapper {
-    box-sizing: border-box;
-    cursor: text;
-    height: 30px;
+#search-input > #reset-input-button {
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 450px;
+    right: 5px;
 }
 
 #search-input > #tags-list {
@@ -237,7 +249,7 @@
 }
 
 .button:hover {
-    background-color: #88888840;
+    background-color: #88888830;
 }
 
 .button:last-child {
