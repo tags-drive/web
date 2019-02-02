@@ -2,83 +2,9 @@
 <div id="top-bar">
 	<!-- Logo -->
 	<div id="logo"><span class="noselect">Tags Drive</span></div>
-	<!-- Search bar -->
-	<div id="search">
-		<div id="expression">
-			<div style="position: relative; width: 100%; height: 100%;">
-				<div
-					v-if="focused"
-					id="cursor"
-					:style="{'left': position * 18 * 0.6 + 'px'}"
-				>
-				</div>
 
-				<div
-					id="expression-input"
-					placeholder="Logical expression"
-					tabindex="0"
-					@keydown.enter="search().usual()"
+	<div id="search-wrapper">
 
-					@click="changeCursorPosition"
-
-					@focus="() => { focused = true; addListener(); }"
-					
-				>
-					<span
-						v-if="focused"
-						style="line-height: 25px; font-size: 18px;"
-					>{{expression}}</span>
-					<div
-						v-if="!focused"
-						style="height: inherit;"
-					>
-						<render-tags-input
-							:expression="expression"
-							style="line-height: 25px; margin: auto 0; height: 100%;"
-						></render-tags-input>
-					</div>
-				</div>
-
-				<div
-					v-show="focused"
-					id="tags-list"
-				>
-					<div
-						v-for="(id, index) in allTagsIDs"
-						style="display: flex; margin: 5px; vertical-align: center"
-						:key="index"
-					>
-						<!-- @click in tag component doesn't work, so we need a wrapper -->
-						<div @click="addTagID(id)">
-							<tag
-							style="cursor: pointer;"
-							title="Paste tag"
-								:tag="Store.allTags.get(id)"
-							></tag>
-						</div>
-						<i style="line-height: 26px;">id: {{id}}</i>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<!-- Separator -->
-		<div id="separator"	class="vertically"></div>
-
-		<div id="text-search">
-			<input
-				type="text"
-				placeholder="Text for search"
-				v-model="text"
-				@keydown.enter="search().usual()">
-		</div>
-
-		<div id="search-button">
-			<i
-				class="material-icons noselect"
-				@click="search().usual()"
-			>search</i>
-		</div>
 	</div>
 
 	<!-- Global Tag editing -->
@@ -116,7 +42,7 @@
 <style scoped>
 #top-bar {
     background-color: var(--primary-color);
-    border-bottom: 1px var(--primary-border-color) solid;
+    border-bottom: 1px solid #0000002f;
     display: flex;
     justify-content: center;
     height: 50px;
@@ -133,82 +59,6 @@
     line-height: 50px;
     margin: 0 10px 0 10px;
     vertical-align: middle;
-}
-
-#search {
-    background-color: var(--primary-color);
-    border: 1px var(--secondary-border-color) solid;
-    border-radius: 5px;
-    display: flex;
-    font: 16px "Courier New", Courier, monospace;
-    height: 80%;
-    margin-bottom: auto;
-    margin-top: auto;
-    position: relative;
-    width: 70%;
-    justify-content: space-around;
-}
-
-div#expression {
-    height: 25px;
-    margin: auto 0;
-    position: relative;
-    width: 60%;
-}
-
-div#expression-input {
-    box-sizing: border-box;
-    border: 1px solid black;
-    cursor: text;
-    height: 100%;
-    margin: auto 0;
-    padding-left: 3px;
-    position: absolute;
-    width: 100%;
-}
-
-div#tags-list {
-    background-color: white;
-    border: 1px solid black;
-    height: auto;
-    max-height: 500px;
-    overflow-y: auto;
-    position: absolute;
-    top: 30px;
-    width: 250px;
-}
-
-div#cursor {
-    border-right: 1.5px solid black;
-    height: 75%; /* addition 5% for padding of div#expression-input */
-    left: 0;
-    margin: auto 0px auto 3px;
-    position: absolute;
-    top: 15%;
-}
-
-div#separator {
-    border-right: 1px solid black;
-    height: 90%;
-}
-
-div#text-search {
-    height: 25px;
-    margin: auto 0px;
-    width: 30%;
-}
-
-div#text-search > input {
-    border: 1px solid black;
-    box-sizing: border-box;
-    height: 100%;
-    padding: 0;
-    width: 100%;
-}
-
-div#search-button > i {
-    font-size: 37px;
-    cursor: pointer;
 }
 
 #tag-editing-button {
