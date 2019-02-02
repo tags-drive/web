@@ -30,6 +30,7 @@
 }
 
 body {
+	font-family: arial, sans-serif;
     margin: 0;
     overflow-y: hidden;
     padding: 0;

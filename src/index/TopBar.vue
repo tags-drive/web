@@ -78,6 +78,7 @@
 
 #logo {
     cursor: default;
+    font-family: none;
     font-size: 25px;
     height: 50px;
     line-height: 50px;
