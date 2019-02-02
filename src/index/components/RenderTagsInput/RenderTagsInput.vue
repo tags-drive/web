@@ -28,7 +28,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
+import { Prop, Watch } from "vue-property-decorator";
 // Components
 import TagComponent from "@components/Tag/Tag.vue";
 // Classes and types
@@ -67,7 +67,10 @@ export default class extends Vue {
 
     elements: (TagElement | TextElement)[] = [];
 
-    created() {
+    @Watch("expression", { immediate: true })
+    onExpressionChanged() {
+        this.elements = [];
+
         let addTag = (id: number) => {
             let tag = SharedStore.state.allTags.get(id);
             let name = "undefined";

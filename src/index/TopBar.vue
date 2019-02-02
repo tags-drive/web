@@ -4,9 +4,10 @@
 	<div id="logo"><span class="noselect">Tags Drive</span></div>
 
 	<div id="search-wrapper">
+		<!-- Search button -->
 		<div
-			id="search-button"
-			class="noselect vertically button"
+			class="noselect vertically button buttons__search"
+			style="margin-left: 5px;"
 		>
 			<div>
 				<i
@@ -16,7 +17,9 @@
 			</div>
 		</div>
 
+		<!-- Search block -->
 		<div id="search-input">
+			<!-- Input -->
 			<div
 				v-show="focused || expression === ''"
 				id="input-wrapper"
@@ -28,8 +31,9 @@
 					ref="expression-input"
 					v-model="expression">
 			</div>
+			<!-- Render -->
 			<div
-				v-if="!focused"
+				v-show="!focused"
 				id="render-wrapper"
 				@click="focusInput"
 			>
@@ -38,6 +42,7 @@
 				></render-tags-input>
 			</div>
 
+			<!-- List of tags -->
 			<div
 				v-show="focused"
 				id="tags-list"
@@ -61,6 +66,23 @@
 		</div>
 
 		<div id="advanced-options">
+
+		</div>
+
+		<div id="search-additional-buttons">
+			<!-- Reset input -->
+			<div
+				id="search-button"
+				class="noselect vertically button buttons__search"
+			>
+				<div>
+					<i
+						class="material-icons noselect"
+						title="Reset input"
+						@click="resetExpression"
+					>close</i>
+				</div>
+			</div>
 
 		</div>
 	</div>
@@ -136,18 +158,12 @@
     width: 600px;
 }
 
-#search-wrapper > #search-button {
-    height: 35px;
-    margin-left: 5px;
-    width: 35px;
-}
-
 #search-input > #input-wrapper {
     height: 30px;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 500px;
+    width: 450px;
 }
 
 #search-input > #input-wrapper > #expression-input {
@@ -166,7 +182,7 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 500px;
+    width: 450px;
 }
 
 #search-input > #tags-list {
@@ -181,6 +197,14 @@
     top: 100%;
     width: 250px;
     z-index: 2;
+}
+
+#search-wrapper > #search-additional-buttons {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 5px;
+    display: flex;
 }
 
 #options {
@@ -218,6 +242,11 @@
 
 .button:last-child {
     margin-right: 0;
+}
+
+.buttons__search {
+    height: 35px;
+    width: 35px;
 }
 </style>
 
@@ -401,7 +430,7 @@ export default class TopBar extends Vue {
     }
 
     addTagID(argID: number) {
-		let id = String(argID);
+        let id = String(argID);
         let elem: HTMLInputElement = <HTMLInputElement>this.$refs["expression-input"];
         if (!(this.$refs["expression-input"] instanceof HTMLInputElement)) {
             return;
@@ -416,6 +445,10 @@ export default class TopBar extends Vue {
             elem.focus();
             elem.setSelectionRange(l + id.length, l + id.length);
         });
+    }
+
+    resetExpression() {
+        this.expression = "";
     }
 
     focusInput() {
