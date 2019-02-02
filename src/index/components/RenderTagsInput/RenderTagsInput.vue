@@ -1,15 +1,15 @@
 <template>
-	<div style="display: flex; flex-wrap: wrap;">
-		<span v-if="elements.length === 0">Logical expression</span>
+	<div style="display: flex; flex-wrap: wrap; height: 100%;">
 		<div
 			v-for="(elem, index) in elements"
 			:key="index"
 			class="vertically"
+			style="margin-right: 2px;"
 		>
 			<tag
 				v-if="elem.type === 'tag'"
 				:tag="elem.tag"
-				class="input-tag"
+				class="custom-tag"
 			></tag>
 			<span
 				v-else
@@ -20,10 +20,7 @@
 </template>
 
 <style scoped>
-.input-tag {
-    font-size: 18px;
-    height: 15px;
-    line-height: 16px;
+.custom-tag {
     margin: auto 0;
 }
 </style>

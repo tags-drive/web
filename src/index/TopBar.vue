@@ -17,7 +17,25 @@
 		</div>
 
 		<div id="search-input">
-
+			<div
+				v-show="focused || expression === ''"
+				id="input-wrapper"
+			>
+				<input
+					id="expression-input"
+					type="text"
+					placeholder="Enter logical expression"
+					v-model="expression">
+			</div>
+			<div
+				v-if="!focused"
+				id="render-wrapper"
+				@click="focusInput"
+			>
+				<render-tags-input
+					:expression="expression"
+				></render-tags-input>
+			</div>
 		</div>
 
 		<div id="advanced-options">
@@ -91,6 +109,7 @@
     box-shadow: 0px 0px 5px 0px #888888;
     display: flex;
     height: 80%;
+    position: relative;
     margin: auto 0 auto 0;
     width: 600px;
 }
@@ -99,6 +118,33 @@
     height: 35px;
     margin-left: 5px;
     width: 35px;
+}
+
+#search-input > #input-wrapper {
+    height: 30px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 500px;
+}
+
+#search-input > #input-wrapper > #expression-input {
+    border: none;
+    box-sizing: border-box;
+    font-size: 16px;
+    height: inherit;
+    outline: none;
+    width: inherit;
+}
+
+#search-input > #render-wrapper {
+    box-sizing: border-box;
+    cursor: text;
+    height: 30px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 500px;
 }
 
 #options {
@@ -200,9 +246,8 @@ export default class TopBar extends Vue {
         });
 
         document.addEventListener("click", event => {
-            if (!isElementInPath(event, "expression")) {
+            if (!isElementInPath(event, "render-wrapper", "input-wrapper")) {
                 this.focused = false;
-                this.removeListener();
             }
         });
     }
@@ -317,6 +362,14 @@ export default class TopBar extends Vue {
                     .catch(err => logError(err));
             }
         };
+    }
+
+    focusInput() {
+        this.focused = true;
+        this.$nextTick(() => {
+            let elem = document.getElementById("expression-input");
+            if (elem !== null) elem.focus();
+        });
     }
 }
 </script>
