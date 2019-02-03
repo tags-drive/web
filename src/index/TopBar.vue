@@ -90,7 +90,17 @@
 		<div
 			id="advanced-options"
 			v-if="showAdvancedOptions"
-		></div>
+		>
+			<div class="advanced-option">
+				<div class="advanced-option__label">Text to search</div>
+				<div class="advanced-option__input-wrapper">
+					<input
+						type="text"
+						placeholder="Enter text"
+						v-model="text">
+				</div>
+			</div>
+		</div>
 
 		<!-- Show advanced options -->
 		<div
@@ -252,13 +262,35 @@
     background-color: white;
     border: 1px solid #88888880;
     border-radius: 0px 0px 5px 5px;
-    border-top: none;
-    height: 200px;
+    border-top: 1px solid #88888820;
+    height: auto;
+	padding: 10px 5px 0px 5px;
     position: absolute;
     right: 5px;
     top: 100%;
     width: 400px;
     z-index: 2;
+}
+
+.advanced-option {
+	font-size: 15px;
+	position: relative;
+	height: 25px;
+	margin-bottom: 10px;
+}
+
+.advanced-option__label {
+	position: absolute;
+	left: 10px;
+}
+
+.advanced-option__input-wrapper {
+	position: absolute;
+	right: 10px;
+}
+
+.advanced-option__input-wrapper > input {
+	width: 250px; 
 }
 
 #options {
