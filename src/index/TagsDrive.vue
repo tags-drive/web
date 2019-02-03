@@ -30,10 +30,16 @@
 }
 
 body {
-	font-family: arial, sans-serif;
+    font-family: arial, sans-serif;
     margin: 0;
     overflow-y: hidden;
     padding: 0;
+}
+
+input[type="text"] {
+    border: none;
+    border-bottom: 1px solid #888888;
+    outline: none;
 }
 
 .vertically {
