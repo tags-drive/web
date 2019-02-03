@@ -31,7 +31,9 @@
 						type="text"
 						placeholder="Enter logical expression"
 						ref="expression-input"
-						v-model="expression">
+						v-model="expression"
+						@keyup.enter="search().usual()"
+						@keyup.esc="focused = false">
 				</div>
 				<!-- Render -->
 				<div
