@@ -71,10 +71,12 @@
 			<div
 				id="reset-input-button"
 				class="noselect vertically button buttons__search"
+				style="width: 25px; height: 25px;"
 			>
-				<div>
+				<div style="width: 25px; height: 25px; line-height: 25px;">
 					<i
 						class="material-icons noselect"
+						style="font-size: 25px;"
 						title="Reset input"
 						@click="resetExpression"
 					>close</i>
@@ -186,7 +188,7 @@
     display: flex;
     height: 40px;
     margin: auto 0;
-    justify-content: space-around;
+    justify-content: center;
     width: 500px;
 }
 
