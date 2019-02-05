@@ -32,6 +32,7 @@
 						placeholder="Enter logical expression"
 						ref="expression-input"
 						v-model="expression"
+						@keypress="validateInput"
 						@keyup.enter="search().usual()"
 						@keyup.esc="focused = false">
 				</div>
@@ -353,6 +354,8 @@ import { Events, EventBus } from "@app/index/eventBus";
 import { isErrorStatusCode, logError, logInfo, isElementInPath } from "@app/index/tools";
 import { Params } from "@app/global";
 
+const validCharacters = "0123456789&|!()";
+
 @Component({
     components: {
         tag: TagComponent,
@@ -548,6 +551,12 @@ export default class TopBar extends Vue {
             let elem = this.$refs["expression-input"];
             if (elem instanceof HTMLElement) elem.focus();
         });
+    }
+
+    validateInput(ev: KeyboardEvent) {
+        if (!validCharacters.includes(ev.key)) {
+            ev.preventDefault();
+        }
     }
 
     turnOnAdvancedOptions() {
