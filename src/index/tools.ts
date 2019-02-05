@@ -29,7 +29,7 @@ function logInfo(msg: string) {
     EventBus.$emit(Events.LogEvent, { type: Const.logType.info, msg: msg });
 }
 
-function isElementInPath(event: Event, id: string): boolean {
+function isElementInPath(event: Event, ...ids: string[]): boolean {
     // We need to use type any because Event hasn't property path, composedPath and composedPath().
     // Nevertheless, it's a cross browser way to get path.
     let path = (<any>event).path || ((<any>event).composedPath && (<any>event).composedPath());
@@ -38,9 +38,11 @@ function isElementInPath(event: Event, id: string): boolean {
     }
 
     for (let i = 0; i < path.length; i++) {
-        if (path[i].id === id) {
-            return true;
-        }
+		for (let j = 0; j < ids.length; j++) {
+			if (path[i].id === ids[j]) {
+				return true;
+			}
+		}
     }
 
     return false;

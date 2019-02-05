@@ -2,132 +2,186 @@
 <div id="top-bar">
 	<!-- Logo -->
 	<div id="logo"><span class="noselect">Tags Drive</span></div>
-	<!-- Search bar -->
-	<div id="search">
-		<div id="expression">
-			<div style="position: relative; width: 100%; height: 100%;">
+
+	<div id="search-bar-wrapper">
+		<!-- Search button -->
+		<div
+			class="noselect vertically button buttons__search"
+			style="margin-left: 5px;"
+		>
+			<div>
+				<i
+					class="material-icons noselect"
+					@click="search().usual()"
+				>search</i>
+			</div>
+		</div>
+
+		<!-- Search block -->
+		<div id="search-input-wrapper">
+			<div id="search-input">
+				<!-- Input -->
 				<div
-					v-if="focused"
-					id="cursor"
-					:style="{'left': position * 18 * 0.6 + 'px'}"
+					v-show="focused || expression === ''"
+					id="input-wrapper"
+					@click="focused = true"
 				>
+					<input
+						id="expression-input"
+						type="text"
+						placeholder="Enter logical expression"
+						ref="expression-input"
+						v-model="expression"
+						@keypress="validateInput"
+						@keyup.enter="search().usual()"
+						@keyup.esc="focused = false">
+				</div>
+				<!-- Render -->
+				<div
+					v-show="!focused"
+					id="render-wrapper"
+					@click="focusInput"
+				>
+					<render-tags-input
+						:expression="expression"
+					></render-tags-input>
 				</div>
 
-				<div
-					id="expression-input"
-					placeholder="Logical expression"
-					tabindex="0"
-					@keydown.enter="search().usual()"
-
-					@click="changeCursorPosition"
-
-					@focus="() => { focused = true; addListener(); }"
-					
-				>
-					<span
-						v-if="focused"
-						style="line-height: 25px; font-size: 18px;"
-					>{{expression}}</span>
-					<div
-						v-if="!focused"
-						style="height: inherit;"
-					>
-						<render-tags-input
-							:expression="expression"
-							style="line-height: 25px; margin: auto 0; height: 100%;"
-						></render-tags-input>
-					</div>
-				</div>
-
+				<!-- List of tags -->
 				<div
 					v-show="focused"
 					id="tags-list"
 				>
 					<div
 						v-for="(id, index) in allTagsIDs"
-						style="display: flex; margin: 5px; vertical-align: center"
+						style="display: flex; margin: 5px;"
 						:key="index"
 					>
 						<!-- @click in tag component doesn't work, so we need a wrapper -->
-						<div @click="addTagID(id)">
+						<div @click="insertTagID(id)">
 							<tag
 							style="cursor: pointer;"
 							title="Paste tag"
 								:tag="Store.allTags.get(id)"
 							></tag>
 						</div>
-						<i style="line-height: 26px;">id: {{id}}</i>
+						<i style="line-height: 28px;">id: {{id}}</i>
 					</div>
+				</div>
+			</div>
+
+			<!-- Reset input -->
+			<div
+				id="reset-input-button"
+				class="noselect vertically button buttons__search"
+				style="width: 25px; height: 25px;"
+			>
+				<div
+					v-show="expression != ''"
+					style="width: 25px; height: 25px; line-height: 25px;"
+				>
+					<i
+						class="material-icons noselect"
+						style="font-size: 25px;"
+						title="Reset input"
+						@click="resetExpression"
+					>close</i>
 				</div>
 			</div>
 		</div>
 
-		<!-- Separator -->
-		<div id="separator"	class="vertically"></div>
-
-		<div id="text-search">
-			<input
-				type="text"
-				placeholder="Text for search"
-				v-model="text"
-				@keydown.enter="search().usual()">
+		<!-- Advanced options -->
+		<div
+			id="advanced-options"
+			v-if="showAdvancedOptions"
+		>
+			<div class="advanced-option">
+				<div class="advanced-option__label">Text to search</div>
+				<div class="advanced-option__input-wrapper">
+					<input
+						type="text"
+						placeholder="Enter text"
+						v-model="text">
+				</div>
+			</div>
 		</div>
 
-		<div id="search-button">
-			<i
-				class="material-icons noselect"
-				@click="search().usual()"
-			>search</i>
+		<!-- Show advanced options -->
+		<div
+			id="search-button"
+			class="noselect vertically button buttons__search"
+		>
+			<div>
+				<i
+					v-if="!showAdvancedOptions"
+					class="material-icons noselect"
+					title="Show advanced options"
+					@click="displayAdvancedOptions"
+				>arrow_drop_down</i>
+				<i
+					v-else
+					class="material-icons noselect"
+					title="Hide advanced options"
+					@click="hideAdvancedOptions"
+				>arrow_drop_up</i>
+			</div>
 		</div>
 	</div>
 
-	<!-- Global Tag editing -->
-	<div
-		id="tag-editing-button"
-		class="vertically noselect"
-		title="Change tags"
-		@click="management().globalTags()"
-	>
-		<i style="font-size: 30px;" class="material-icons">local_offer</i>
-	</div>
+	<div id="options">
+		<!-- Global Tag editing -->
+		<div
+			id="tag-editing-button"
+			class="vertically noselect button"
+			title="Change tags"
+			@click="management().globalTags()"
+		>
+			<div>
+				<i class="material-icons">local_offer</i>
+			</div>
+		</div>
 
-	<!-- Settings -->
-	<div
-		id="settings-button"
-		class="vertically noselect"
-		title="Settings"
-		@click="management().settings()"
-	>
-		<i style="font-size: 30px;" class="material-icons">settings</i>
-	</div>
+		<!-- Settings -->
+		<div
+			id="settings-button"
+			class="vertically noselect button"
+			title="Settings"
+			@click="management().settings()"
+		>
+			<div>
+				<i class="material-icons">settings</i>
+			</div>
+		</div>
 
-	<!-- Log out -->
-	<div
-		id="logout"
-		class="vertically noselect"
-		title="Log out"
-		@click="management().logout()"
-	>
-		<i class="material-icons" style="font-size: 30px;">exit_to_app</i>
+		<!-- Log out -->
+		<div
+			id="logout"
+			class="vertically noselect button"
+			title="Log out"
+			@click="management().logout()"
+		>
+			<div>
+				<i class="material-icons">exit_to_app</i>
+			</div>
+		</div>
 	</div>
 </div>
 </template>
 
 <style scoped>
 #top-bar {
-    background-color: var(--primary-color);
-    border-bottom: 1px var(--primary-border-color) solid;
+    background-color: white;
+    border-bottom: 1px solid #0000002f;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     height: 50px;
-    position: sticky;
     top: 0;
     width: 100%;
-    z-index: 1;
 }
 
 #logo {
     cursor: default;
+    font-family: none;
     font-size: 25px;
     height: 50px;
     line-height: 50px;
@@ -135,95 +189,154 @@
     vertical-align: middle;
 }
 
-#search {
-    background-color: var(--primary-color);
-    border: 1px var(--secondary-border-color) solid;
+#search-bar-wrapper {
     border-radius: 5px;
+    box-shadow: 0px 0px 5px 0px #888888;
     display: flex;
-    font: 16px "Courier New", Courier, monospace;
-    height: 80%;
-    margin-bottom: auto;
-    margin-top: auto;
-    position: relative;
-    width: 70%;
+    height: 40px;
     justify-content: space-around;
-}
-
-div#expression {
-    height: 25px;
-    margin: auto 0;
+    margin: auto 0 auto 0;
     position: relative;
-    width: 60%;
+    width: 600px;
 }
 
-div#expression-input {
-    box-sizing: border-box;
-    border: 1px solid black;
-    cursor: text;
-    height: 100%;
+#search-input-wrapper {
+    display: flex;
+    height: 40px;
     margin: auto 0;
-    padding-left: 3px;
+    justify-content: center;
+    width: 500px;
+}
+
+#search-input {
+    margin: auto 0;
+    height: 40px;
+    position: relative;
+    width: 450px;
+}
+
+#search-input > #input-wrapper,
+#render-wrapper {
+    box-sizing: border-box;
+    cursor: text;
+    height: -webkit-fill-available;
     position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
     width: 100%;
 }
 
-div#tags-list {
+#search-input > #input-wrapper > #expression-input {
+    border: none;
+    box-sizing: border-box;
+    font-size: 16px;
+    height: inherit;
+    outline: none;
+    width: inherit;
+}
+
+#search-input > #reset-input-button {
+    position: absolute;
+    right: 5px;
+}
+
+#search-input > #tags-list {
     background-color: white;
-    border: 1px solid black;
+    border: 1px solid #88888880;
+    border-radius: 0px 0px 5px 5px;
+    border-top: none;
     height: auto;
     max-height: 500px;
     overflow-y: auto;
     position: absolute;
-    top: 30px;
+    top: 100%;
+    width: 250px;
+    z-index: 2;
+}
+
+#search-wrapper > #search-additional-buttons {
+    display: flex;
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#search-bar-wrapper > #advanced-options {
+    background-color: white;
+    border: 1px solid #88888880;
+    border-radius: 0px 0px 5px 5px;
+    border-top: 1px solid #88888820;
+    height: auto;
+    padding: 10px 5px 0px 5px;
+    position: absolute;
+    right: 5px;
+    top: 100%;
+    width: 400px;
+    z-index: 2;
+}
+
+.advanced-option {
+    font-size: 15px;
+    height: 25px;
+	line-height: 25px;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.advanced-option__label {
+    left: 10px;
+    position: absolute;
+}
+
+.advanced-option__input-wrapper {
+    position: absolute;
+    right: 10px;
+}
+
+.advanced-option__input-wrapper > input {
     width: 250px;
 }
 
-div#cursor {
-    border-right: 1.5px solid black;
-    height: 75%; /* addition 5% for padding of div#expression-input */
-    left: 0;
-    margin: auto 0px auto 3px;
+#options {
+    display: flex;
+}
+
+.button {
+    border-radius: 50%;
+    cursor: pointer;
+    height: 40px;
+    line-height: 40px;
+    margin-right: 5px;
+    position: relative;
+    text-align: center;
+    width: 40px;
+}
+
+.button > div {
+    height: 30px;
+    left: 50%;
     position: absolute;
-    top: 15%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
 }
 
-div#separator {
-    border-right: 1px solid black;
-    height: 90%;
+.button div > i {
+    font-size: 30px;
+    vertical-align: baseline;
 }
 
-div#text-search {
-    height: 25px;
-    margin: auto 0px;
-    width: 30%;
+.button:hover {
+    background-color: #88888830;
 }
 
-div#text-search > input {
-    border: 1px solid black;
-    box-sizing: border-box;
-    height: 100%;
-    padding: 0;
-    width: 100%;
+.button:last-child {
+    margin-right: 0;
 }
 
-div#search-button > i {
-    font-size: 37px;
-    cursor: pointer;
-}
-
-#tag-editing-button {
-    cursor: pointer;
-    margin-left: 10px;
-}
-
-#settings-button {
-    cursor: pointer;
-    margin-left: 5px;
-}
-
-#logout {
-    cursor: pointer;
-    margin-left: 5px;
+.buttons__search {
+    height: 35px;
     width: 35px;
 }
 </style>
@@ -242,7 +355,7 @@ import { Events, EventBus } from "@app/index/eventBus";
 import { isErrorStatusCode, logError, logInfo, isElementInPath } from "@app/index/tools";
 import { Params } from "@app/global";
 
-const fontWidth = 18 * 0.6; // px * em
+const validCharacters = "0123456789&|!()";
 
 @Component({
     components: {
@@ -252,28 +365,18 @@ const fontWidth = 18 * 0.6; // px * em
 })
 export default class TopBar extends Vue {
     // Expression
-    expression: string;
-    position: number;
-    showTagsList: boolean;
-    focused: boolean;
+    expression: string = "";
+    position: number = 0;
+    showTagsList: boolean = false;
+    focused: boolean = false;
+    showAdvancedOptions: boolean = false;
     // Text search
-    text: string;
-    Store: Store;
+    text: string = "";
+    Store: Store = SharedStore.state;
 
     get allTagsIDs() {
         // For reactive updating (see @app/index/store/types.ts for more information)
         return SharedStore.state.allTagsChangesCounter && Array.from(SharedStore.state.allTags.keys());
-    }
-
-    constructor() {
-        super();
-
-        this.expression = "";
-        this.position = 0;
-        this.showTagsList = false;
-        this.focused = false;
-        this.text = "";
-        this.Store = SharedStore.state;
     }
 
     created() {
@@ -291,9 +394,8 @@ export default class TopBar extends Vue {
         });
 
         document.addEventListener("click", event => {
-            if (!isElementInPath(event, "expression")) {
+            if (!isElementInPath(event, "render-wrapper", "input-wrapper", "tags-list")) {
                 this.focused = false;
-                this.removeListener();
             }
         });
     }
@@ -410,87 +512,62 @@ export default class TopBar extends Vue {
         };
     }
 
-    changeCursorPosition(event: MouseEvent) {
-        let x = event.offsetX > 0 ? event.offsetX : 0;
-        let pos = Math.round(x / fontWidth);
-        this.position = pos < this.expression.length ? pos : this.expression.length;
-    }
-
-    addTagID(id: number) {
-        let text = String(id);
-        this.expression = this.expression.substr(0, this.position) + text + this.expression.substr(this.position);
-        this.position += text.length;
-    }
-
-    addListener() {
-        document.addEventListener("keydown", this.onkeydownListener);
-
-        // Paste event
-        const elem: HTMLElement = document.getElementById("expression-input")!;
-        elem.onpaste = ev => {
-            let text = ev.clipboardData.getData("Text");
-            this.expression = this.expression.substr(0, this.position) + text + this.expression.substr(this.position);
-            this.position += text.length;
-        };
-    }
-
-    removeListener() {
-        document.removeEventListener("keydown", this.onkeydownListener);
-    }
-
-    onkeydownListener(ev: KeyboardEvent) {
-        let hasPrefix = (str: string, prefix: string) => {
-            if (str.length < prefix.length) {
-                return false;
-            }
-
-            for (let i = 0; i < prefix.length; i++) {
-                if (str[i] !== prefix[i]) {
-                    return false;
-                }
-            }
-            return true;
-        };
-
-        if (ev.ctrlKey || ev.altKey) {
+    // insertTagID is used to insert tag id into expression
+    insertTagID(argID: number) {
+        let id = String(argID);
+        let elem: HTMLInputElement = <HTMLInputElement>this.$refs["expression-input"];
+        if (!(this.$refs["expression-input"] instanceof HTMLInputElement)) {
             return;
         }
 
-        if (
-            ev.key.length === 1 &&
-            (hasPrefix(ev.code, "Key") ||
-                ev.key === "(" ||
-                ev.key === ")" ||
-                ev.key === "|" ||
-                hasPrefix(ev.code, "Numpad") ||
-                hasPrefix(ev.code, "Digit"))
-        ) {
-            this.expression = this.expression.substr(0, this.position) + ev.key + this.expression.substr(this.position);
+        let l = elem.selectionStart!,
+            r = elem.selectionEnd!;
 
-            this.position++;
-        } else if (hasPrefix(ev.code, "Arrow")) {
-            // Arrow
-            if (hasPrefix(ev.code, "ArrowLeft")) {
-                if (this.position > 0) {
-                    this.position--;
-                }
-            } else if (hasPrefix(ev.code, "ArrowRight")) {
-                if (this.position < this.expression.length) {
-                    this.position++;
-                }
-            }
-        } else if (hasPrefix(ev.code, "Backspace")) {
-            if (this.position === 0) {
-                return;
-            }
-            this.expression = this.expression.substr(0, this.position - 1) + this.expression.substr(this.position);
-            this.position--;
-        } else if (hasPrefix(ev.code, "Delete")) {
-            this.expression = this.expression.substr(0, this.position) + this.expression.substr(this.position + 1);
-        } else if (ev.code === "Home") {
-            this.position = 0;
-        } else if (ev.code === "End") {
-            this.position = this.expression.length;
+        this.expression = this.expression.slice(0, l) + id + this.expression.slice(r);
+
+        this.$nextTick(() => {
+            elem.focus();
+            elem.setSelectionRange(l + id.length, l + id.length);
+        });
+    }
+
+    // For AdvancedOptions
+    displayAdvancedOptions() {
+        this.showAdvancedOptions = true;
+        this.$nextTick(() => {
+            document.addEventListener("click", this.advancedOptionsListener);
+        });
+    }
+
+    hideAdvancedOptions() {
+        this.showAdvancedOptions = false;
+        this.$nextTick(() => {
+            document.removeEventListener("click", this.advancedOptionsListener);
+        });
+    }
+
+    advancedOptionsListener(event: MouseEvent) {
+        if (!isElementInPath(event, "advanced-options")) {
+            this.hideAdvancedOptions();
+        }
+    }
+
+    // Secondary function
+    resetExpression() {
+        this.expression = "";
+    }
+
+    focusInput() {
+        this.focused = true;
+        this.$nextTick(() => {
+            let elem = this.$refs["expression-input"];
+            if (elem instanceof HTMLElement) elem.focus();
+        });
+    }
+
+    validateInput(ev: KeyboardEvent) {
+        if (!validCharacters.includes(ev.key)) {
+            ev.preventDefault();
         }
     }
 }

@@ -1,37 +1,28 @@
 <template>
-	<div style="display: flex; flex-wrap: wrap;">
-		<span v-if="elements.length === 0">Logical expression</span>
+	<div style="display: flex; flex-wrap: wrap; height: 100%;">
 		<div
 			v-for="(elem, index) in elements"
 			:key="index"
 			class="vertically"
+			style="margin-right: 2px;"
 		>
 			<tag
 				v-if="elem.type === 'tag'"
 				:tag="elem.tag"
-				class="input-tag"
+				style="margin: auto 0;"
 			></tag>
 			<span
 				v-else
-				style="font-size: 18px;"
+				style="font-size: 16px;"
 			>{{elem.text}}</span>
 		</div>
 	</div>
 </template>
 
-<style scoped>
-.input-tag {
-    font-size: 18px;
-    height: 15px;
-    line-height: 16px;
-    margin: auto 0;
-}
-</style>
-
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
+import { Prop, Watch } from "vue-property-decorator";
 // Components
 import TagComponent from "@components/Tag/Tag.vue";
 // Classes and types
@@ -70,7 +61,10 @@ export default class extends Vue {
 
     elements: (TagElement | TextElement)[] = [];
 
-    created() {
+    @Watch("expression", { immediate: true })
+    onExpressionChanged() {
+        this.elements = [];
+
         let addTag = (id: number) => {
             let tag = SharedStore.state.allTags.get(id);
             let name = "undefined";
@@ -83,6 +77,7 @@ export default class extends Vue {
 
             this.elements.push(new TagElement(name, color));
         };
+
         let addText = (text: string) => {
             this.elements.push(new TextElement(text));
         };
