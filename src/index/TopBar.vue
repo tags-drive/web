@@ -58,7 +58,7 @@
 						:key="index"
 					>
 						<!-- @click in tag component doesn't work, so we need a wrapper -->
-						<div @click="addTagID(id)">
+						<div @click="insertTagID(id)">
 							<tag
 							style="cursor: pointer;"
 							title="Paste tag"
@@ -116,13 +116,13 @@
 					v-if="!showAdvancedOptions"
 					class="material-icons noselect"
 					title="Show advanced options"
-					@click="turnOnAdvancedOptions"
+					@click="displayAdvancedOptions"
 				>arrow_drop_down</i>
 				<i
 					v-else
 					class="material-icons noselect"
 					title="Hide advanced options"
-					@click="turnOffAdvancedOptions"
+					@click="hideAdvancedOptions"
 				>arrow_drop_up</i>
 			</div>
 		</div>
@@ -255,11 +255,11 @@
 }
 
 #search-wrapper > #search-additional-buttons {
+    display: flex;
     position: absolute;
+    right: 5px;
     top: 50%;
     transform: translateY(-50%);
-    right: 5px;
-    display: flex;
 }
 
 #search-bar-wrapper > #advanced-options {
@@ -268,7 +268,7 @@
     border-radius: 0px 0px 5px 5px;
     border-top: 1px solid #88888820;
     height: auto;
-	padding: 10px 5px 0px 5px;
+    padding: 10px 5px 0px 5px;
     position: absolute;
     right: 5px;
     top: 100%;
@@ -277,24 +277,24 @@
 }
 
 .advanced-option {
-	font-size: 15px;
-	position: relative;
-	height: 25px;
-	margin-bottom: 10px;
+    font-size: 15px;
+    height: 25px;
+    position: relative;
+    margin-bottom: 10px;
 }
 
 .advanced-option__label {
-	position: absolute;
-	left: 10px;
+    left: 10px;
+    position: absolute;
 }
 
 .advanced-option__input-wrapper {
-	position: absolute;
-	right: 10px;
+    position: absolute;
+    right: 10px;
 }
 
 .advanced-option__input-wrapper > input {
-	width: 250px; 
+    width: 250px;
 }
 
 #options {
@@ -364,30 +364,18 @@ const validCharacters = "0123456789&|!()";
 })
 export default class TopBar extends Vue {
     // Expression
-    expression: string;
-    position: number;
-    showTagsList: boolean;
-    focused: boolean;
-    showAdvancedOptions: boolean;
+    expression: string = "";
+    position: number = 0;
+    showTagsList: boolean = false;
+    focused: boolean = false;
+    showAdvancedOptions: boolean = false;
     // Text search
-    text: string;
-    Store: Store;
+    text: string = "";
+    Store: Store = SharedStore.state;
 
     get allTagsIDs() {
         // For reactive updating (see @app/index/store/types.ts for more information)
         return SharedStore.state.allTagsChangesCounter && Array.from(SharedStore.state.allTags.keys());
-    }
-
-    constructor() {
-        super();
-
-        this.expression = "";
-        this.position = 0;
-        this.showTagsList = false;
-        this.focused = false;
-        this.showAdvancedOptions = false;
-        this.text = "";
-        this.Store = SharedStore.state;
     }
 
     created() {
@@ -523,7 +511,8 @@ export default class TopBar extends Vue {
         };
     }
 
-    addTagID(argID: number) {
+    // insertTagID is used to insert tag id into expression
+    insertTagID(argID: number) {
         let id = String(argID);
         let elem: HTMLInputElement = <HTMLInputElement>this.$refs["expression-input"];
         if (!(this.$refs["expression-input"] instanceof HTMLInputElement)) {
@@ -541,6 +530,28 @@ export default class TopBar extends Vue {
         });
     }
 
+    // For AdvancedOptions
+    displayAdvancedOptions() {
+        this.showAdvancedOptions = true;
+        this.$nextTick(() => {
+            document.addEventListener("click", this.advancedOptionsListener);
+        });
+    }
+
+    hideAdvancedOptions() {
+        this.showAdvancedOptions = false;
+        this.$nextTick(() => {
+            document.removeEventListener("click", this.advancedOptionsListener);
+        });
+    }
+
+    advancedOptionsListener(event: MouseEvent) {
+        if (!isElementInPath(event, "advanced-options")) {
+            this.hideAdvancedOptions();
+        }
+    }
+
+    // Secondary function
     resetExpression() {
         this.expression = "";
     }
@@ -556,26 +567,6 @@ export default class TopBar extends Vue {
     validateInput(ev: KeyboardEvent) {
         if (!validCharacters.includes(ev.key)) {
             ev.preventDefault();
-        }
-    }
-
-    turnOnAdvancedOptions() {
-        this.showAdvancedOptions = true;
-        this.$nextTick(() => {
-            document.addEventListener("click", this.advancedOptionsListener);
-        });
-    }
-
-    turnOffAdvancedOptions() {
-        this.showAdvancedOptions = false;
-        this.$nextTick(() => {
-            document.removeEventListener("click", this.advancedOptionsListener);
-        });
-    }
-
-    advancedOptionsListener(event: MouseEvent) {
-        if (!isElementInPath(event, "advanced-options")) {
-            this.turnOffAdvancedOptions();
         }
     }
 }
