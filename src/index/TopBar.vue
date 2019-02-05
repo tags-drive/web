@@ -75,7 +75,10 @@
 				class="noselect vertically button buttons__search"
 				style="width: 25px; height: 25px;"
 			>
-				<div style="width: 25px; height: 25px; line-height: 25px;">
+				<div
+					v-show="expression != ''"
+					style="width: 25px; height: 25px; line-height: 25px;"
+				>
 					<i
 						class="material-icons noselect"
 						style="font-size: 25px;"
