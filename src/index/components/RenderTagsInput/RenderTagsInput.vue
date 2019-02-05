@@ -9,21 +9,15 @@
 			<tag
 				v-if="elem.type === 'tag'"
 				:tag="elem.tag"
-				class="custom-tag"
+				style="margin: auto 0;"
 			></tag>
 			<span
 				v-else
-				style="font-size: 18px;"
+				style="font-size: 16px;"
 			>{{elem.text}}</span>
 		</div>
 	</div>
 </template>
-
-<style scoped>
-.custom-tag {
-    margin: auto 0;
-}
-</style>
 
 <script lang="ts">
 import Vue from "vue";
@@ -83,6 +77,7 @@ export default class extends Vue {
 
             this.elements.push(new TagElement(name, color));
         };
+
         let addText = (text: string) => {
             this.elements.push(new TextElement(text));
         };
