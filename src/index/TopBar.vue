@@ -279,6 +279,7 @@
 .advanced-option {
     font-size: 15px;
     height: 25px;
+	line-height: 25px;
     position: relative;
     margin-bottom: 10px;
 }
