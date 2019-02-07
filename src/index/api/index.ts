@@ -105,7 +105,6 @@ function recoverFiles(ids: number[]) {
             // TODO
             // Refresh list of files
             EventBus.$emit(Events.Search.Usual);
-            EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
         })
         .then(() => logInfo("File was recovered"))
         .catch(err => logError(err));
