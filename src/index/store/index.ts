@@ -79,35 +79,10 @@ const store: StoreOptions<Store> = {
     },
     mutations: {
         // allFiles
-        updateFiles(state) {
-            fetch(Params.Host + "/api/files", {
-                method: "GET",
-                credentials: "same-origin"
-            })
-                .then(data => data.json())
-                .then(files => {
-                    let updatedFiles: File[] = [];
-
-                    for (let i in files) {
-                        let f = files[i];
-
-                        let file = objectToFile(f);
-                        if (file === null) {
-                            continue;
-                        }
-                        updatedFiles.push(file);
-                    }
-
-                    state.filesReady = true;
-                    state.allFiles = updatedFiles;
-                    state.allFilesChangesCounter++;
-                })
-                .catch(err => logError(err));
-        },
         setFiles(state, files: object[]) {
             let updatedFiles: File[] = [];
 
-            for (let i in files) {
+            for (let i = 0; i < files.length; i++) {
                 let f = files[i];
                 let file = objectToFile(f);
                 if (file === null) {
@@ -120,30 +95,26 @@ const store: StoreOptions<Store> = {
             state.allFilesChangesCounter++;
         },
         // allTags
-        updateTags(state) {
-            fetch(Params.Host + "/api/tags", {
-                method: "GET",
-                credentials: "same-origin"
-            })
-                .then(data => data.json())
-                .then(tags => {
-                    state.allTags.clear();
+        setTags(state, tags: any) {
+            if (tags === undefined) {
+                return;
+            }
 
-                    for (let id in tags) {
-                        if (tags[id].name === undefined || tags[id].color === undefined) {
-                            continue;
-                        }
+            state.allTags.clear();
 
-                        let t = objectToTag(tags[id]);
-                        if (t !== null) {
-                            state.allTags.set(Number(id), t);
-                        }
-                    }
+            for (let id in tags) {
+                if (tags[id] === undefined || tags[id].name === undefined || tags[id].color === undefined) {
+                    continue;
+                }
 
-                    state.tagsReady = true;
-                    state.allTagsChangesCounter++;
-                })
-                .catch(err => logError(err));
+                let t = objectToTag(tags[id]);
+                if (t !== null) {
+                    state.allTags.set(Number(id), t);
+                }
+            }
+
+            state.tagsReady = true;
+            state.allTagsChangesCounter++;
         },
         // selectedFiles
         //

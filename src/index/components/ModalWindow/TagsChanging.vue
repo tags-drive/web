@@ -58,20 +58,14 @@ export default class extends Vue {
 
     addTag(name: string, color: string) {
         API.tags.add(name, color);
-        // TODO
-        SharedStore.commit("updateTags");
     }
 
     changeTag(tagID: number, newName: string, newColor: string) {
         API.tags.change(tagID, newName, newColor);
-        // TODO
-        SharedStore.commit("updateTags");
     }
 
     deleteTag(tagID: number) {
         API.tags.delete(tagID);
-        // TODO
-        SharedStore.commit("updateTags");
     }
 }
 </script>

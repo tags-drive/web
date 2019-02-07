@@ -287,7 +287,29 @@ function deleteFiles(ids: number[], force: boolean) {
 }
 
 // Tags
-function fetchTags() {}
+function fetchTags() {
+    fetch(Params.Host + "/api/tags", {
+        method: "GET",
+        credentials: "same-origin"
+    })
+        .then(resp => {
+            if (isErrorStatusCode(resp.status)) {
+                resp.text().then(text => {
+                    logError(text);
+                });
+                return;
+            }
+            return resp.json();
+        })
+        .then(tags => {
+            if (tags === undefined) {
+                return;
+            }
+
+            SharedStore.commit("setTags", tags);
+        })
+        .catch(err => logError(err));
+}
 
 function addTag(name: string, color: string) {
     let params = new URLSearchParams();
@@ -306,8 +328,8 @@ function addTag(name: string, color: string) {
                 return;
             }
 
-            // TODO
-            // SharedStore.commit("updateTags");
+            // update Tags
+            fetchTags();
         })
         .catch(err => {
             logError(err);
@@ -332,8 +354,8 @@ function changeTag(tagID: number, newName: string, newColor: string) {
                 return;
             }
 
-            // TODO
-            // SharedStore.commit("updateTags");
+            // update Tags
+            fetchTags();
         })
         .catch(err => {
             logError(err);
@@ -356,8 +378,8 @@ function deleteTag(tagID: number) {
                 return;
             }
 
-            // TODO
-            // SharedStore.commit("updateTags");
+            // update Tags
+            fetchTags();
             // Need to update files to remove deleted tag
             EventBus.$emit(Events.Search.Usual);
         })
