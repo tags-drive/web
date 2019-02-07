@@ -38,11 +38,11 @@ function isElementInPath(event: Event, ...ids: string[]): boolean {
     }
 
     for (let i = 0; i < path.length; i++) {
-		for (let j = 0; j < ids.length; j++) {
-			if (path[i].id === ids[j]) {
-				return true;
-			}
-		}
+        for (let j = 0; j < ids.length; j++) {
+            if (path[i].id === ids[j]) {
+                return true;
+            }
+        }
     }
 
     return false;
