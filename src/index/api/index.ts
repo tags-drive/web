@@ -5,9 +5,57 @@ import { isErrorStatusCode, logError, logInfo } from "@app/index/tools";
 // Files
 function fetchFiles() {}
 
-function downloadFile(id: number) {}
+function downloadFile(id: number, filename: string) {
+    fetch(Params.Host + "/data/" + id, {
+        method: "GET",
+        credentials: "same-origin"
+    })
+        .then(resp => {
+            if (isErrorStatusCode(resp.status)) {
+                resp.text().then(text => {
+                    logError(text);
+                });
+                return;
+            }
 
-function downloadFiles(ids: number[]) {}
+            resp.blob().then(file => {
+                let a = document.createElement("a"),
+                    url = URL.createObjectURL(file);
+
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            });
+        })
+        .catch(err => logError(err));
+}
+
+function downloadFiles(ids: number[]) {
+    let params = new URLSearchParams();
+    params.append("ids", ids.join(","));
+
+    fetch(Params.Host + "/api/files/download?" + params, {
+        method: "GET",
+        credentials: "same-origin"
+    }).then(resp => {
+        resp.blob().then(file => {
+            let a = document.createElement("a"),
+                url = URL.createObjectURL(file);
+
+            a.href = url;
+            a.download = "files.zip";
+            document.body.appendChild(a);
+            a.click();
+
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        });
+    });
+}
 
 function uploadFiles() {}
 
