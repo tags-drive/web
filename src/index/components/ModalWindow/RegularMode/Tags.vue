@@ -48,8 +48,7 @@ import { File, Tag } from "@app/index/global";
 import SharedStore from "@app/index/store";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
-import { Params } from "@app/global";
-import { logError, isErrorStatusCode } from "@app/index/tools";
+import API from "@app/index/api";
 
 interface CustomTag {
     id: number;
@@ -79,31 +78,11 @@ export default class extends Vue {
     }
 
     updateTags() {
-        let ids: number[] = [];
-        this.tags.filter(tag => tag.selected).forEach(tag => ids.push(tag.id));
+        let tagsIDs: number[] = [];
+        this.tags.filter(tag => tag.selected).forEach(tag => tagsIDs.push(tag.id));
 
-        let params = new URLSearchParams();
-        let id = this.file.id;
-        params.append("tags", ids.join(","));
-
-        fetch(Params.Host + `/api/file/${id}/tags?` + params, {
-            method: "PUT",
-            credentials: "same-origin"
-        })
-            .then(resp => {
-                if (isErrorStatusCode(resp.status)) {
-                    resp.text().then(text => {
-                        logError(text);
-                    });
-                    return;
-                }
-                // Refresh list of files
-                EventBus.$emit(Events.Search.Usual);
-                this.hideWindow();
-            })
-            .catch(err => {
-                logError(err);
-            });
+        API.files.changeTags(this.file.id, tagsIDs);
+        this.hideWindow();
     }
 
     hideWindow() {

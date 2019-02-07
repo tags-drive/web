@@ -11,11 +11,80 @@ function downloadFiles(ids: number[]) {}
 
 function uploadFiles() {}
 
-function changeFileName(id: number, newName: string) {}
+function changeFileName(id: number, newName: string) {
+    let params = new URLSearchParams();
+    params.append("new-name", newName);
 
-function changeFileDescription(id: number, newDesc: string) {}
+    fetch(Params.Host + `/api/file/${id}/name?` + params, {
+        method: "PUT",
+        credentials: "same-origin"
+    })
+        .then(resp => {
+            if (isErrorStatusCode(resp.status)) {
+                resp.text().then(text => {
+                    logError(text);
+                });
+                return;
+            }
 
-function changeFileTags(id: number, newTagsIDs: number[]) {}
+            // TODO
+            // Refresh list of files
+            EventBus.$emit(Events.Search.Usual);
+        })
+        .catch(err => {
+            logError(err);
+        });
+}
+
+function changeFileDescription(id: number, newDesc: string) {
+    let params = new URLSearchParams();
+    params.append("description", newDesc);
+
+    fetch(Params.Host + `/api/file/${id}/description?` + params, {
+        method: "PUT",
+        credentials: "same-origin"
+    })
+        .then(resp => {
+            if (isErrorStatusCode(resp.status)) {
+                resp.text().then(text => {
+                    logError(text);
+                });
+                return;
+            }
+
+            // TODO
+            // Refresh list of files
+            EventBus.$emit(Events.Search.Usual);
+        })
+        .catch(err => {
+            logError(err);
+        });
+}
+
+function changeFileTags(id: number, newTagsIDs: number[]) {
+    let params = new URLSearchParams();
+    params.append("tags", newTagsIDs.join(","));
+
+    fetch(Params.Host + `/api/file/${id}/tags?` + params, {
+        method: "PUT",
+        credentials: "same-origin"
+    })
+        .then(resp => {
+            if (isErrorStatusCode(resp.status)) {
+                resp.text().then(text => {
+                    logError(text);
+                });
+                return;
+            }
+
+            // TODO
+            // Refresh list of files
+            EventBus.$emit(Events.Search.Usual);
+        })
+        .catch(err => {
+            logError(err);
+        });
+}
 
 function recoverFiles(ids: number[]) {
     let params = new URLSearchParams();
@@ -33,6 +102,7 @@ function recoverFiles(ids: number[]) {
                 return;
             }
 
+            // TODO
             // Refresh list of files
             EventBus.$emit(Events.Search.Usual);
             EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
@@ -60,6 +130,7 @@ function deleteFiles(ids: number[], force: boolean) {
                 return;
             }
 
+            // TODO
             // Refresh list of files
             EventBus.$emit(Events.Search.Usual);
             return resp.json();
@@ -113,7 +184,7 @@ const API = {
         //
         uploadFiles: uploadFiles,
         //
-        rename: changeFileName,
+        changeName: changeFileName,
         changeTags: changeFileTags,
         changeDescription: changeFileDescription,
         //
