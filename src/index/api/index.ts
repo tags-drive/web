@@ -2,9 +2,52 @@ import { Params } from "@app/global";
 import { Const } from "@app/index/const.ts";
 import { EventBus, Events } from "@app/index/eventBus";
 import { isErrorStatusCode, logError, logInfo } from "@app/index/tools";
+import SharedStore from "@app/index/store";
 
 // Files
-function fetchFiles() {}
+
+/**
+ *
+ * @param expression - logical expression
+ * @param text – test to search
+ * @param sType – sort type (use "" to search with default value)
+ * @param sOrder – sort order (use "" to search with default value)
+ */
+function fetchFiles(expression: string, text: string, sType: string, sOrder: string) {
+    let params = new URLSearchParams();
+    // Expression
+    params.append("expr", expression);
+    params.append("search", text);
+    if (sType !== "") {
+        params.append("sort", sType);
+    }
+    if (sOrder !== "") {
+        params.append("order", sOrder);
+    }
+
+    // Can skip sort and order, because server will use default values
+    fetch(Params.Host + "/api/files?" + params, {
+        method: "GET",
+        credentials: "same-origin"
+    })
+        .then(resp => {
+            if (isErrorStatusCode(resp.status)) {
+                resp.text().then(text => {
+                    logError(text);
+                });
+                return;
+            }
+            return resp.json();
+        })
+        .then(files => {
+            if (files === undefined) {
+                return;
+            }
+
+            SharedStore.commit("setFiles", files);
+        })
+        .catch(err => logError(err));
+}
 
 function downloadFile(id: number, filename: string) {
     fetch(Params.Host + "/data/" + id, {
