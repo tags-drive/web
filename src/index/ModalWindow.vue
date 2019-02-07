@@ -33,14 +33,14 @@
 			<div v-else-if="selectFilesTagsAddMode" class="modal-window__input">
 				<select-tags-updating
 					:selectedFiles="selectedFiles"
-					mode="add-mode"
+					:mode="SharedTagsChangingModes.addMode"
 				></select-tags-updating>
 			</div>
 			<!-- Select tags deleting -->
 			<div v-else-if="selectFilesTagsDeleteMode" class="modal-window__input">
 				<select-tags-updating
 					:selectedFiles="selectedFiles"
-					mode="delete-mode"
+					:mode="SharedTagsChangingModes.deleteMode"
 				></select-tags-updating>
 			</div>
 			<!-- Select delete mode -->
@@ -101,6 +101,7 @@ import { File } from "@app/index/global";
 // Shared data
 import SharedState from "@app/index/state";
 // Other
+import { Const } from "@app/index/const";
 import { Events, EventBus } from "@app/index/eventBus";
 
 @Component({
@@ -133,6 +134,8 @@ export default class extends Vue {
     selectFilesTagsAddMode: boolean = false;
     selectFilesTagsDeleteMode: boolean = false;
     selectDeleteMode: boolean = false;
+    //
+    SharedTagsChangingModes = Const.tagsChanging;
 
     created() {
         EventBus.$on(Events.ModalWindow.HideWindow, () => {

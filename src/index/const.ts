@@ -11,5 +11,9 @@ export const Const = {
     logType: {
         info: "info",
         error: "error"
+    },
+    tagsChanging: {
+        addMode: "add-mode",
+        deleteMode: "delete-mode"
     }
 };

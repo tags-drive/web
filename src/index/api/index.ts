@@ -1,4 +1,5 @@
 import { Params } from "@app/global";
+import { Const } from "@app/index/const.ts";
 import { EventBus, Events } from "@app/index/eventBus";
 import { isErrorStatusCode, logError, logInfo } from "@app/index/tools";
 
@@ -134,6 +135,34 @@ function changeFileTags(id: number, newTagsIDs: number[]) {
         });
 }
 
+function changeFilesTags(filesIDs: number[], tagsIDs: number[], mode: string) {
+    let method = "POST";
+    if (mode === Const.tagsChanging.deleteMode) {
+        method = "DELETE";
+    }
+
+    let params = new URLSearchParams();
+    params.append("files", filesIDs.join(","));
+    params.append("tags", tagsIDs.join(","));
+
+    fetch(Params.Host + `/api/files/tags?` + params, {
+        method: method
+    })
+        .then(resp => {
+            if (isErrorStatusCode(resp.status)) {
+                resp.text().then(text => {
+                    logError(text);
+                });
+
+                return;
+            }
+
+            EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
+            EventBus.$emit(Events.Search.Usual);
+        })
+        .catch(err => logError(err));
+}
+
 function recoverFiles(ids: number[]) {
     let params = new URLSearchParams();
     params.append("ids", ids.join(","));
@@ -234,6 +263,7 @@ const API = {
         changeName: changeFileName,
         changeTags: changeFileTags,
         changeDescription: changeFileDescription,
+        changeFilesTags: changeFilesTags,
         //
         recover: recoverFiles,
         delete: deleteFiles
