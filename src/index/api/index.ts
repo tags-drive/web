@@ -1,23 +1,100 @@
+import { Params } from "@app/global";
+import { EventBus, Events } from "@app/index/eventBus";
+import { isErrorStatusCode, logError, logInfo } from "@app/index/tools";
+
 // Files
 function fetchFiles() {}
 
-function downloadFile() {}
+function downloadFile(id: number) {}
 
-function downloadFiles() {}
+function downloadFiles(ids: number[]) {}
 
 function uploadFiles() {}
 
-function changeFileName() {}
+function changeFileName(id: number, newName: string) {}
 
-function changeFileDescription() {}
+function changeFileDescription(id: number, newDesc: string) {}
 
-function changeFileTags() {}
+function changeFileTags(id: number, newTagsIDs: number[]) {}
 
-function recoverFiles() {}
+function recoverFiles(ids: number[]) {
+    let params = new URLSearchParams();
+    params.append("ids", ids.join(","));
 
-function deleteFile() {}
+    fetch(Params.Host + "/api/files/recover?" + params, {
+        method: "POST",
+        credentials: "same-origin"
+    })
+        .then(resp => {
+            if (isErrorStatusCode(resp.status)) {
+                resp.text().then(text => {
+                    logError(text);
+                });
+                return;
+            }
 
-function deleteFileForce() {}
+            // Refresh list of files
+            EventBus.$emit(Events.Search.Usual);
+            EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
+        })
+        .then(() => logInfo("File was recovered"))
+        .catch(err => logError(err));
+}
+
+function deleteFiles(ids: number[], force: boolean) {
+    let params = new URLSearchParams();
+    params.append("ids", ids.join(","));
+    if (force) {
+        params.append("force", "true");
+    }
+
+    fetch(Params.Host + "/api/files?" + params, {
+        method: "DELETE",
+        credentials: "same-origin"
+    })
+        .then(resp => {
+            if (isErrorStatusCode(resp.status)) {
+                resp.text().then(text => {
+                    logError(text);
+                });
+                return;
+            }
+
+            // Refresh list of files
+            EventBus.$emit(Events.Search.Usual);
+            return resp.json();
+        })
+        .then(log => {
+            if (log === undefined) {
+                return;
+            }
+            /* Schema:
+			[
+				{
+					filename: string,
+					isError: boolean,
+					error: string (when isError == true),
+					status: string (when isError == false)
+				}
+			]
+			*/
+            for (let i in log) {
+                let msg = log[i].filename;
+                if (log[i].isError) {
+                    msg += " " + log[i].error;
+                } else {
+                    msg += " " + log[i].status;
+                }
+
+                if (log[i].isError) {
+                    logError(msg);
+                } else {
+                    logInfo(msg);
+                }
+            }
+        })
+        .catch(err => logError(err));
+}
 
 // Tags
 function fetchTags() {}
@@ -40,9 +117,8 @@ const API = {
         changeTags: changeFileTags,
         changeDescription: changeFileDescription,
         //
-        recoverFiles: recoverFiles,
-        delete: deleteFile,
-        deleteForce: deleteFileForce
+        recover: recoverFiles,
+        delete: deleteFiles
     },
     tags: {
         fetch: fetchTags,

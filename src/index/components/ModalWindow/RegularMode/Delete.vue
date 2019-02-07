@@ -66,97 +66,32 @@ import { Prop } from "vue-property-decorator";
 import { File } from "@app/index/global";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
-import { Params } from "@app/global";
-import { logError, logInfo, isErrorStatusCode } from "@app/index/tools";
+import API from "@app/index/api";
 
 @Component({})
 export default class extends Vue {
     @Prop() file!: File;
 
-    deleteFile(force: boolean) {
-        let params = new URLSearchParams();
-        params.append("ids", String(this.file.id));
-        if (force === true) {
-            params.append("force", "true");
-        }
+    deleteFile() {
+        let ids = [this.file.id];
+        API.files.delete(ids, false);
 
-        fetch(Params.Host + "/api/files?" + params, {
-            method: "DELETE",
-            credentials: "same-origin"
-        })
-            .then(resp => {
-                if (isErrorStatusCode(resp.status)) {
-                    resp.text().then(text => {
-                        logError(text);
-                    });
-                    return;
-                }
-
-                // Refresh list of files
-                EventBus.$emit(Events.Search.Usual);
-                this.hideWindow();
-                return resp.json();
-            })
-            .then(log => {
-                if (log === undefined) {
-                    return;
-                }
-                /* Schema:
-                            [
-                                {
-                                    filename: string,
-                                    isError: boolean,
-                                    error: string (when isError == true),
-                                    status: string (when isError == false)
-                                }
-                            ]
-                            */
-                for (let i in log) {
-                    let msg = log[i].filename;
-                    if (log[i].isError) {
-                        msg += " " + log[i].error;
-                    } else {
-                        msg += " " + log[i].status;
-                    }
-
-                    if (log[i].isError) {
-                        logError(msg);
-                    } else {
-                        logInfo(msg);
-                    }
-                }
-            })
-            .catch(err => logError(err));
+        this.hideWindow();
     }
 
     // deleteFileForever is a wrapper over deleteFile
     deleteFileForever() {
-        this.deleteFile(true);
+        let ids = [this.file.id];
+        API.files.delete(ids, false);
+
+        this.hideWindow();
     }
 
     recoverFile() {
-        let params = new URLSearchParams();
-        params.append("ids", String(this.file.id));
+        let ids = [this.file.id];
+        API.files.recover(ids);
 
-        fetch(Params.Host + "/api/files/recover?" + params, {
-            method: "POST",
-            credentials: "same-origin"
-        })
-            .then(resp => {
-                if (isErrorStatusCode(resp.status)) {
-                    resp.text().then(text => {
-                        logError(text);
-                    });
-                    return;
-                }
-
-                // Refresh list of files
-                EventBus.$emit(Events.Search.Usual);
-                EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
-                this.hideWindow();
-            })
-            .then(() => logInfo("File was recovered"))
-            .catch(err => logError(err));
+        this.hideWindow();
     }
 
     hideWindow() {
