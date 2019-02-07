@@ -134,8 +134,6 @@ function downloadFiles(ids: number[]) {
     });
 }
 
-function uploadFiles() {}
-
 function changeFileName(id: number, newName: string) {
     let params = new URLSearchParams();
     params.append("new-name", newName);
@@ -416,13 +414,35 @@ function deleteTag(tagID: number) {
         });
 }
 
+// Other
+
+function logout() {
+    if (!confirm("Are you sure you want log out?")) {
+        return;
+    }
+
+    fetch(Params.Host + "/logout", {
+        method: "POST",
+        credentials: "same-origin"
+    })
+        .then(resp => {
+            if (isErrorStatusCode(resp.status)) {
+                resp.text().then(text => {
+                    logError(text);
+                });
+                return;
+            }
+
+            window.location.reload();
+        })
+        .catch(err => logError(err));
+}
+
 const API = {
     files: {
         fetch: fetchFiles,
         downloadFile: downloadFile,
         downloadFiles: downloadFiles,
-        //
-        uploadFiles: uploadFiles,
         //
         changeName: changeFileName,
         changeTags: changeFileTags,
@@ -437,6 +457,9 @@ const API = {
         add: addTag,
         change: changeTag,
         delete: deleteTag
+    },
+    management: {
+        logout: logout
     }
 };
 

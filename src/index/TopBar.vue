@@ -424,25 +424,7 @@ export default class TopBar extends Vue {
                 EventBus.$emit(Events.ModalWindow.ShowSettingsWindow);
             },
             logout: () => {
-                if (!confirm("Are you sure you want log out?")) {
-                    return;
-                }
-
-                fetch(Params.Host + "/logout", {
-                    method: "POST",
-                    credentials: "same-origin"
-                })
-                    .then(resp => {
-                        if (isErrorStatusCode(resp.status)) {
-                            resp.text().then(text => {
-                                logError(text);
-                            });
-                            return;
-                        }
-
-                        location.reload(true);
-                    })
-                    .catch(err => logError(err));
+                API.management.logout();
             }
         };
     }
