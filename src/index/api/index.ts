@@ -246,11 +246,82 @@ function deleteFiles(ids: number[], force: boolean) {
 // Tags
 function fetchTags() {}
 
-function addTag() {}
+function addTag(name: string, color: string) {
+    let params = new URLSearchParams();
+    params.append("name", name);
+    params.append("color", color);
 
-function changeTag() {}
+    fetch(Params.Host + "/api/tags?" + params, {
+        method: "POST",
+        credentials: "same-origin"
+    })
+        .then(resp => {
+            if (isErrorStatusCode(resp.status)) {
+                resp.text().then(text => {
+                    logError(text);
+                });
+                return;
+            }
 
-function deleteTag() {}
+            // TODO
+            // SharedStore.commit("updateTags");
+        })
+        .catch(err => {
+            logError(err);
+        });
+}
+
+function changeTag(tagID: number, newName: string, newColor: string) {
+    let params = new URLSearchParams();
+    params.append("id", String(tagID));
+    params.append("name", newName);
+    params.append("color", newColor);
+
+    fetch(Params.Host + "/api/tags?" + params, {
+        method: "PUT",
+        credentials: "same-origin"
+    })
+        .then(resp => {
+            if (isErrorStatusCode(resp.status)) {
+                resp.text().then(text => {
+                    logError(text);
+                });
+                return;
+            }
+
+            // TODO
+            // SharedStore.commit("updateTags");
+        })
+        .catch(err => {
+            logError(err);
+        });
+}
+
+function deleteTag(tagID: number) {
+    let params = new URLSearchParams();
+    params.append("id", String(tagID));
+
+    fetch(Params.Host + "/api/tags?" + params, {
+        method: "DELETE",
+        credentials: "same-origin"
+    })
+        .then(resp => {
+            if (isErrorStatusCode(resp.status)) {
+                resp.text().then(text => {
+                    logError(text);
+                });
+                return;
+            }
+
+            // TODO
+            // SharedStore.commit("updateTags");
+            // Need to update files to remove deleted tag
+            EventBus.$emit(Events.Search.Usual);
+        })
+        .catch(err => {
+            logError(err);
+        });
+}
 
 const API = {
     files: {
