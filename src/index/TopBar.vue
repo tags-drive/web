@@ -406,7 +406,6 @@ export default class TopBar extends Vue {
             usual: () => {
                 EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
                 API.files.fetch(this.expression, this.text, "", "");
-                // TODO
                 EventBus.$emit(Events.FilesBlock.RestoreSortParams);
             },
             advanced: (sType: string, sOrder: string) => {

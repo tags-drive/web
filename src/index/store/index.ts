@@ -94,6 +94,21 @@ const store: StoreOptions<Store> = {
             state.allFiles = updatedFiles;
             state.allFilesChangesCounter++;
         },
+        setSingleFiles(state, f: any) {
+            let file = objectToFile(f);
+            if (file === null) {
+                return;
+            }
+
+            for (let i = 0; i < state.allFiles.length; i++) {
+                if (state.allFiles[i].id === file.id) {
+                    state.allFiles[i] = file;
+                    break;
+                }
+            }
+
+            state.allFilesChangesCounter++;
+        },
         // allTags
         setTags(state, tags: any) {
             if (tags === undefined) {

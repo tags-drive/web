@@ -7,17 +7,51 @@ import SharedStore from "@app/index/store";
 // Files
 
 /**
+ * fetches single file and update Store
  *
- * @param expression - logical expression
- * @param text – test to search
- * @param sType – sort type (use "" to search with default value)
- * @param sOrder – sort order (use "" to search with default value)
+ * @param id id of a file
+ */
+function fetchFile(id: number) {
+    fetch(Params.Host + `/api/file/${id}`, {
+        method: "GET",
+        credentials: "same-origin"
+    })
+        .then(resp => {
+            if (isErrorStatusCode(resp.status)) {
+                resp.text().then(text => {
+                    logError(text);
+                });
+                return;
+            }
+            return resp.json();
+        })
+        .then(file => {
+            if (file === undefined) {
+                return;
+            }
+
+            SharedStore.commit("setSingleFiles", file);
+        })
+        .catch(err => logError(err));
+}
+
+/**
+ * fetches all files and update Store
+ *
+ * @param expression logical expression
+ * @param text test to search
+ * @param sType sort type (use "" to search with default value)
+ * @param sOrder sort order (use "" to search with default value)
  */
 function fetchFiles(expression: string, text: string, sType: string, sOrder: string) {
     let params = new URLSearchParams();
     // Expression
-    params.append("expr", expression);
-    params.append("search", text);
+    if (expression !== "") {
+        params.append("expr", expression);
+    }
+    if (text !== "") {
+        params.append("search", text);
+    }
     if (sType !== "") {
         params.append("sort", sType);
     }
@@ -25,7 +59,6 @@ function fetchFiles(expression: string, text: string, sType: string, sOrder: str
         params.append("order", sOrder);
     }
 
-    // Can skip sort and order, because server will use default values
     fetch(Params.Host + "/api/files?" + params, {
         method: "GET",
         credentials: "same-origin"
@@ -119,9 +152,8 @@ function changeFileName(id: number, newName: string) {
                 return;
             }
 
-            // TODO
-            // Refresh list of files
-            EventBus.$emit(Events.Search.Usual);
+            // Refresh single file
+            fetchFile(id);
         })
         .catch(err => {
             logError(err);
@@ -144,9 +176,8 @@ function changeFileDescription(id: number, newDesc: string) {
                 return;
             }
 
-            // TODO
-            // Refresh list of files
-            EventBus.$emit(Events.Search.Usual);
+            // Refresh single file
+            fetchFile(id);
         })
         .catch(err => {
             logError(err);
@@ -169,9 +200,8 @@ function changeFileTags(id: number, newTagsIDs: number[]) {
                 return;
             }
 
-            // TODO
-            // Refresh list of files
-            EventBus.$emit(Events.Search.Usual);
+            // Refresh single file
+            fetchFile(id);
         })
         .catch(err => {
             logError(err);
@@ -222,7 +252,6 @@ function recoverFiles(ids: number[]) {
                 return;
             }
 
-            // TODO
             // Refresh list of files
             EventBus.$emit(Events.Search.Usual);
         })
@@ -249,7 +278,6 @@ function deleteFiles(ids: number[], force: boolean) {
                 return;
             }
 
-            // TODO
             // Refresh list of files
             EventBus.$emit(Events.Search.Usual);
             return resp.json();
