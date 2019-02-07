@@ -53,6 +53,10 @@ const state: StoreOptions<State> = {
         },
         saveSettings(state) {
             localStorage.setItem(settingsKey, JSON.stringify(state.settings));
+        },
+        resetSettings(state) {
+            // clear all local storage
+            localStorage.clear();
         }
     }
 };

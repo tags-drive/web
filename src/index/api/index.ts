@@ -3,6 +3,7 @@ import { Const } from "@app/index/const.ts";
 import { EventBus, Events } from "@app/index/eventBus";
 import { isErrorStatusCode, logError, logInfo } from "@app/index/tools";
 import SharedStore from "@app/index/store";
+import SharedState from "@app/index/state";
 
 // Files
 
@@ -433,6 +434,8 @@ function logout() {
                 return;
             }
 
+            // clear settings
+            SharedState.commit("resetSettings");
             window.location.reload();
         })
         .catch(err => logError(err));
