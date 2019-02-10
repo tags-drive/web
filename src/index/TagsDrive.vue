@@ -113,18 +113,20 @@ import Component from "vue-class-component";
 // Shared data
 import SharedStore from "@app/index/store";
 import SharedState from "@app/index/state";
+import API from "@app/index/api";
 
 @Component({})
 export default class extends Vue {
     created() {
         SharedState.commit("readSettings");
-        SharedStore.commit("updateTags");
+        API.tags.fetch();
 
-        // If we call SharedStore.commit("updateFiles") immediately, some tags can be undefined.
+        // If we fetch files immediately, some tags can be undefined.
         // So we need to wait for tags are ready
         let t = setInterval(() => {
             if (SharedStore.state.tagsReady) {
-                SharedStore.commit("updateFiles");
+                // fetch all files
+                API.files.fetch("", "", "", "");
                 clearInterval(t);
             }
         }, 10);

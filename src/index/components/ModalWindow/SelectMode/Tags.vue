@@ -1,8 +1,8 @@
 <template>
 	<div>
 		<div style="font-size: 20px;">
-			<span v-if="mode === 'add-mode'">Add tags</span>
-			<span v-else-if="mode === 'delete-mode'">Delete tags</span>
+			<span v-if="mode === SharedModes.addMode">Add tags</span>
+			<span v-else-if="mode === SharedModes.deleteMode">Delete tags</span>
 		</div>
 		<p></p>
 		<div style="margin-right: auto; margin-left: auto; width: 40%;">
@@ -42,7 +42,9 @@ import SharedStore from "@app/index/store";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
+import { Const } from "@app/index/const";
 import { logError, isErrorStatusCode } from "@app/index/tools";
+import API from "@app/index/api";
 
 interface CustomTag {
     id: number;
@@ -50,9 +52,6 @@ interface CustomTag {
     color: string;
     selected: boolean;
 }
-
-export const AddMode = "add-mode";
-export const DeleteMode = "delete-mode";
 
 @Component({
     components: {
@@ -62,6 +61,7 @@ export const DeleteMode = "delete-mode";
 export default class extends Vue {
     @Prop() selectedFiles!: File[];
     @Prop() mode!: string;
+    SharedModes = Const.tagsChanging;
     tags: CustomTag[] = [];
 
     created() {
@@ -72,11 +72,6 @@ export default class extends Vue {
     }
 
     processSelectedFiles() {
-        let method = "POST";
-        if (this.mode === DeleteMode) {
-            method = "DELETE";
-        }
-
         let tagIDs: number[] = [];
         this.tags.filter(tag => tag.selected).forEach(tag => tagIDs.push(tag.id));
         let fileIDs: number[] = [];
@@ -86,27 +81,8 @@ export default class extends Vue {
             return;
         }
 
-        let params = new URLSearchParams();
-        params.append("files", fileIDs.join(","));
-        params.append("tags", tagIDs.join(","));
-
-        fetch(Params.Host + `/api/files/tags?` + params, {
-            method: method
-        })
-            .then(resp => {
-                if (isErrorStatusCode(resp.status)) {
-                    resp.text().then(text => {
-                        logError(text);
-                    });
-
-                    return;
-                }
-
-                EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
-                EventBus.$emit(Events.Search.Usual);
-                this.hideWindow();
-            })
-            .catch(err => logError(err));
+        API.files.changeFilesTags(fileIDs, tagIDs, this.mode);
+        this.hideWindow();
     }
 
     hideWindow() {

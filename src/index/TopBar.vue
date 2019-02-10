@@ -354,6 +354,7 @@ import { Store } from "@app/index/store/types";
 import { Events, EventBus } from "@app/index/eventBus";
 import { isErrorStatusCode, logError, logInfo, isElementInPath } from "@app/index/tools";
 import { Params } from "@app/global";
+import API from "@app/index/api";
 
 const validCharacters = "0123456789&|!()";
 
@@ -404,78 +405,12 @@ export default class TopBar extends Vue {
         return {
             usual: () => {
                 EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
-
-                let params = new URLSearchParams();
-                // Expression
-                if (this.expression !== "") {
-                    params.append("expr", this.expression);
-                }
-                // search
-                if (this.text !== "") {
-                    params.append("search", this.text);
-                }
-
-                // Can skip sort and order, because server will use default values
-
-                fetch(Params.Host + "/api/files?" + params, {
-                    method: "GET",
-                    credentials: "same-origin"
-                })
-                    .then(resp => {
-                        if (isErrorStatusCode(resp.status)) {
-                            resp.text().then(text => {
-                                logError(text);
-                            });
-                            return;
-                        }
-                        return resp.json();
-                    })
-                    .then(files => {
-                        if (files === undefined) {
-                            return;
-                        }
-                        SharedStore.commit("setFiles", files);
-                        EventBus.$emit(Events.FilesBlock.RestoreSortParams);
-                    })
-                    .catch(err => logError(err));
+                API.files.fetch(this.expression, this.text, "", "");
+                EventBus.$emit(Events.FilesBlock.RestoreSortParams);
             },
             advanced: (sType: string, sOrder: string) => {
                 EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
-
-                let params = new URLSearchParams();
-                // Expression
-                if (this.expression !== "") {
-                    params.append("expr", this.expression);
-                }
-                // search
-                if (this.text !== "") {
-                    params.append("search", this.text);
-                }
-                // sort
-                params.append("sort", sType);
-                // order
-                params.append("order", sOrder);
-
-                fetch(Params.Host + "/api/files?" + params, {
-                    method: "GET",
-                    credentials: "same-origin"
-                })
-                    .then(resp => {
-                        if (isErrorStatusCode(resp.status)) {
-                            resp.text().then(text => {
-                                logError(text);
-                            });
-                            return;
-                        }
-                        return resp.json();
-                    })
-                    .then(files => {
-                        if (files === undefined) {
-                            return;
-                        }
-                        SharedStore.commit("setFiles", files);
-                    })
-                    .catch(err => logError(err));
+                API.files.fetch(this.expression, this.text, sType, sOrder);
             }
         };
     }
@@ -489,25 +424,7 @@ export default class TopBar extends Vue {
                 EventBus.$emit(Events.ModalWindow.ShowSettingsWindow);
             },
             logout: () => {
-                if (!confirm("Are you sure you want log out?")) {
-                    return;
-                }
-
-                fetch(Params.Host + "/logout", {
-                    method: "POST",
-                    credentials: "same-origin"
-                })
-                    .then(resp => {
-                        if (isErrorStatusCode(resp.status)) {
-                            resp.text().then(text => {
-                                logError(text);
-                            });
-                            return;
-                        }
-
-                        location.reload(true);
-                    })
-                    .catch(err => logError(err));
+                API.management.logout();
             }
         };
     }

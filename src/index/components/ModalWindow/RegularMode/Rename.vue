@@ -22,8 +22,7 @@ import { Prop } from "vue-property-decorator";
 import { File } from "@app/index/global";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
-import { Params } from "@app/global";
-import { logError, isErrorStatusCode } from "@app/index/tools";
+import API from "@app/index/api";
 
 @Component({})
 export default class extends Vue {
@@ -35,28 +34,8 @@ export default class extends Vue {
     }
 
     rename() {
-        let params = new URLSearchParams();
-        let id = this.file.id;
-        params.append("new-name", this.newFilename);
-
-        fetch(Params.Host + `/api/file/${id}/name` + params, {
-            method: "PUT",
-            credentials: "same-origin"
-        })
-            .then(resp => {
-                if (isErrorStatusCode(resp.status)) {
-                    resp.text().then(text => {
-                        logError(text);
-                    });
-                    return;
-                }
-                // Refresh list of files
-                EventBus.$emit(Events.Search.Usual);
-                this.hideWindow();
-            })
-            .catch(err => {
-                logError(err);
-            });
+        API.files.changeName(this.file.id, this.newFilename);
+        this.hideWindow();
     }
 
     hideWindow() {

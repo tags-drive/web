@@ -74,70 +74,17 @@ import { Prop } from "vue-property-decorator";
 import { File } from "@app/index/global";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
-import { Params } from "@app/global";
-import { logError, logInfo, isErrorStatusCode } from "@app/index/tools";
+import API from "@app/index/api";
 
 @Component({})
 export default class extends Vue {
     @Prop() selectedFiles!: File[];
 
-    deleteSelectedFiles(force: boolean) {
-        let params = new URLSearchParams();
-
-        let ids: number[] = [];
-        this.selectedFiles.forEach(elem => ids.push(elem.id));
-        params.append("ids", ids.join(","));
-        if (force === true) {
-            params.append("force", "true");
-        }
-
-        fetch(Params.Host + "/api/files?" + params, {
-            method: "DELETE",
-            credentials: "same-origin"
-        })
-            .then(resp => {
-                if (isErrorStatusCode(resp.status)) {
-                    resp.text().then(text => {
-                        logError(text);
-                    });
-                    return;
-                }
-
-                // Refresh list of files
-                EventBus.$emit(Events.Search.Usual);
-                this.hideWindow();
-                return resp.json();
-            })
-            .then(log => {
-                if (log === undefined) {
-                    return;
-                }
-                /* Schema:
-                            [
-                                {
-                                    filename: string,
-                                    isError: boolean,
-                                    error: string (when isError == true),
-                                    status: string (when isError == false)
-                                }
-                            ]
-                            */
-                for (let i in log) {
-                    let msg = log[i].filename;
-                    if (log[i].isError) {
-                        msg += " " + log[i].error;
-                    } else {
-                        msg += " " + log[i].status;
-                    }
-
-                    if (log[i].isError) {
-                        logError(msg);
-                    } else {
-                        logInfo(msg);
-                    }
-                }
-            })
-            .catch(err => logError(err));
+    deleteSelectedFiles() {
+        let ids = new Array<number>(this.selectedFiles.length);
+        this.selectedFiles.forEach((elem, i) => (ids[i] = elem.id));
+        API.files.delete(ids, false);
+        this.hideWindow();
 
         // If we don't call this function, next files will become selected.
         EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
@@ -145,34 +92,22 @@ export default class extends Vue {
 
     // deleteSelectedFilesForever is a wrapper over deleteFile
     deleteSelectedFilesForever() {
-        this.deleteSelectedFiles(true);
+        let ids = new Array<number>(this.selectedFiles.length);
+        this.selectedFiles.forEach((elem, i) => (ids[i] = elem.id));
+        API.files.delete(ids, true);
+        this.hideWindow();
+
+        // If we don't call this function, next files will become selected.
+        EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
     }
 
     recoverSelectedFiles() {
-        let params = new URLSearchParams();
-        let ids: number[] = [];
-        this.selectedFiles.forEach(elem => ids.push(elem.id));
-        params.append("ids", ids.join(","));
+        let ids: number[] = new Array<number>(this.selectedFiles.length);
+        this.selectedFiles.forEach((elem, i) => (ids[i] = elem.id));
+        API.files.recover(ids);
+        this.hideWindow();
 
-        fetch(Params.Host + "/api/files/recover?" + params, {
-            method: "POST",
-            credentials: "same-origin"
-        })
-            .then(resp => {
-                if (isErrorStatusCode(resp.status)) {
-                    resp.text().then(text => {
-                        logError(text);
-                    });
-                    return;
-                }
-
-                // Refresh list of files
-                EventBus.$emit(Events.Search.Usual);
-                EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
-                this.hideWindow();
-            })
-            .then(() => logInfo("Files were recovered"))
-            .catch(err => logError(err));
+        EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
     }
 
     hideWindow() {

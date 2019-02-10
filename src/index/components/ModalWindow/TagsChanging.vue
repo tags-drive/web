@@ -29,6 +29,7 @@ import { Store } from "@app/index/store/types";
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
 import { logError, logInfo, isErrorStatusCode } from "@app/index/tools";
+import API from "@app/index/api";
 
 @Component({
     components: {
@@ -56,77 +57,15 @@ export default class extends Vue {
     }
 
     addTag(name: string, color: string) {
-        let params = new URLSearchParams();
-        params.append("name", name);
-        params.append("color", color);
-
-        fetch(Params.Host + "/api/tags?" + params, {
-            method: "POST",
-            credentials: "same-origin"
-        })
-            .then(resp => {
-                if (isErrorStatusCode(resp.status)) {
-                    resp.text().then(text => {
-                        logError(text);
-                    });
-                    return;
-                }
-
-                SharedStore.commit("updateTags");
-            })
-            .catch(err => {
-                logError(err);
-            });
+        API.tags.add(name, color);
     }
 
     changeTag(tagID: number, newName: string, newColor: string) {
-        let params = new URLSearchParams();
-        params.append("id", String(tagID));
-        params.append("name", newName);
-        params.append("color", newColor);
-
-        fetch(Params.Host + "/api/tags?" + params, {
-            method: "PUT",
-            credentials: "same-origin"
-        })
-            .then(resp => {
-                if (isErrorStatusCode(resp.status)) {
-                    resp.text().then(text => {
-                        logError(text);
-                    });
-                    return;
-                }
-
-                SharedStore.commit("updateTags");
-            })
-            .catch(err => {
-                logError(err);
-            });
+        API.tags.change(tagID, newName, newColor);
     }
 
     deleteTag(tagID: number) {
-        let params = new URLSearchParams();
-        params.append("id", String(tagID));
-
-        fetch(Params.Host + "/api/tags?" + params, {
-            method: "DELETE",
-            credentials: "same-origin"
-        })
-            .then(resp => {
-                if (isErrorStatusCode(resp.status)) {
-                    resp.text().then(text => {
-                        logError(text);
-                    });
-                    return;
-                }
-
-                SharedStore.commit("updateTags");
-                // Need to update files to remove deleted tag
-                EventBus.$emit(Events.Search.Usual);
-            })
-            .catch(err => {
-                logError(err);
-            });
+        API.tags.delete(tagID);
     }
 }
 </script>

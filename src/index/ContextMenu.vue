@@ -92,8 +92,8 @@ import SharedState from "@app/index/state";
 import { State } from "@app/index/state/types";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
-import { Params } from "@app/global";
-import { isElementInPath, isErrorStatusCode, logError } from "@app/index/tools";
+import { isElementInPath } from "@app/index/tools";
+import API from "@app/index/api";
 
 interface Payload {
     file: File;
@@ -129,14 +129,6 @@ export default class extends Vue {
     divHeight: number = 125;
     //
     State: State = SharedState.state;
-
-    get downloadLink(): string {
-        if (this.file === null) {
-            return "";
-        }
-
-        return Params.Host + "/" + this.file.origin;
-    }
 
     created() {
         EventBus.$on(Events.ShowContextMenu, (payload: Payload) => {
@@ -216,58 +208,14 @@ export default class extends Vue {
                 );
             },
             downloadSingleFile: () => {
-                fetch(Params.Host + "/data/" + this.file!.id, {
-                    method: "GET",
-                    credentials: "same-origin"
-                })
-                    .then(resp => {
-                        if (isErrorStatusCode(resp.status)) {
-                            resp.text().then(text => {
-                                logError(text);
-                            });
-                            return;
-                        }
-
-                        resp.blob().then(file => {
-                            let a = document.createElement("a"),
-                                url = URL.createObjectURL(file);
-
-                            a.href = url;
-                            a.download = this.file!.filename;
-                            document.body.appendChild(a);
-                            a.click();
-
-                            document.body.removeChild(a);
-                            window.URL.revokeObjectURL(url);
-                        });
-                    })
-                    .catch(err => logError(err));
+                API.files.downloadFile(this.file!.id, this.file!.filename);
             },
             downloadFiles: () => {
-                let params = new URLSearchParams();
-
                 getSelectedFiles().then(files => {
                     let ids: number[] = [];
                     files.forEach(elem => ids.push(elem.id));
-                    params.append("ids", ids.join(","));
-
-                    fetch(Params.Host + "/api/files/download?" + params, {
-                        method: "GET",
-                        credentials: "same-origin"
-                    }).then(resp => {
-                        resp.blob().then(file => {
-                            let a = document.createElement("a"),
-                                url = URL.createObjectURL(file);
-
-                            a.href = url;
-                            a.download = "files.zip";
-                            document.body.appendChild(a);
-                            a.click();
-
-                            document.body.removeChild(a);
-                            window.URL.revokeObjectURL(url);
-                        });
-                    });
+                    API.files.downloadFiles(ids);
+                    EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
                 });
             },
             deleteFiles: () => {

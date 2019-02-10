@@ -35,8 +35,7 @@ import { Prop } from "vue-property-decorator";
 import { File } from "@app/index/global";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
-import { Params } from "@app/global";
-import { logError, isErrorStatusCode } from "@app/index/tools";
+import API from "@app/index/api";
 
 @Component({})
 export default class extends Vue {
@@ -48,28 +47,8 @@ export default class extends Vue {
     }
 
     updateDescription() {
-        let params = new URLSearchParams();
-        let id = this.file.id;
-        params.append("description", this.newDescription);
-
-        fetch(Params.Host + `/api/file/${id}/description?` + params, {
-            method: "PUT",
-            credentials: "same-origin"
-        })
-            .then(resp => {
-                if (isErrorStatusCode(resp.status)) {
-                    resp.text().then(text => {
-                        logError(text);
-                    });
-                    return;
-                }
-                // Refresh list of files
-                EventBus.$emit(Events.Search.Usual);
-                this.hideWindow();
-            })
-            .catch(err => {
-                logError(err);
-            });
+        API.files.changeDescription(this.file.id, this.newDescription);
+        this.hideWindow();
     }
 
     hideWindow() {
