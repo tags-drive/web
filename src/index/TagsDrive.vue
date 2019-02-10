@@ -3,7 +3,7 @@
 		<div id="top-bar"></div>
 
 		<!-- We have to set height for correct scroll -->
-		<div id="files-block-wrapper" style="height: 95vh; overflow: hidden; width: 100%;">
+		<div id="files-block-wrapper">
 			<div id="files-block"></div>
 		</div>
 
@@ -40,6 +40,13 @@ input[type="text"] {
     border: none;
     border-bottom: 1px solid #888888;
     outline: none;
+}
+
+#files-block-wrapper {
+    height: calc(100% - 51px);
+    overflow-y: auto;
+    position: absolute;
+    width: 100%;
 }
 
 .vertically {

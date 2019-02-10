@@ -56,40 +56,13 @@
 		</tr>
 
 		<files
-			v-for="(file, index) in displayedFiles"
+			v-for="(file, index) in allFiles"
 			:key="index"
 			:file="file"
 		></files>
 	</table>
-
-	<!-- Progress bar -->
-	<div id="progress-bar">
-		<i
-			v-for="i in 10"
-			:key="i"
-			class="material-icons noselect"
-			:style="[currentProgress === i ? {'opacity': 0.5} : {}]"
-			@click="goto(i)"
-		>fiber_manual_record</i>
-	</div>
 </div>
 </template>
-
-<style scoped>
-#progress-bar {
-    display: grid;
-    position: fixed;
-    right: 5px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-#progress-bar > i {
-    cursor: pointer;
-    font-size: 15px;
-    opacity: 0.2;
-}
-</style>
 
 <script lang="ts">
 import Vue from "vue";
@@ -110,14 +83,6 @@ import { isElementInPath, preloadImages } from "@app/index/tools";
 
 const trTableHeight = 50;
 const maxLastIDs = 10;
-
-let customRound = (n: number, greater: number): number => {
-    if ((n * 10) % 10 > greater) {
-        return Math.ceil(n);
-    } else {
-        return Math.floor(n);
-    }
-};
 
 let areEqualArrays = (a: any[], b: any[]): boolean => {
     if (a.length !== b.length) {
@@ -165,42 +130,6 @@ export default class extends Vue {
     //
     lastSortType: string = Const.sortType.name;
 
-    get displayedFiles(): TableFile[] {
-        let result: TableFile[] = [],
-            reactive = this.selectedFilesIDsCounter,
-            allFiles = this.allFiles,
-            start = this.offset,
-            stop = Math.min(this.offset + this.maxDisplayedFiles, allFiles.length);
-
-        for (let i = start; i < stop; i++) {
-            let f = new TableFile(allFiles[i]);
-            f.selected = this.selectedFilesIDs.has(allFiles[i].id);
-            result.push(f);
-        }
-
-        let nextImagesURLs: string[] = [];
-        start = Math.min(this.offset + this.maxDisplayedFiles, allFiles.length);
-        stop = Math.min(start + SharedState.state.settings.scrollOffset, allFiles.length);
-        for (let i = start; i < stop; i++) {
-            if (allFiles[i].preview !== "") {
-                nextImagesURLs.push(allFiles[i].preview);
-            }
-        }
-
-        preloadImages(...nextImagesURLs);
-
-        return result;
-    }
-
-    get maxDisplayedFiles(): number {
-        let tableClientHeight = this.tableClientHeight;
-        if (tableClientHeight === 0) {
-            return 10;
-        }
-
-        return customRound(tableClientHeight / trTableHeight, 7);
-    }
-
     get allFiles(): File[] {
         // For reactive updating (see @app/index/store/types.ts for more information)
         let reactive = SharedStore.state.allFilesChangesCounter;
@@ -239,10 +168,6 @@ export default class extends Vue {
         return allFiles;
     }
 
-    get currentProgress(): number {
-        return Math.floor((this.offset / this.allFiles.length) * 10) + 1;
-    }
-
     created() {
         EventBus.$on(Events.FilesBlock.UnselectAllFiles, () => {
             this.unselectAllFiles();
@@ -266,54 +191,6 @@ export default class extends Vue {
         //
         EventBus.$on(Events.FilesBlock.RestoreSortParams, () => {
             this.sort().restoreDefault();
-        });
-
-        // Event Listener for offset update
-        document.addEventListener("wheel", ev => {
-            if (!isElementInPath(ev, "files-block-wrapper")) {
-                return;
-            }
-
-            // Prevent scroll if special keys or right mouse button are pressed
-            if (ev.ctrlKey || ev.altKey || ev.shiftKey || ev.buttons === 2) {
-                return;
-            }
-
-            let deltaOffset: number = SharedState.state.settings.scrollOffset;
-
-            if (ev.deltaY > 0) {
-                if (this.offset + deltaOffset < this.allFiles.length) {
-                    this.offset += deltaOffset;
-                }
-            } else if (ev.deltaY < 0) {
-                if (this.offset - deltaOffset < 0) {
-                    this.offset = 0;
-                } else {
-                    this.offset -= deltaOffset;
-                }
-            }
-        });
-
-        // Update tableClientHeight after page is loaded and #top-bar is created
-        let t = setInterval(() => {
-            let elem = document.getElementById("top-bar");
-            if (elem === null) {
-                return;
-            }
-
-            this.tableClientHeight = window.innerHeight - trTableHeight - elem!.clientHeight;
-            clearInterval(t);
-        }, 10);
-
-        // Update tableClientHeight on window resize
-        window.addEventListener("resize", ev => {
-            let topBarHeight: number = 0;
-            if (document.getElementById("top-bar") !== null) {
-                topBarHeight = document.getElementById("top-bar")!.clientHeight;
-            }
-
-            // Without header and #top-bar
-            this.tableClientHeight = window.innerHeight - trTableHeight - topBarHeight;
         });
     }
 
@@ -446,16 +323,6 @@ export default class extends Vue {
         if (this.selectedFilesCounter === 0) {
             SharedState.commit("unsetSelectMode");
         }
-    }
-
-    // goto updates offset
-    // tenPercents - number in [1; 10].
-    goto(tenPercents: number) {
-        if (tenPercents < 1 || tenPercents > 10) {
-            return;
-        }
-
-        this.offset = Math.ceil(((tenPercents - 1) * this.allFiles.length) / 10);
     }
 }
 </script>
