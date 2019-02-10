@@ -151,8 +151,10 @@ function changeFileName(id: number, newName: string) {
                 return;
             }
 
-            // Refresh single file
-            fetchFile(id);
+            return resp.json();
+        })
+        .then(file => {
+            SharedStore.commit("setSingleFiles", file);
         })
         .catch(err => {
             logError(err);
@@ -175,8 +177,10 @@ function changeFileDescription(id: number, newDesc: string) {
                 return;
             }
 
-            // Refresh single file
-            fetchFile(id);
+            return resp.json();
+        })
+        .then(file => {
+            SharedStore.commit("setSingleFiles", file);
         })
         .catch(err => {
             logError(err);
@@ -199,8 +203,10 @@ function changeFileTags(id: number, newTagsIDs: number[]) {
                 return;
             }
 
-            // Refresh single file
-            fetchFile(id);
+            return resp.json();
+        })
+        .then(file => {
+            SharedStore.commit("setSingleFiles", file);
         })
         .catch(err => {
             logError(err);
@@ -365,11 +371,10 @@ function addTag(name: string, color: string) {
 
 function changeTag(tagID: number, newName: string, newColor: string) {
     let params = new URLSearchParams();
-    params.append("id", String(tagID));
     params.append("name", newName);
     params.append("color", newColor);
 
-    fetch(Params.Host + "/api/tags?" + params, {
+    fetch(Params.Host + `/api/tag/${tagID}?` + params, {
         method: "PUT",
         credentials: "same-origin"
     })
