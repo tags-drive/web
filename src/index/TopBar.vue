@@ -73,7 +73,8 @@
 			<!-- Reset input -->
 			<div
 				id="reset-input-button"
-				class="noselect vertically button buttons__search"
+				class="noselect vertically"
+				:class="{ 'button buttons__search' : expression != '' }"
 				style="width: 25px; height: 25px;"
 			>
 				<div
