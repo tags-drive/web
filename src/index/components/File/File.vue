@@ -54,14 +54,10 @@
 			</div>
 		</div>
 
-		<div
-			class="file-info__description"
-			:title="file.description"
-		>
-			{{
-				// Cut too long description
-				(file.description.length > 20) ? file.description.slice(0, 20) + '...' : file.description
-			}}
+		<div class="file-info__description">
+			<div class="description" :title="file.description">
+				{{file.description}}
+			</div>
 		</div>
 
 		<div class="file-info__size">{{(file.size / (1024 * 1024)).toFixed(2)}}</div>
@@ -75,12 +71,12 @@
     background-color: #d3d3d3;
 }
 
-.filename {
+.filename,
+.description {
     -o-text-overflow: ellipsis;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 200px;
 }
 
 .image-wrapper {
