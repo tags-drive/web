@@ -72,6 +72,10 @@ Use this styles for File components
     height: 50px;
 }
 
+.file-table__file:hover {
+    background-color: #d3d3d3;
+}
+
 .file-table__file > td,
 th {
     border-bottom: 1px solid #dddddd;

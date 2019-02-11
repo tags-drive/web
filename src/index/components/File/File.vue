@@ -4,8 +4,6 @@
 		class="file-table__file"
 		:style="stylesObject"
 		:title="titleMessage"
-		@mouseover="hover = true;"
-		@mouseleave="hover = false;"
 		@click.right.prevent="showContextMenu($event, file);"
 	>
 		<td style="text-align: center;">
@@ -122,7 +120,6 @@ const tagsListPadding = 4;
 })
 export default class extends Vue {
     @Prop() file!: TableFile;
-    hover: boolean = false;
     overflow: boolean = false;
     tagsListHover: boolean = false;
     // setInterval id
@@ -132,14 +129,15 @@ export default class extends Vue {
     State: State = SharedState.state;
 
     get stylesObject() {
-        let bgColor = "white";
-        if (this.hover || this.file.selected) {
-            bgColor = "#d3d3d3";
-        }
-        return {
-            opacity: this.file.deleted && !this.file.selected ? 0.4 : 1,
-            "background-color": bgColor
+        let style = <any>{
+            opacity: this.file.deleted && !this.file.selected ? 0.4 : 1
         };
+
+        if (this.file.selected) {
+            style["background-color"] = "#d3d3d3";
+        }
+
+        return style;
     }
 
     get titleMessage(): string {
