@@ -1,11 +1,12 @@
 <template>
 <div>
-	<table
-		id="file-table"
-		style="border-collapse: collapse; width: 100%;"
+	<div
+		class="file-info"
+		style="font-size: 17px; border-bottom: 1px solid grey;"
 	>
-		<tr class="file-info">
-			<th class="noselect" style="text-align: center; width: 30px;">
+		<!-- There are some nonexistent classes. They are reserved for readability and future using -->
+		<div class="file-info__checkbox">
+			<div>
 				<input
 					type="checkbox"
 					style="height: 15px; width: 15px;"
@@ -14,97 +15,85 @@
 					:indeterminate.prop="
 						selectedFilesCounter > 0 &&
 						selectedFilesCounter !== allFiles.length"
-					@click="toggleAllFiles"
-				></th>
-			<th
-				style="width: 50px; cursor: default; font-weight: normal;"
-				title="Selected files"
-			>{{selectedFilesCounter}}</th>
+					@click="toggleAllFiles">
+			</div>	
+		</div>
 
-			<th class="noselect" style="width: 210px;">
-				Filename
-				<i
-					id="sortByNameIcon"
-					class="material-icons noselect"
-					style="font-size: 20px; cursor: pointer;"
-					@click="sort().byName()"
-					:style="[!sortModeByName || sortOrderAsc || !sortOrderDesc ? {'transform': 'scale(1, -1)'} : {'transform': 'scale(1, 1)'}]"
-				>sort</i>
-			</th>
-			<th class="noselect">Tags</th>
-			<th class="noselect" style="width: 20%;">Description</th>
-			<th class="noselect" style="width: 100px;">
-				Size (MB)
-				<i
-					id="sortByNameSize"
-					class="material-icons noselect"
-					style="transform: scale(1, 1); font-size: 20px; cursor: pointer;"
-					@click="sort().bySize()"
-					:style="[!sortModeBySize || sortOrderAsc || !sortOrderDesc ? {'transform': 'scale(1, -1)'} : {'transform': 'scale(1, 1)'}]"
-				>sort</i>
-			</th>
-			<th class="noselect" style="width: 150px;">
-				Time of adding
-				<i
+		<div
+			class="file-info__preview"
+			style="cursor: default;"
+			title="Selected files"
+		>{{selectedFilesCounter}}</div>
+
+		<div class="file-info__filename">
+			Filename
+			<i
+				id="sortByNameIcon"
+				class="material-icons noselect"
+				style="font-size: 20px; cursor: pointer;"
+				@click="sort().byName()"
+				:style="[!sortModeByName || sortOrderAsc || !sortOrderDesc ? {'transform': 'scale(1, -1)'} : {'transform': 'scale(1, 1)'}]"
+			>sort</i>
+		</div>
+
+		<div class="file-info__tags-list">Tags</div>
+
+		<div class="file-info__description">Description</div>
+
+		<div class="file-info__size">
+			Size (MB)
+			<i
+				id="sortByNameSize"
+				class="material-icons noselect"
+				style="transform: scale(1, 1); font-size: 20px; cursor: pointer;"
+				@click="sort().bySize()"
+				:style="[!sortModeBySize || sortOrderAsc || !sortOrderDesc ? {'transform': 'scale(1, -1)'} : {'transform': 'scale(1, 1)'}]"
+			>sort</i>
+		</div>
+
+		<div class="file-info__adding-time">
+			Time of adding
+			<i
 				id="sortByNameTime"
 				class="material-icons noselect"
 				style="transform: scale(1, 1); font-size: 20px; cursor: pointer;"
 				@click="sort().byTime()"
 				:style="[!sortModeByTime || sortOrderAsc || !sortOrderDesc ? {'transform': 'scale(1, -1)'} : {'transform': 'scale(1, 1)'}]"
-				>sort</i>
-			</th>
-		</tr>
+			>sort</i>
+		</div>
+	</div>
 
-		<file
-			v-for="(file, index) in allFiles"
-			:key="index"
-			:file="file"
-		></file>
-	</table>
+	<file
+		v-for="(file, index) in allFiles"
+		:key="index"
+		:file="file"
+	></file>
 </div>
 </template>
- 
+
 <style>
-/* 
-Use this styles for File components
-*/
-.file-table__file {
-    height: 50px;
-}
-
-.file-table__file:hover {
-    background-color: #d3d3d3;
-}
-
-.file-table__file > td,
-th {
-    border-bottom: 1px solid #dddddd;
-    border-collapse: collapse;
-    font-family: arial, sans-serif;
-    height: 40px;
-    padding: 4px;
+/* Use this styles for File components */
+.file-info {
+    border-bottom: 1px solid #ddd;
+    display: grid;
+    grid-template-columns: 40px 60px 210px auto 20% 110px 150px;
+    grid-auto-rows: 50px;
     text-align: left;
 }
 
-.file-table__checkbox {
+.file-info > div {
+    height: 40px;
+    line-height: 40px;
+    padding: 4px;
 }
 
-.file-table__preview {
+.file-info__checkbox {
+    text-align: center;
 }
 
-.file-table__filename {
-}
-
-.file-table__tags-list {
-}
-
-.file-table__description {
-}
-
-.file-table__size {
-}
-
-.file-table__adding-time {
+.file-info__checkbox > div {
+    line-height: normal;
+    transform: translateY(50%);
 }
 </style>
 

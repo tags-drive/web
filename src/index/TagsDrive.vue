@@ -43,10 +43,9 @@ input[type="text"] {
 }
 
 #files-block-wrapper {
-    height: calc(100% - 51px);
-    overflow-y: auto;
-    position: absolute;
-    width: 100%;
+    height: calc(100vh - 51px);
+    overflow: auto;
+	overflow-x: hidden;
 }
 
 .vertically {

@@ -1,19 +1,24 @@
 <template>
-	<tr
+	<div
 		v-show="!file.deleted || State.settings.showDeletedFiles"
-		class="file-table__file"
+		class="file-info hover-class"
 		:style="stylesObject"
 		:title="titleMessage"
 		@click.right.prevent="showContextMenu($event, file);"
 	>
-		<td style="text-align: center;">
-			<input
-				type="checkbox"
-				style="height: 15px; width: 15px;"
-				v-model="file.selected"
-				@change="toggleSelect">
-		</td>
-		<td
+		<!-- There are some nonexistent classes. They are reserved for readability and future using -->
+		<div class="file-info__checkbox">
+			<div>
+				<input
+					type="checkbox"
+					style="height: 15px; width: 15px;"
+					v-model="file.selected"
+					@change="toggleSelect">
+			</div>
+		</div>
+
+		<div
+			class="file-info__preview"
 			title="Show preview"
 			style="cursor: pointer;"
 			@click="showPreview"
@@ -21,13 +26,16 @@
 			<div class="image-wrapper">
 				<img :src="previewLink">
 			</div>
-		</td>
-		<td>
+		</div>
+
+		<div class="file-info__filename">
 			<div class="filename" :title="file.filename">
 				{{file.filename}}
 			</div>
-		</td>
-		<td
+		</div>
+
+		<div
+			class="file-info__tags-list"
 			ref="tags-list-wrapper"
 		>
 			<div
@@ -44,19 +52,29 @@
 					:tag="Store.allTags.get(id)"
 				></tag>
 			</div>
-		</td>
-		<td :title="file.description">
+		</div>
+
+		<div
+			class="file-info__description"
+			:title="file.description"
+		>
 			{{
 				// Cut too long description
 				(file.description.length > 20) ? file.description.slice(0, 20) + '...' : file.description
 			}}
-		</td>
-		<td>{{(file.size / (1024 * 1024)).toFixed(2)}}</td>
-		<td>{{file.addTime}}</td>
-	</tr>
+		</div>
+
+		<div class="file-info__size">{{(file.size / (1024 * 1024)).toFixed(2)}}</div>
+
+		<div class="file-info__adding-time">{{file.addTime}}</div>
+	</div>
 </template>
 
 <style scoped>
+.hover-class:hover {
+    background-color: #d3d3d3;
+}
+
 .filename {
     -o-text-overflow: ellipsis;
     overflow: hidden;
