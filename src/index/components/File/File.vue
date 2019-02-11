@@ -1,7 +1,7 @@
 <template>
 	<tr
 		v-show="!file.deleted || State.settings.showDeletedFiles"
-		class="file-info"
+		class="file-table__file"
 		:style="stylesObject"
 		:title="titleMessage"
 		@mouseover="hover = true;"

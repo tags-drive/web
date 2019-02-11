@@ -55,20 +55,60 @@
 			</th>
 		</tr>
 
-		<files
+		<file
 			v-for="(file, index) in allFiles"
 			:key="index"
 			:file="file"
-		></files>
+		></file>
 	</table>
 </div>
 </template>
+ 
+<style>
+/* 
+Use this styles for File components
+*/
+.file-table__file {
+    height: 50px;
+}
+
+.file-table__file > td,
+th {
+    border-bottom: 1px solid #dddddd;
+    border-collapse: collapse;
+    font-family: arial, sans-serif;
+    height: 40px;
+    padding: 4px;
+    text-align: left;
+}
+
+.file-table__checkbox {
+}
+
+.file-table__preview {
+}
+
+.file-table__filename {
+}
+
+.file-table__tags-list {
+}
+
+.file-table__description {
+}
+
+.file-table__size {
+}
+
+.file-table__adding-time {
+}
+</style>
 
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
 // Components
-import Files from "@components/File/File.vue";
+import FileComponent from "@components/File/File.vue";
 // Classes and types
 import { File } from "@app/index/global";
 import { TableFile } from "@components/File/types";
@@ -100,7 +140,7 @@ let areEqualArrays = (a: any[], b: any[]): boolean => {
 
 @Component({
     components: {
-        files: Files
+        file: FileComponent
     }
 })
 export default class extends Vue {
