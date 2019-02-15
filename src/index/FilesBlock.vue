@@ -169,8 +169,6 @@ export default class extends Vue {
     allSelected: boolean = false;
     selectedFilesCounter: number = 0;
     //
-    selectedFilesIDs: Set<number> = new Set();
-    selectedFilesIDsCounter: number = 0; // for reactive selectedFilesIDs
     // Sort modes
     sortModeByName: boolean = true;
     sortModeBySize: boolean = false;
@@ -182,6 +180,10 @@ export default class extends Vue {
     lastSortType: string = Const.sortType.name;
 
     get allFiles(): TableFile[] {
+        // Reset because allFiles will change
+        this.allSelected = false;
+        this.selectedFilesCounter = 0;
+
         // For reactive updating (see @app/index/store/types.ts for more information)
         let reactive = SharedStore.state.allFilesChangesCounter;
 
@@ -322,10 +324,9 @@ export default class extends Vue {
             this.allSelected = true;
             SharedState.commit("setSelectMode");
 
-            this.allFiles.forEach(f => {
-                this.selectedFilesIDs.add(f.id);
+            this.allFiles.forEach((f, i) => {
+                this.allFiles[i].selected = true;
             });
-            this.selectedFilesIDsCounter++;
         } else {
             this.unselectAllFiles();
         }
@@ -333,8 +334,9 @@ export default class extends Vue {
 
     unselectAllFiles() {
         this.selectedFilesCounter = 0;
-        this.selectedFilesIDs.clear();
-        this.selectedFilesIDsCounter++;
+        this.allFiles.forEach((f, i) => {
+            this.allFiles[i].selected = false;
+        });
 
         this.allSelected = false;
         SharedState.commit("unsetSelectMode");
@@ -344,8 +346,8 @@ export default class extends Vue {
     updateSelectedFiles() {
         let selectedFiles: File[] = [];
 
-        this.allFiles.forEach(f => {
-            if (this.selectedFilesIDs.has(f.id)) {
+        this.allFiles.forEach((f, i) => {
+            if (this.allFiles[i].selected) {
                 selectedFiles.push(f);
             }
         });
@@ -357,8 +359,13 @@ export default class extends Vue {
     selectFile(id: number) {
         this.selectedFilesCounter++;
         SharedState.commit("setSelectMode");
-        this.selectedFilesIDs.add(id);
-        this.selectedFilesIDsCounter++;
+
+        for (let i = 0; i < this.allFiles.length; i++) {
+            if (this.allFiles[i].id === id) {
+                this.allFiles[i].selected = true;
+            }
+        }
+
         if (this.selectedFilesCounter === this.allFiles.length) {
             this.allSelected = true;
         }
@@ -367,8 +374,12 @@ export default class extends Vue {
     unselectFile(id: number) {
         this.selectedFilesCounter--;
         this.allSelected = false;
-        this.selectedFilesIDs.delete(id);
-        this.selectedFilesIDsCounter++;
+        for (let i = 0; i < this.allFiles.length; i++) {
+            if (this.allFiles[i].id === id) {
+                this.allFiles[i].selected = false;
+            }
+        }
+
         if (this.selectedFilesCounter === 0) {
             SharedState.commit("unsetSelectMode");
         }
