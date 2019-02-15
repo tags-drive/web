@@ -2,10 +2,7 @@
 	<div style="min-width: 900px;">
 		<div id="top-bar"></div>
 
-		<!-- We have to set height for correct scroll -->
-		<div id="files-block-wrapper">
-			<div id="files-block"></div>
-		</div>
+		<div id="files-block"></div>
 
 		<div id="upload-block"></div>
 
@@ -40,12 +37,6 @@ input[type="text"] {
     border: none;
     border-bottom: 1px solid #888888;
     outline: none;
-}
-
-#files-block-wrapper {
-    height: calc(100vh - 51px);
-    overflow: auto;
-	overflow-x: hidden;
 }
 
 .vertically {

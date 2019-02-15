@@ -1,5 +1,6 @@
 <template>
-<div>
+<div id="files-block-wrapper">
+<div style="height: 100%;">
 	<div
 		class="file-info"
 		style="font-size: 17px; border-bottom: 1px solid grey;"
@@ -16,7 +17,7 @@
 						selectedFilesCounter > 0 &&
 						selectedFilesCounter !== allFiles.length"
 					@click="toggleAllFiles">
-			</div>	
+			</div>
 		</div>
 
 		<div
@@ -63,15 +64,30 @@
 		</div>
 	</div>
 
-	<file
-		v-for="(file, index) in allFiles"
-		:key="index"
-		:file="file"
-	></file>
+	<RecycleScroller
+		:items="allFiles"
+		:item-height="50"
+		id="recycle-scroller"
+	>
+		<div slot-scope="{ item }" class="user">
+			<file :file="item"></file>
+		</div>
+	</RecycleScroller>
+</div>
 </div>
 </template>
 
 <style>
+#files-block-wrapper {
+    height: calc(100vh - 51px);
+    overflow: auto;
+    overflow-x: hidden;
+}
+
+#recycle-scroller {
+    height: calc(100% - 51px);
+}
+
 /* Use this styles for File components */
 .file-info {
     border-bottom: 1px solid #ddd;
@@ -114,6 +130,9 @@ import { Const } from "@app/index/const";
 import { Events, EventBus } from "@app/index/eventBus";
 import { isElementInPath, preloadImages } from "@app/index/tools";
 
+import { RecycleScroller } from "vue-virtual-scroller";
+import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
+
 const trTableHeight = 50;
 const maxLastIDs = 10;
 
@@ -133,7 +152,8 @@ let areEqualArrays = (a: any[], b: any[]): boolean => {
 
 @Component({
     components: {
-        file: FileComponent
+        file: FileComponent,
+        RecycleScroller: RecycleScroller
     }
 })
 export default class extends Vue {
