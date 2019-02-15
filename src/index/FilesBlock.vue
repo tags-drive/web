@@ -119,7 +119,7 @@ import Component from "vue-class-component";
 // Components
 import FileComponent from "@components/File/File.vue";
 // Classes and types
-import { File } from "@app/index/global";
+import { File, Tag } from "@app/index/global";
 import { TableFile } from "@components/File/types";
 // Shared data
 import SharedStore from "@app/index/store";
@@ -157,8 +157,6 @@ let areEqualArrays = (a: any[], b: any[]): boolean => {
     }
 })
 export default class extends Vue {
-    offset: number = 0; // current offset
-    tableClientHeight: number = 0; // for reactive number of displayed files
     // We want to update offset when number or order of files were changed.
     // We can't emit event in TopBar search functions to update offset
     // because it would emit event after every file change. We would prefer not to update
@@ -183,19 +181,19 @@ export default class extends Vue {
     //
     lastSortType: string = Const.sortType.name;
 
-    get allFiles(): File[] {
+    get allFiles(): TableFile[] {
         // For reactive updating (see @app/index/store/types.ts for more information)
         let reactive = SharedStore.state.allFilesChangesCounter;
 
-        let allFiles = SharedStore.state.allFiles;
-        if (!SharedState.state.settings.showDeletedFiles) {
-            allFiles = allFiles.filter(f => !f.deleted);
-        }
+        let allFiles: TableFile[] = [];
+        SharedStore.state.allFiles.forEach((f, i) => {
+            if (!f.deleted || SharedState.state.settings.showDeletedFiles) {
+                allFiles.push(new TableFile(f));
+            }
+        });
 
         // Determine should we reset offset
         if (allFiles.length !== this.lastAllFilesLength) {
-            // Reset offset
-            this.offset = 0;
             this.lastAllFilesLength = allFiles.length;
             this.lastFirstFilesIDS = [];
             for (let i = 0; i < maxLastIDs && i < allFiles.length; i++) {
@@ -208,8 +206,6 @@ export default class extends Vue {
             }
 
             if (!areEqualArrays(newIDs, this.lastFirstFilesIDS)) {
-                // Order of files was changed. We have to reset offset.
-                this.offset = 0;
                 // We are able not to change lastAllFilesLength
                 this.lastFirstFilesIDS = [];
                 for (let i = 0; i < maxLastIDs && i < allFiles.length; i++) {
