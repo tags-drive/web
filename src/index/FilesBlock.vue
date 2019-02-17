@@ -78,6 +78,8 @@
 </template>
 
 <style>
+/* We have to use global styles to use some classes in File component */
+
 #files-block-wrapper {
     height: calc(100vh - 51px);
     overflow: auto;
@@ -85,10 +87,12 @@
 }
 
 #recycle-scroller {
+    /* without header */
     height: calc(100% - 51px);
 }
 
-/* Use this styles for File components */
+/* Classes for File component */
+
 .file-info {
     border-bottom: 1px solid #ddd;
     display: grid;
@@ -118,6 +122,11 @@ import Vue from "vue";
 import Component from "vue-class-component";
 // Components
 import FileComponent from "@components/File/File.vue";
+// There's no a declaration file for module 'vue-virtual-scroller'.
+// So we have to use require() instead of import to escape error
+const VirtualScroller = require("vue-virtual-scroller");
+const { RecycleScroller } = VirtualScroller;
+import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 // Classes and types
 import { File, Tag } from "@app/index/global";
 import { TableFile } from "@components/File/types";
@@ -129,9 +138,6 @@ import { State } from "@app/index/state/types";
 import { Const } from "@app/index/const";
 import { Events, EventBus } from "@app/index/eventBus";
 import { isElementInPath, preloadImages } from "@app/index/tools";
-
-import { RecycleScroller } from "vue-virtual-scroller";
-import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 
 const trTableHeight = 50;
 const maxLastIDs = 10;
