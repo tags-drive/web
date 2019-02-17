@@ -11,21 +11,6 @@
 					class="vertically"
 					v-model="settings.showDeletedFiles">
 			</div>
-
-			<p></p>
-
-			<!-- Number of scrolled files by one scroll -->
-			<div
-				class="setting"
-				:title="'Current: ' + String(settings.scrollOffset)"
-			>
-				<span>Scroll offset:</span>
-				<input
-					type="range"
-					min="1"
-					max="10"
-					v-model.number="settings.scrollOffset">
-			</div>
 		</div>
 
 		<p></p>
@@ -83,7 +68,7 @@ import { Version } from "@app/global";
 
 @Component({})
 export default class extends Vue {
-    settings: Settings = { showDeletedFiles: false, scrollOffset: 0 };
+    settings: Settings = { showDeletedFiles: false };
     version: string = Version;
 
     created() {
