@@ -69,7 +69,7 @@
 		:item-height="50"
 		id="recycle-scroller"
 	>
-		<div slot-scope="{ item }" class="user">
+		<div slot-scope="{ item }">
 			<file :file="item"></file>
 		</div>
 	</RecycleScroller>

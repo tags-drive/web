@@ -39,7 +39,7 @@
 			ref="tags-list-wrapper"
 		>
 			<div
-				class="tags-list-wrapper"
+				class="tags-list"
 				ref="tags-list"
 				@mouseover="tagsListHover = true;"
 				@mouseleave="tagsListHover = false;"
@@ -92,7 +92,7 @@
     width: auto;
 }
 
-.tags-list-wrapper {
+.tags-list {
     /*
 		If there are too many tags, we change color of left border.
 		Without border-left in style there are some layout bugs.
@@ -200,6 +200,32 @@ export default class extends Vue {
             return;
         }
 
+        // Magic //
+
+        // There is a bug with RecycleScroller when next files cover expanded tags-list.
+        // So we have to change their z-index to n-1 and current to n (n = 1).
+
+        // Get current RecycleScroller node
+        let currNode = list.parentElement!.parentElement!.parentElement!.parentElement!;
+        currNode.style.zIndex = "1";
+
+        let RecycleScroller = currNode.parentElement!;
+        let shouldChange = false;
+        for (let i = 0; i < RecycleScroller.childNodes.length; i++) {
+            if (RecycleScroller.childNodes[i] === currNode) {
+                shouldChange = true;
+                continue;
+            }
+
+            if (shouldChange) {
+                let nextNode = <HTMLElement>RecycleScroller.childNodes[i];
+                if (nextNode !== undefined) {
+                    nextNode.style.zIndex = "0";
+                }
+            }
+        }
+        // End of Magic //
+
         let rect = wrapper.getBoundingClientRect();
 
         return {
@@ -210,9 +236,7 @@ export default class extends Vue {
             left: rect.left - 1 + "px", // minus border width
             padding: tagsListPadding + "px",
             position: "fixed",
-            top: rect.top + "px",
-            width: rect.width - tagsListPadding * 2 + "px",
-            "z-index": 6
+            width: rect.width - tagsListPadding * 2 + "px"
         };
     }
 
