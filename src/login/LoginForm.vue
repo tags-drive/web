@@ -6,11 +6,22 @@
 			</div>
 		</div>
 		<p></p>
-		<input type="text" v-model="login" placeholder="Login">
+		<input
+			type="text"
+			placeholder="Login"
+			v-model="login"
+			@keypress.enter="auth">
 		<p></p>
-		<input type="password" v-model="password" placeholder="Password">
+		<input
+			type="password"
+			placeholder="Password"
+			v-model="password"
+			@keypress.enter="auth">
 		<p></p>
-		<input type="button" @click="auth" value="Submit">
+		<input
+			type="button"
+			value="Submit"
+			@click="auth">
 	</div>
 </template>
 
