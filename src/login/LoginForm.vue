@@ -20,6 +20,7 @@
 		<p></p>
 		<input
 			type="button"
+			id="submit-button"
 			value="Submit"
 			@click="auth">
 	</div>
@@ -28,32 +29,41 @@
 <style scoped>
 input {
     font-size: 16px;
-    outline-color: #88888888;
-    width: 70%;
+    width: 80%;
 }
 
-input[type="button"] {
-    background-color: #88888862;
+input[type="text"],
+input[type="password"] {
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    height: 30px;
-    width: 80px;
-}
-
-input[type="button"]:hover {
-    background-color: #88888888;
+    border-bottom: 1px solid #88888888;
+    outline: none;
 }
 
 #login-form {
     background-color: white;
     border-radius: 10px;
-    box-shadow: 0px 10px 10px 9px #888888a2;
-    margin-top: 50px;
-    margin: auto;
+    box-shadow: 0px 4px 10px 5px #888888a2;
+	left: 50%;
+    max-width: 450px;
     padding: 20px;
+	position: fixed;
     text-align: center;
-    width: 40%;
+    top: 30px;
+	transform: translateX(-50%);
+    width: 80%;
+}
+
+#submit-button {
+    background-color: #88888840;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    height: 30px;
+    width: 120px;
+}
+
+#submit-button:hover {
+    background-color: #88888860;
 }
 
 #error-msg {
