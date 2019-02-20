@@ -13,8 +13,7 @@ const state: StoreOptions<State> = {
         showModalWindow: false,
         // settings
         settings: {
-            showDeletedFiles: false,
-            scrollOffset: 5
+            showDeletedFiles: false
         }
     },
     mutations: {

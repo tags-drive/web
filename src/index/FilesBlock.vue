@@ -1,11 +1,13 @@
 <template>
-<div>
-	<table
-		id="file-table"
-		style="border-collapse: collapse; width: 100%;"
+<div id="files-block-wrapper">
+<div style="height: 100%;">
+	<div
+		class="file-info"
+		style="font-size: 17px; border-bottom: 1px solid grey;"
 	>
-		<tr class="file-info">
-			<th class="noselect" style="text-align: center; width: 30px;">
+		<!-- There are some nonexistent classes. They are reserved for readability and future using -->
+		<div class="file-info__checkbox">
+			<div>
 				<input
 					type="checkbox"
 					style="height: 15px; width: 15px;"
@@ -14,80 +16,104 @@
 					:indeterminate.prop="
 						selectedFilesCounter > 0 &&
 						selectedFilesCounter !== allFiles.length"
-					@click="toggleAllFiles"
-				></th>
-			<th
-				style="width: 50px; cursor: default; font-weight: normal;"
-				title="Selected files"
-			>{{selectedFilesCounter}}</th>
+					@click="toggleAllFiles">
+			</div>
+		</div>
 
-			<th class="noselect" style="width: 210px;">
-				Filename
-				<i
-					id="sortByNameIcon"
-					class="material-icons noselect"
-					style="font-size: 20px; cursor: pointer;"
-					@click="sort().byName()"
-					:style="[!sortModeByName || sortOrderAsc || !sortOrderDesc ? {'transform': 'scale(1, -1)'} : {'transform': 'scale(1, 1)'}]"
-				>sort</i>
-			</th>
-			<th class="noselect">Tags</th>
-			<th class="noselect" style="width: 20%;">Description</th>
-			<th class="noselect" style="width: 100px;">
-				Size (MB)
-				<i
-					id="sortByNameSize"
-					class="material-icons noselect"
-					style="transform: scale(1, 1); font-size: 20px; cursor: pointer;"
-					@click="sort().bySize()"
-					:style="[!sortModeBySize || sortOrderAsc || !sortOrderDesc ? {'transform': 'scale(1, -1)'} : {'transform': 'scale(1, 1)'}]"
-				>sort</i>
-			</th>
-			<th class="noselect" style="width: 150px;">
-				Time of adding
-				<i
+		<div
+			class="file-info__preview"
+			style="cursor: default;"
+			title="Selected files"
+		>{{selectedFilesCounter}}</div>
+
+		<div class="file-info__filename">
+			Filename
+			<i
+				id="sortByNameIcon"
+				class="material-icons noselect"
+				style="font-size: 20px; cursor: pointer;"
+				@click="sort().byName()"
+				:style="[!sortModeByName || sortOrderAsc || !sortOrderDesc ? {'transform': 'scale(1, -1)'} : {'transform': 'scale(1, 1)'}]"
+			>sort</i>
+		</div>
+
+		<div class="file-info__tags-list">Tags</div>
+
+		<div class="file-info__description">Description</div>
+
+		<div class="file-info__size">
+			Size (MB)
+			<i
+				id="sortByNameSize"
+				class="material-icons noselect"
+				style="transform: scale(1, 1); font-size: 20px; cursor: pointer;"
+				@click="sort().bySize()"
+				:style="[!sortModeBySize || sortOrderAsc || !sortOrderDesc ? {'transform': 'scale(1, -1)'} : {'transform': 'scale(1, 1)'}]"
+			>sort</i>
+		</div>
+
+		<div class="file-info__adding-time">
+			Time of adding
+			<i
 				id="sortByNameTime"
 				class="material-icons noselect"
 				style="transform: scale(1, 1); font-size: 20px; cursor: pointer;"
 				@click="sort().byTime()"
 				:style="[!sortModeByTime || sortOrderAsc || !sortOrderDesc ? {'transform': 'scale(1, -1)'} : {'transform': 'scale(1, 1)'}]"
-				>sort</i>
-			</th>
-		</tr>
-
-		<files
-			v-for="(file, index) in displayedFiles"
-			:key="index"
-			:file="file"
-		></files>
-	</table>
-
-	<!-- Progress bar -->
-	<div id="progress-bar">
-		<i
-			v-for="i in 10"
-			:key="i"
-			class="material-icons noselect"
-			:style="[currentProgress === i ? {'opacity': 0.5} : {}]"
-			@click="goto(i)"
-		>fiber_manual_record</i>
+			>sort</i>
+		</div>
 	</div>
+
+	<RecycleScroller
+		:items="allFiles"
+		:item-height="50"
+		id="recycle-scroller"
+	>
+		<div slot-scope="{ item }">
+			<file :file="item"></file>
+		</div>
+	</RecycleScroller>
+</div>
 </div>
 </template>
 
-<style scoped>
-#progress-bar {
-    display: grid;
-    position: fixed;
-    right: 5px;
-    top: 50%;
-    transform: translateY(-50%);
+<style>
+/* We have to use global styles to use some classes in File component */
+
+#files-block-wrapper {
+    height: calc(100vh - 51px);
+    overflow: auto;
+    overflow-x: hidden;
 }
 
-#progress-bar > i {
-    cursor: pointer;
-    font-size: 15px;
-    opacity: 0.2;
+#recycle-scroller {
+    /* without header */
+    height: calc(100% - 51px);
+}
+
+/* Classes for File component */
+
+.file-info {
+    border-bottom: 1px solid #ddd;
+    display: grid;
+    grid-template-columns: 40px 60px 210px auto 20% 110px 150px;
+    grid-auto-rows: 50px;
+    text-align: left;
+}
+
+.file-info > div {
+    height: 40px;
+    line-height: 40px;
+    padding: 4px;
+}
+
+.file-info__checkbox {
+    text-align: center;
+}
+
+.file-info__checkbox > div {
+    line-height: normal;
+    transform: translateY(50%);
 }
 </style>
 
@@ -95,9 +121,14 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 // Components
-import Files from "@components/File/File.vue";
+import FileComponent from "@components/File/File.vue";
+// There's no a declaration file for module 'vue-virtual-scroller'.
+// So we have to use require() instead of import to escape error
+const VirtualScroller = require("vue-virtual-scroller");
+const { RecycleScroller } = VirtualScroller;
+import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 // Classes and types
-import { File } from "@app/index/global";
+import { File, Tag } from "@app/index/global";
 import { TableFile } from "@components/File/types";
 // Shared data
 import SharedStore from "@app/index/store";
@@ -110,14 +141,6 @@ import { isElementInPath, preloadImages } from "@app/index/tools";
 
 const trTableHeight = 50;
 const maxLastIDs = 10;
-
-let customRound = (n: number, greater: number): number => {
-    if ((n * 10) % 10 > greater) {
-        return Math.ceil(n);
-    } else {
-        return Math.floor(n);
-    }
-};
 
 let areEqualArrays = (a: any[], b: any[]): boolean => {
     if (a.length !== b.length) {
@@ -135,12 +158,11 @@ let areEqualArrays = (a: any[], b: any[]): boolean => {
 
 @Component({
     components: {
-        files: Files
+        file: FileComponent,
+        RecycleScroller: RecycleScroller
     }
 })
 export default class extends Vue {
-    offset: number = 0; // current offset
-    tableClientHeight: number = 0; // for reactive number of displayed files
     // We want to update offset when number or order of files were changed.
     // We can't emit event in TopBar search functions to update offset
     // because it would emit event after every file change. We would prefer not to update
@@ -153,8 +175,6 @@ export default class extends Vue {
     allSelected: boolean = false;
     selectedFilesCounter: number = 0;
     //
-    selectedFilesIDs: Set<number> = new Set();
-    selectedFilesIDsCounter: number = 0; // for reactive selectedFilesIDs
     // Sort modes
     sortModeByName: boolean = true;
     sortModeBySize: boolean = false;
@@ -165,55 +185,23 @@ export default class extends Vue {
     //
     lastSortType: string = Const.sortType.name;
 
-    get displayedFiles(): TableFile[] {
-        let result: TableFile[] = [],
-            reactive = this.selectedFilesIDsCounter,
-            allFiles = this.allFiles,
-            start = this.offset,
-            stop = Math.min(this.offset + this.maxDisplayedFiles, allFiles.length);
+    get allFiles(): TableFile[] {
+        // Reset because allFiles will change
+        this.allSelected = false;
+        this.selectedFilesCounter = 0;
 
-        for (let i = start; i < stop; i++) {
-            let f = new TableFile(allFiles[i]);
-            f.selected = this.selectedFilesIDs.has(allFiles[i].id);
-            result.push(f);
-        }
-
-        let nextImagesURLs: string[] = [];
-        start = Math.min(this.offset + this.maxDisplayedFiles, allFiles.length);
-        stop = Math.min(start + SharedState.state.settings.scrollOffset, allFiles.length);
-        for (let i = start; i < stop; i++) {
-            if (allFiles[i].preview !== "") {
-                nextImagesURLs.push(allFiles[i].preview);
-            }
-        }
-
-        preloadImages(...nextImagesURLs);
-
-        return result;
-    }
-
-    get maxDisplayedFiles(): number {
-        let tableClientHeight = this.tableClientHeight;
-        if (tableClientHeight === 0) {
-            return 10;
-        }
-
-        return customRound(tableClientHeight / trTableHeight, 7);
-    }
-
-    get allFiles(): File[] {
         // For reactive updating (see @app/index/store/types.ts for more information)
         let reactive = SharedStore.state.allFilesChangesCounter;
 
-        let allFiles = SharedStore.state.allFiles;
-        if (!SharedState.state.settings.showDeletedFiles) {
-            allFiles = allFiles.filter(f => !f.deleted);
-        }
+        let allFiles: TableFile[] = [];
+        SharedStore.state.allFiles.forEach((f, i) => {
+            if (!f.deleted || SharedState.state.settings.showDeletedFiles) {
+                allFiles.push(new TableFile(f));
+            }
+        });
 
         // Determine should we reset offset
         if (allFiles.length !== this.lastAllFilesLength) {
-            // Reset offset
-            this.offset = 0;
             this.lastAllFilesLength = allFiles.length;
             this.lastFirstFilesIDS = [];
             for (let i = 0; i < maxLastIDs && i < allFiles.length; i++) {
@@ -226,8 +214,6 @@ export default class extends Vue {
             }
 
             if (!areEqualArrays(newIDs, this.lastFirstFilesIDS)) {
-                // Order of files was changed. We have to reset offset.
-                this.offset = 0;
                 // We are able not to change lastAllFilesLength
                 this.lastFirstFilesIDS = [];
                 for (let i = 0; i < maxLastIDs && i < allFiles.length; i++) {
@@ -237,10 +223,6 @@ export default class extends Vue {
         }
 
         return allFiles;
-    }
-
-    get currentProgress(): number {
-        return Math.floor((this.offset / this.allFiles.length) * 10) + 1;
     }
 
     created() {
@@ -266,54 +248,6 @@ export default class extends Vue {
         //
         EventBus.$on(Events.FilesBlock.RestoreSortParams, () => {
             this.sort().restoreDefault();
-        });
-
-        // Event Listener for offset update
-        document.addEventListener("wheel", ev => {
-            if (!isElementInPath(ev, "files-block-wrapper")) {
-                return;
-            }
-
-            // Prevent scroll if special keys or right mouse button are pressed
-            if (ev.ctrlKey || ev.altKey || ev.shiftKey || ev.buttons === 2) {
-                return;
-            }
-
-            let deltaOffset: number = SharedState.state.settings.scrollOffset;
-
-            if (ev.deltaY > 0) {
-                if (this.offset + deltaOffset < this.allFiles.length) {
-                    this.offset += deltaOffset;
-                }
-            } else if (ev.deltaY < 0) {
-                if (this.offset - deltaOffset < 0) {
-                    this.offset = 0;
-                } else {
-                    this.offset -= deltaOffset;
-                }
-            }
-        });
-
-        // Update tableClientHeight after page is loaded and #top-bar is created
-        let t = setInterval(() => {
-            let elem = document.getElementById("top-bar");
-            if (elem === null) {
-                return;
-            }
-
-            this.tableClientHeight = window.innerHeight - trTableHeight - elem!.clientHeight;
-            clearInterval(t);
-        }, 10);
-
-        // Update tableClientHeight on window resize
-        window.addEventListener("resize", ev => {
-            let topBarHeight: number = 0;
-            if (document.getElementById("top-bar") !== null) {
-                topBarHeight = document.getElementById("top-bar")!.clientHeight;
-            }
-
-            // Without header and #top-bar
-            this.tableClientHeight = window.innerHeight - trTableHeight - topBarHeight;
         });
     }
 
@@ -396,10 +330,9 @@ export default class extends Vue {
             this.allSelected = true;
             SharedState.commit("setSelectMode");
 
-            this.allFiles.forEach(f => {
-                this.selectedFilesIDs.add(f.id);
+            this.allFiles.forEach((f, i) => {
+                this.allFiles[i].selected = true;
             });
-            this.selectedFilesIDsCounter++;
         } else {
             this.unselectAllFiles();
         }
@@ -407,8 +340,9 @@ export default class extends Vue {
 
     unselectAllFiles() {
         this.selectedFilesCounter = 0;
-        this.selectedFilesIDs.clear();
-        this.selectedFilesIDsCounter++;
+        this.allFiles.forEach((f, i) => {
+            this.allFiles[i].selected = false;
+        });
 
         this.allSelected = false;
         SharedState.commit("unsetSelectMode");
@@ -418,8 +352,8 @@ export default class extends Vue {
     updateSelectedFiles() {
         let selectedFiles: File[] = [];
 
-        this.allFiles.forEach(f => {
-            if (this.selectedFilesIDs.has(f.id)) {
+        this.allFiles.forEach((f, i) => {
+            if (this.allFiles[i].selected) {
                 selectedFiles.push(f);
             }
         });
@@ -431,8 +365,13 @@ export default class extends Vue {
     selectFile(id: number) {
         this.selectedFilesCounter++;
         SharedState.commit("setSelectMode");
-        this.selectedFilesIDs.add(id);
-        this.selectedFilesIDsCounter++;
+
+        for (let i = 0; i < this.allFiles.length; i++) {
+            if (this.allFiles[i].id === id) {
+                this.allFiles[i].selected = true;
+            }
+        }
+
         if (this.selectedFilesCounter === this.allFiles.length) {
             this.allSelected = true;
         }
@@ -441,21 +380,15 @@ export default class extends Vue {
     unselectFile(id: number) {
         this.selectedFilesCounter--;
         this.allSelected = false;
-        this.selectedFilesIDs.delete(id);
-        this.selectedFilesIDsCounter++;
+        for (let i = 0; i < this.allFiles.length; i++) {
+            if (this.allFiles[i].id === id) {
+                this.allFiles[i].selected = false;
+            }
+        }
+
         if (this.selectedFilesCounter === 0) {
             SharedState.commit("unsetSelectMode");
         }
-    }
-
-    // goto updates offset
-    // tenPercents - number in [1; 10].
-    goto(tenPercents: number) {
-        if (tenPercents < 1 || tenPercents > 10) {
-            return;
-        }
-
-        this.offset = Math.ceil(((tenPercents - 1) * this.allFiles.length) / 10);
     }
 }
 </script>

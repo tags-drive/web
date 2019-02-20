@@ -2,10 +2,7 @@
 	<div style="min-width: 900px;">
 		<div id="top-bar"></div>
 
-		<!-- We have to set height for correct scroll -->
-		<div id="files-block-wrapper" style="height: 95vh; overflow: hidden; width: 100%;">
-			<div id="files-block"></div>
-		</div>
+		<div id="files-block"></div>
 
 		<div id="upload-block"></div>
 
@@ -61,21 +58,6 @@ input[type="text"] {
     display: inline-flex;
     justify-content: center;
     vertical-align: middle;
-}
-
-.file-info {
-    height: 50px;
-}
-
-/* Files in table */
-.file-info > td,
-th {
-    border-bottom: 1px solid #dddddd;
-    border-collapse: collapse;
-    font-family: arial, sans-serif;
-    height: 40px;
-    padding: 4px;
-    text-align: left;
 }
 
 .btn {

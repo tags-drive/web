@@ -7,5 +7,4 @@ export interface State {
 
 export interface Settings {
     showDeletedFiles: boolean;
-    scrollOffset: number;
 }

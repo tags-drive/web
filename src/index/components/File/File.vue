@@ -1,21 +1,24 @@
 <template>
-	<tr
+	<div
 		v-show="!file.deleted || State.settings.showDeletedFiles"
-		class="file-info"
+		class="file-info hover-class"
 		:style="stylesObject"
 		:title="titleMessage"
-		@mouseover="hover = true;"
-		@mouseleave="hover = false;"
 		@click.right.prevent="showContextMenu($event, file);"
 	>
-		<td style="text-align: center;">
-			<input
-				type="checkbox"
-				style="height: 15px; width: 15px;"
-				v-model="file.selected"
-				@change="toggleSelect">
-		</td>
-		<td
+		<!-- There are some nonexistent classes. They are reserved for readability and future using -->
+		<div class="file-info__checkbox">
+			<div>
+				<input
+					type="checkbox"
+					style="height: 15px; width: 15px;"
+					v-model="file.selected"
+					@change="toggleSelect">
+			</div>
+		</div>
+
+		<div
+			class="file-info__preview"
 			title="Show preview"
 			style="cursor: pointer;"
 			@click="showPreview"
@@ -23,17 +26,20 @@
 			<div class="image-wrapper">
 				<img :src="previewLink">
 			</div>
-		</td>
-		<td>
+		</div>
+
+		<div class="file-info__filename">
 			<div class="filename" :title="file.filename">
 				{{file.filename}}
 			</div>
-		</td>
-		<td
+		</div>
+
+		<div
+			class="file-info__tags-list"
 			ref="tags-list-wrapper"
 		>
 			<div
-				class="tags-list-wrapper"
+				class="tags-list"
 				ref="tags-list"
 				@mouseover="tagsListHover = true;"
 				@mouseleave="tagsListHover = false;"
@@ -46,25 +52,31 @@
 					:tag="Store.allTags.get(id)"
 				></tag>
 			</div>
-		</td>
-		<td :title="file.description">
-			{{
-				// Cut too long description
-				(file.description.length > 20) ? file.description.slice(0, 20) + '...' : file.description
-			}}
-		</td>
-		<td>{{(file.size / (1024 * 1024)).toFixed(2)}}</td>
-		<td>{{file.addTime}}</td>
-	</tr>
+		</div>
+
+		<div class="file-info__description">
+			<div class="description" :title="file.description">
+				{{file.description}}
+			</div>
+		</div>
+
+		<div class="file-info__size">{{(file.size / (1024 * 1024)).toFixed(2)}}</div>
+
+		<div class="file-info__adding-time">{{file.addTime}}</div>
+	</div>
 </template>
 
 <style scoped>
-.filename {
+.hover-class:hover {
+    background-color: #d3d3d3;
+}
+
+.filename,
+.description {
     -o-text-overflow: ellipsis;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 200px;
 }
 
 .image-wrapper {
@@ -80,7 +92,7 @@
     width: auto;
 }
 
-.tags-list-wrapper {
+.tags-list {
     /*
 		If there are too many tags, we change color of left border.
 		Without border-left in style there are some layout bugs.
@@ -122,7 +134,6 @@ const tagsListPadding = 4;
 })
 export default class extends Vue {
     @Prop() file!: TableFile;
-    hover: boolean = false;
     overflow: boolean = false;
     tagsListHover: boolean = false;
     // setInterval id
@@ -132,14 +143,15 @@ export default class extends Vue {
     State: State = SharedState.state;
 
     get stylesObject() {
-        let bgColor = "white";
-        if (this.hover || this.file.selected) {
-            bgColor = "#d3d3d3";
-        }
-        return {
-            opacity: this.file.deleted && !this.file.selected ? 0.4 : 1,
-            "background-color": bgColor
+        let style = <any>{
+            opacity: this.file.deleted && !this.file.selected ? 0.4 : 1
         };
+
+        if (this.file.selected) {
+            style["background-color"] = "#d3d3d3";
+        }
+
+        return style;
     }
 
     get titleMessage(): string {
@@ -188,6 +200,32 @@ export default class extends Vue {
             return;
         }
 
+        // Magic //
+
+        // There is a bug with RecycleScroller when next files cover expanded tags-list.
+        // So we have to change their z-index to n-1 and current to n (n = 1).
+
+        // Get current RecycleScroller node
+        let currNode = list.parentElement!.parentElement!.parentElement!.parentElement!;
+        currNode.style.zIndex = "1";
+
+        let RecycleScroller = currNode.parentElement!;
+        let shouldChange = false;
+        for (let i = 0; i < RecycleScroller.childNodes.length; i++) {
+            if (RecycleScroller.childNodes[i] === currNode) {
+                shouldChange = true;
+                continue;
+            }
+
+            if (shouldChange) {
+                let nextNode = <HTMLElement>RecycleScroller.childNodes[i];
+                if (nextNode !== undefined) {
+                    nextNode.style.zIndex = "0";
+                }
+            }
+        }
+        // End of Magic //
+
         let rect = wrapper.getBoundingClientRect();
 
         return {
@@ -198,9 +236,7 @@ export default class extends Vue {
             left: rect.left - 1 + "px", // minus border width
             padding: tagsListPadding + "px",
             position: "fixed",
-            top: rect.top + "px",
-            width: rect.width - tagsListPadding * 2 + "px",
-            "z-index": 6
+            width: rect.width - tagsListPadding * 2 + "px"
         };
     }
 

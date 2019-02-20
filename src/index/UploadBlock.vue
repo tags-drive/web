@@ -108,7 +108,7 @@ input[type="checkbox"] {
     position: fixed;
     top: 0;
     width: 100vw;
-    z-index: 2;
+    z-index: 3;
 }
 
 #upload-layer {
