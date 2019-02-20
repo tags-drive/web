@@ -5,31 +5,40 @@
 				<b><span style="font-size: 20px;">Error: </span></b>{{errorMsg}}
 			</div>
 		</div>
-		<p></p>
-		<input
-			type="text"
-			placeholder="Login"
-			v-model="login"
-			@keypress.enter="auth">
-		<p></p>
-		<input
-			type="password"
-			placeholder="Password"
-			v-model="password"
-			@keypress.enter="auth">
-		<p></p>
-		<input
-			type="button"
-			id="submit-button"
-			value="Submit"
-			@click="auth">
+
+		<!-- Login -->
+		<div class="container">
+			<input
+				type="text"
+				placeholder="Login"
+				v-model="login"
+				@keypress.enter="auth">
+		</div>
+
+		<!-- Password -->
+		<div class="container">
+			<input
+				:type="[showPassword ? 'text' : 'password']"
+				placeholder="Password"
+				v-model="password"
+				@keypress.enter="auth">
+		</div>
+
+		<!-- Submit -->
+		<div class="container">
+			<input
+				type="button"
+				id="submit-button"
+				value="Submit"
+				@click="auth">
+		</div>
 	</div>
 </template>
 
 <style scoped>
 input {
     font-size: 16px;
-    width: 80%;
+    width: 100%;
 }
 
 input[type="text"],
@@ -73,6 +82,15 @@ input[type="password"] {
     height: 30px;
     line-height: 30px;
     padding: 3px;
+}
+
+.container {
+    margin: 0 auto 12px;
+    width: 80%;
+}
+
+.container:last-child {
+    margin-bottom: 0px;
 }
 </style>
 
