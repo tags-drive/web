@@ -1,8 +1,15 @@
 <template>
 	<div id="login-form">
-		<div v-if="isError">
+		<div
+			v-if="isError"
+			class="container"
+			style="height: auto;"
+		>
 			<div id="error-msg">
-				<b><span style="font-size: 20px;">Error: </span></b>{{errorMsg}}
+				<svg style="width: 24px; height: 30px;" viewBox="0 0 24 24">
+					<path fill="#ffffff" d="M11,4.5H13V15.5H11V4.5M13,17.5V19.5H11V17.5H13Z" />
+				</svg>
+				<span>{{errorMsg}}</span>
 			</div>
 		</div>
 
@@ -57,6 +64,10 @@
 </template>
 
 <style scoped>
+* {
+    font-family: arial, sans-serif;
+}
+
 input {
     font-size: 16px;
     width: 100%;
@@ -83,6 +94,27 @@ input[type="password"] {
     width: 80%;
 }
 
+#error-msg {
+    background-color: #ff6253;
+    border-radius: 10px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    height: fit-content;
+    line-height: 30px;
+    min-height: 30px;
+    position: relative;
+}
+
+#error-msg > svg {
+    position: absolute;
+    left: 10px;
+}
+
+#error-msg > span {
+    max-width: 80%;
+}
+
 #submit-button {
     background-color: #88888840;
     border: none;
@@ -94,15 +126,6 @@ input[type="password"] {
 
 #submit-button:hover {
     background-color: #88888860;
-}
-
-#error-msg {
-    background-color: rgba(255, 161, 161, 0.883);
-    border: 1.5px rgba(255, 0, 0, 0.65) solid;
-    border-radius: 5px;
-    height: 30px;
-    line-height: 30px;
-    padding: 3px;
 }
 
 .container {
