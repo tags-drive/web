@@ -124,6 +124,7 @@ import { State } from "@app/index/state/types";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
+import { Const } from "@app/index/const";
 
 const tagsListPadding = 4;
 
@@ -178,7 +179,7 @@ export default class extends Vue {
     }
 
     get previewLink(): string {
-        if (this.file.type === "image") {
+        if (this.file.type.fileType === Const.fileTypes.image) {
             return Params.Host + "/" + this.file.preview;
         }
 

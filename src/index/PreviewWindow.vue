@@ -365,6 +365,7 @@ import SharedState from "@app/index/state";
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
 import { logError, preloadImages } from "@app/index/tools";
+import { Const } from "@app/index/const";
 
 @Component({
     components: {
@@ -501,8 +502,7 @@ export default class extends Vue {
             return false;
         }
 
-        let ext = this.file.filename.split(".").pop();
-        return this.file.type === "file" && ext === "txt";
+        return this.file.type.previewType == Const.fileTypes.text;
     }
 
     isImage() {
@@ -510,8 +510,7 @@ export default class extends Vue {
             return "";
         }
 
-        return this.file.type === "image";
-        // return ext === "jpg" || ext === "jpeg" || ext === "png" || ext === "gif";
+        return this.file.type.previewType === Const.fileTypes.image;
     }
 
     nextPreview() {
