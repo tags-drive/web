@@ -70,7 +70,22 @@
 					class="noselect"
 				>
 					<span class="helper"></span>
-					<img :src="imageLink">
+					<img :src="originLink">
+				</div>
+				<!-- Video -->
+				<div
+					v-else-if="isVideo()"
+					id="video-preview"
+				>
+					<video
+						width="100%" height="auto" controls
+						ref="video-block"
+					>
+						<source
+							:src="originLink"
+							:type="file.type.previewType">
+						Your browser does not support the video tag.
+					</video> 
 				</div>
 				<!-- Unsupported format -->
 				<div
@@ -79,14 +94,6 @@
 				>
 					<br>
 					<span>Preview for this file is unsupported</span>
-				</div>
-
-				<!-- Filename (only in fullscreen mode) -->
-				<div
-					id="fullscreen-filename"
-					v-show="fullscreenMode"
-				>
-					<span>{{file.filename}}</span>
 				</div>
 			</div>
 
@@ -309,6 +316,18 @@
     }
 }
 
+#video-preview {
+    @include preview-block-common-styles();
+
+    position: relative;
+
+    video {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+}
+
 #unsupported-format {
     background-color: white;
     border-radius: 5px;
@@ -401,7 +420,7 @@ export default class extends Vue {
         return SharedStore.state.allFilesChangesCounter && SharedStore.state.allFiles;
     }
 
-    get imageLink(): string {
+    get originLink(): string {
         return Params.Host + "/" + this.file!.origin;
     }
 
@@ -432,6 +451,32 @@ export default class extends Vue {
             "margin-top": "30px",
             width: "96%"
         };
+    }
+
+    // Types
+    isTextFile(): boolean {
+        return (
+            this.file !== null &&
+            (this.file.type.fileType == Const.fileTypes.text || this.file.type.fileType == Const.fileTypes.language)
+        );
+    }
+
+    isImage(): boolean {
+        return this.file !== null && this.file.type.fileType === Const.fileTypes.image;
+    }
+
+    isVideo(): boolean {
+        let res = this.file !== null && this.file.type.fileType === Const.fileTypes.video;
+        if (res) {
+            let video = <HTMLVideoElement>this.$refs["video-block"];
+            if (video !== undefined) {
+                // We have to reload video with new src
+                this.$nextTick(() => {
+                    video.load();
+                });
+            }
+        }
+        return res;
     }
 
     created() {
@@ -508,22 +553,6 @@ export default class extends Vue {
                 EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileDescriptionChangingWindow, { file: this.file });
             }
         };
-    }
-
-    isTextFile(): boolean {
-        if (this.file === null) {
-            return false;
-        }
-
-        return this.file.type.previewType == Const.fileTypes.text;
-    }
-
-    isImage() {
-        if (this.file === null) {
-            return "";
-        }
-
-        return this.file.type.previewType === Const.fileTypes.image;
     }
 
     nextPreview() {
