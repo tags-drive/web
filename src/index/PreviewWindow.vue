@@ -72,6 +72,18 @@
 					<span class="helper"></span>
 					<img :src="originLink">
 				</div>
+				<!-- Audio -->
+				<div
+					v-else-if="isAudio()"
+					id="audio-preview"
+				>
+					<audio controls style="width: 80%;" ref="audio-block">
+						<source
+							:src="originLink"
+							:type="file.type.previewType">
+						Your browser does not support the audio tag.
+					</audio>
+				</div>
 				<!-- Video -->
 				<div
 					v-else-if="isVideo()"
@@ -316,6 +328,19 @@
     }
 }
 
+#audio-preview {
+    @include preview-block-common-styles();
+
+    position: relative;
+
+    audio {
+        left: 50%;
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+}
+
 #video-preview {
     @include preview-block-common-styles();
 
@@ -463,6 +488,20 @@ export default class extends Vue {
 
     isImage(): boolean {
         return this.file !== null && this.file.type.fileType === Const.fileTypes.image;
+    }
+
+    isAudio(): boolean {
+        let res = this.file !== null && this.file.type.fileType === Const.fileTypes.audio;
+        if (res) {
+            let audio = <HTMLAudioElement>this.$refs["audio-block"];
+            if (audio !== undefined) {
+                // We have to reload video with new src
+                this.$nextTick(() => {
+                    audio.load();
+                });
+            }
+        }
+        return res;
     }
 
     isVideo(): boolean {
