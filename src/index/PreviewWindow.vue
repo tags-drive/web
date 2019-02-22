@@ -602,13 +602,7 @@ export default class extends Vue {
             }
 
             if (this.isTextFile()) {
-                fetch(Params.Host + "/" + this.file.origin, {
-                    method: "GET",
-                    credentials: "same-origin"
-                })
-                    .then(resp => resp.text())
-                    .then(text => (this.textFileContent = text))
-                    .catch(err => logError(err));
+                this.setPreviewText();
             }
         }
     }
@@ -621,15 +615,23 @@ export default class extends Vue {
             }
 
             if (this.isTextFile()) {
-                fetch(Params.Host + "/" + this.file.origin, {
-                    method: "GET",
-                    credentials: "same-origin"
-                })
-                    .then(resp => resp.text())
-                    .then(text => (this.textFileContent = text))
-                    .catch(err => logError(err));
+                this.setPreviewText();
             }
         }
+    }
+
+    setPreviewText() {
+        if (this.file === null) return;
+
+        this.textFileContent = "";
+
+        fetch(Params.Host + "/" + this.file.origin, {
+            method: "GET",
+            credentials: "same-origin"
+        })
+            .then(resp => resp.text())
+            .then(text => (this.textFileContent = text))
+            .catch(err => logError(err));
     }
 
     updatePreview() {
