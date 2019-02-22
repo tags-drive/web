@@ -16,26 +16,27 @@
 				<!-- Previous button -->
 				<div
 					v-if="fileIndex > 0"
-					class="switch-button"
+					class="switch-button hover-button"
 					style="left: 0;"
 					@click="previousPreview"
 				>
-					<i class="material-icons noselect switch-button__arrow">keyboard_arrow_left</i>
+					<i class="material-icons noselect arrow">keyboard_arrow_left</i>
 				</div>
 				<!-- Next button -->
 				<div
 					v-if="fileIndex < allFiles.length - 1"
-					class="switch-button"
+					class="switch-button hover-button"
 					style="right: 0;"
 					@click="nextPreview"
 				>
-					<i class="material-icons noselect switch-button__arrow">keyboard_arrow_right</i>
+					<i class="material-icons noselect arrow">keyboard_arrow_right</i>
 				</div>
 
 				<!-- Turn on fullscreen button -->
 				<div
 					v-show="!fullscreenMode"
 					id="turn-on-fullscreen-button"
+					class="hover-button"
 					title="Fullscreen mode"
 					@click="fullscreenMode = true;"
 				>
@@ -44,10 +45,10 @@
 				<!-- Turn off fullscreen button -->
 				<div
 					v-show="fullscreenMode"
-					id="turn-off-fullscreen-button__wrapper"
+					id="turn-off-fullscreen-button"
+					class="hover-button"
 				>
 					<div
-						id="turn-off-fullscreen-button"
 						title="Close fullscreen window"
 						@click="fullscreenMode = false;"
 					>
@@ -71,10 +72,10 @@
 					<span class="helper"></span>
 					<img :src="imageLink">
 				</div>
-				<!-- Unsopported format -->
+				<!-- Unsupported format -->
 				<div
 					v-else
-					id="unsopported-format"
+					id="unsupported-format"
 				>
 					<br>
 					<span>Preview for this file is unsupported</span>
@@ -96,15 +97,15 @@
 			>
 				<!-- Filename -->
 				<div class="card">
-					<div class="card__header noselect">File ID</div>
-					<div class="card__data">
+					<div class="header noselect">File ID</div>
+					<div class="data">
 						{{file.id}}
 					</div>
 				</div>
 
 				<!-- Filename -->
 				<div class="card">
-					<div class="card__header noselect">
+					<div class="header noselect">
 						Filename
 						<i
 							class="material-icons noselect"
@@ -112,14 +113,14 @@
 							@click="edit().filename()"
 						>edit</i>
 					</div>
-					<div class="card__data">
+					<div class="data">
 						{{file.filename}} <span v-if="file.deleted" style="color: red">(in Trash)</span>
 					</div>
 				</div>
 
 				<!-- Tags -->				
 				<div class="card">
-					<div class="card__header noselect">
+					<div class="header noselect">
 						Tags
 						<i
 							class="material-icons noselect"
@@ -127,7 +128,7 @@
 							@click="edit().tags()"
 						>edit</i>
 					</div>
-					<div class="card__data" style="font-size: initial;">
+					<div class="data" style="font-size: initial;">
 						<div v-if="file.tags.length === 0">Empty</div>
 						<div
 							v-else
@@ -146,7 +147,7 @@
 
 				<!-- Description -->
 				<div class="card">
-					<div class="card__header noselect">
+					<div class="header noselect">
 						Description
 						<i
 							class="material-icons noselect"
@@ -154,7 +155,7 @@
 							@click="edit().description()"
 						>edit</i>
 					</div>
-					<div class="card__data">
+					<div class="data">
 						{{file.description === "" ? 'Empty' : file.description}}
 					</div>
 				</div>
@@ -163,7 +164,7 @@
 	</div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 #preview-background {
     background-color: #00000070;
     height: 100%;
@@ -194,7 +195,8 @@
     width: 75%;
 }
 
-/* Previews */
+// Preview controls
+
 .switch-button {
     border-radius: 5px;
     cursor: pointer;
@@ -204,15 +206,15 @@
     top: 50%;
     transform: translateY(-50%);
     width: 80px;
-}
 
-.switch-button__arrow {
-    font-size: 50px;
-    left: 50%;
-    opacity: inherit;
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    i.arrow {
+        font-size: 50px;
+        left: 50%;
+        opacity: inherit;
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
 }
 
 #turn-on-fullscreen-button {
@@ -226,26 +228,25 @@
     width: 80px;
 }
 
-#turn-off-fullscreen-button__wrapper {
+#turn-off-fullscreen-button {
+    border-radius: 5px;
     position: absolute;
     right: 0;
     top: 0;
     /* Same as width of switch-button */
     width: 80px;
+
+    div {
+        border-radius: 5px;
+        cursor: pointer;
+        margin: auto;
+        opacity: 0.3;
+        text-align: center;
+        width: 50px;
+    }
 }
 
-#turn-off-fullscreen-button {
-    border-radius: 5px;
-    cursor: pointer;
-    margin: auto;
-    opacity: 0.3;
-    text-align: center;
-    width: 50px;
-}
-
-.switch-button:hover,
-#turn-on-fullscreen-button:hover,
-#turn-off-fullscreen-button:hover {
+.hover-button:hover {
     background-color: #00000020;
     opacity: 0.8;
 }
@@ -261,51 +262,62 @@
     width: fit-content;
 }
 
-#text-preview,
-#image-preview {
+// Previews
+
+@mixin preview-block-common-styles {
     height: 100%;
     margin: auto;
     width: 80%;
 }
 
-#text-preview,
-#unsopported-format {
+#text-preview {
+    @include preview-block-common-styles();
+
     background-color: white;
     border-radius: 5px;
     height: 100%;
     margin: auto;
+    overflow: auto;
     /* If width == 100%, buttons cover text */
     width: 70%;
-}
 
-#unsopported-format {
-    font-size: 30px;
-    text-align: center;
-}
-
-#text-preview > pre {
-    margin: 0;
-    padding: 10px;
+    pre {
+        margin: 0;
+        padding: 10px;
+    }
 }
 
 #image-preview {
+    @include preview-block-common-styles();
+
     text-align: center;
+
+    /* Help to center an image vertically */
+    span.helper {
+        display: inline-block;
+        height: 100%;
+        vertical-align: middle;
+    }
+
+    img {
+        display: inline-block;
+        height: auto;
+        max-height: 100%;
+        max-width: 100%;
+        vertical-align: middle;
+        width: auto;
+    }
 }
 
-#image-preview > img {
-    display: inline-block;
-    height: auto;
-    max-height: 100%;
-    max-width: 100%;
-    vertical-align: middle;
-    width: auto;
-}
-
-/* Help to center an image vertically */
-.helper {
-    display: inline-block;
+#unsupported-format {
+    background-color: white;
+    border-radius: 5px;
+    font-size: 30px;
     height: 100%;
-    vertical-align: middle;
+    margin: auto;
+    text-align: center;
+    /* If width == 100%, buttons cover text */
+    width: 70%;
 }
 
 #info {
@@ -315,7 +327,8 @@
     width: 24%;
 }
 
-/* Info blocks */
+// Info blocks
+
 .card {
     background-color: white;
     border: 1px solid #00000012;
@@ -324,29 +337,29 @@
     margin: 5px;
     margin-bottom: 7px;
     padding: 3px;
-}
 
-.card__header {
-    border-bottom: 1px solid #00000060;
-    border-radius: 3px;
-    font-size: 18px;
-    margin: auto;
-    position: relative;
-    text-align: center;
-}
+    div.header {
+        border-bottom: 1px solid #00000060;
+        border-radius: 3px;
+        font-size: 18px;
+        margin: auto;
+        position: relative;
+        text-align: center;
 
-.card__header > i {
-    cursor: pointer;
-    font-size: 20px;
-    position: absolute;
-    right: 0;
-    top: 0;
-}
+        i {
+            cursor: pointer;
+            font-size: 20px;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+    }
 
-.card__data {
-    font-size: 14px;
-    padding: 5px;
-    word-wrap: break-word;
+    div.data {
+        font-size: 14px;
+        padding: 5px;
+        word-wrap: break-word;
+    }
 }
 </style>
 
