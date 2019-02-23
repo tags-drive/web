@@ -106,6 +106,12 @@
 				>
 					<br>
 					<span>Preview for this file is unsupported</span>
+					<br>
+					<input
+						type="button"
+						class="btn"
+						value="Try to open as a text file"
+						@click="openAsTextFile">
 				</div>
 			</div>
 
@@ -356,7 +362,7 @@
 #unsupported-format {
     background-color: white;
     border-radius: 5px;
-    font-size: 30px;
+    font-size: 25px;
     height: 100%;
     margin: auto;
     text-align: center;
@@ -431,6 +437,7 @@ import { Const } from "@app/index/const";
 })
 export default class extends Vue {
     show: boolean = false;
+    showAsText: boolean = false;
     fullscreenMode: boolean = false;
     // File
     fileIndex: number = 0;
@@ -480,7 +487,7 @@ export default class extends Vue {
 
     // Types
     isTextFile(): boolean {
-        return this.file !== null && this.file.type.previewType === Const.previewTypes.text;
+        return this.file !== null && (this.file.type.previewType === Const.previewTypes.text || this.showAsText);
     }
 
     isImage(): boolean {
@@ -593,6 +600,8 @@ export default class extends Vue {
 
     nextPreview() {
         if (this.fileIndex < SharedStore.state.allFiles.length - 1) {
+            this.showAsText = false;
+
             this.file = SharedStore.state.allFiles[++this.fileIndex];
             if (this.fileIndex < SharedStore.state.allFiles.length - 1) {
                 let nextFile = SharedStore.state.allFiles[this.fileIndex + 1];
@@ -609,6 +618,8 @@ export default class extends Vue {
 
     previousPreview() {
         if (this.fileIndex > 0) {
+            this.showAsText = false;
+
             this.file = SharedStore.state.allFiles[--this.fileIndex];
             if (this.fileIndex > 0) {
                 let nextFile = SharedStore.state.allFiles[this.fileIndex - 1];
@@ -635,6 +646,11 @@ export default class extends Vue {
             .then(resp => resp.text())
             .then(text => (this.textFileContent = text))
             .catch(err => logError(err));
+    }
+
+    openAsTextFile() {
+        this.showAsText = true;
+        this.setPreviewText();
     }
 
     updatePreview() {
