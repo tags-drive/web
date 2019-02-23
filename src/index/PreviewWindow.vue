@@ -480,18 +480,15 @@ export default class extends Vue {
 
     // Types
     isTextFile(): boolean {
-        return (
-            this.file !== null &&
-            (this.file.type.fileType == Const.fileTypes.text || this.file.type.fileType == Const.fileTypes.language)
-        );
+        return this.file !== null && this.file.type.previewType === Const.previewTypes.text;
     }
 
     isImage(): boolean {
-        return this.file !== null && this.file.type.fileType === Const.fileTypes.image;
+        return this.file !== null && this.file.type.previewType === Const.previewTypes.image;
     }
 
     isAudio(): boolean {
-        let res = this.file !== null && this.file.type.fileType === Const.fileTypes.audio;
+        let res = this.file !== null && this.file.type.previewType.includes(Const.previewTypes.audio);
         if (res) {
             let audio = <HTMLAudioElement>this.$refs["audio-block"];
             if (audio !== undefined) {
@@ -505,7 +502,7 @@ export default class extends Vue {
     }
 
     isVideo(): boolean {
-        let res = this.file !== null && this.file.type.fileType === Const.fileTypes.video;
+        let res = this.file !== null && this.file.type.previewType.includes(Const.previewTypes.video);
         if (res) {
             let video = <HTMLVideoElement>this.$refs["video-block"];
             if (video !== undefined) {
@@ -598,7 +595,10 @@ export default class extends Vue {
         if (this.fileIndex < SharedStore.state.allFiles.length - 1) {
             this.file = SharedStore.state.allFiles[++this.fileIndex];
             if (this.fileIndex < SharedStore.state.allFiles.length - 1) {
-                preloadImages(SharedStore.state.allFiles[this.fileIndex + 1].origin);
+                let nextFile = SharedStore.state.allFiles[this.fileIndex + 1];
+                if (nextFile.type.previewType == Const.previewTypes.image) {
+                    preloadImages(nextFile.origin);
+                }
             }
 
             if (this.isTextFile()) {
@@ -611,7 +611,10 @@ export default class extends Vue {
         if (this.fileIndex > 0) {
             this.file = SharedStore.state.allFiles[--this.fileIndex];
             if (this.fileIndex > 0) {
-                preloadImages(SharedStore.state.allFiles[this.fileIndex - 1].origin);
+                let nextFile = SharedStore.state.allFiles[this.fileIndex - 1];
+                if (nextFile.type.previewType == Const.previewTypes.image) {
+                    preloadImages(nextFile.origin);
+                }
             }
 
             if (this.isTextFile()) {

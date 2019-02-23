@@ -179,7 +179,7 @@ export default class extends Vue {
     }
 
     get previewLink(): string {
-        if (this.file.type.fileType === Const.fileTypes.image) {
+        if (this.file.type.previewType === Const.previewTypes.image) {
             return Params.Host + "/" + this.file.preview;
         }
 

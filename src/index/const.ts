@@ -23,5 +23,11 @@ export const Const = {
         language: "lang",
         text: "text",
         video: "video"
+    },
+    previewTypes: {
+        audio: "audio",
+        image: "image",
+        text: "text",
+        video: "video"
     }
 };
