@@ -1,6 +1,13 @@
+export class FileExt {
+    ext: string = "";
+    fileType: string = "";
+    supported: boolean = false;
+    previewType: string = "";
+}
+
 export class File {
     id: number = 0;
-    type: string = "file";
+    type: FileExt = new FileExt();
     filename: string = "";
     description: string = "";
     size: number = 0;

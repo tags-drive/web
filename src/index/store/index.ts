@@ -2,12 +2,9 @@ import Vue from "vue";
 import Vuex, { StoreOptions } from "vuex";
 // Classes and types
 import { Store } from "./types";
-import { File, Tag } from "@app/index/global";
+import { File, Tag, FileExt } from "@app/index/global";
 // Other
 import dateformat from "dateformat";
-import { Params } from "@app/global";
-import { logError } from "@app/index/tools";
-
 Vue.use(Vuex);
 
 function objectToFile(f: any, skipTimeParsing?: boolean): File | null {
@@ -28,9 +25,24 @@ function objectToFile(f: any, skipTimeParsing?: boolean): File | null {
         return null;
     }
 
+    if (
+        f.type.ext === undefined ||
+        f.type.fileType === undefined ||
+        f.type.supported === undefined ||
+        f.type.previewType === undefined
+    ) {
+        return null;
+    }
+
+    let ext = new FileExt();
+    ext.ext = f.type.ext;
+    ext.fileType = f.type.fileType;
+    ext.supported = f.type.supported;
+    ext.previewType = f.type.previewType;
+
     let file: File = new File();
     file.id = <number>f.id;
-    file.type = <string>f.type;
+    file.type = ext;
     file.filename = <string>f.filename;
     file.origin = <string>f.origin;
     file.description = <string>f.description;

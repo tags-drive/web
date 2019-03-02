@@ -15,5 +15,19 @@ export const Const = {
     tagsChanging: {
         addMode: "add-mode",
         deleteMode: "delete-mode"
+    },
+    fileTypes: {
+        archive: "archive",
+        audio: "audio",
+        image: "image",
+        language: "lang",
+        text: "text",
+        video: "video"
+    },
+    previewTypes: {
+        audio: "audio",
+        image: "image",
+        text: "text",
+        video: "video"
     }
 };
