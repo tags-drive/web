@@ -1,17 +1,17 @@
 <template>
-	<div style="display: inline-flex; margin-bottom: 5px; width: 95%;">
+	<div class="container">
 		<div
 			class="tag-indicator vertically"
 			:style="{'border-left-color': indicatorBorderColor}"
 		></div>
 
-		<div style="width: 35%; display: flex;">
+		<div style="display: flex;">
 			<tag :tag="{ name: newName, color: newColor }"></tag>
 		</div>
 
 		<input
 			type="text"
-			style="width: 35%; margin-right: 10px;"
+			style="margin-right: 10px;"
 			maxlength="20"
 			@input="check"
 			:disabled="isDeleted"
@@ -19,7 +19,7 @@
 
 		<input
 			type="text"
-			style="width: 15%; margin-right: 5px;"
+			style="margin-right: 5px;"
 			@input="check"
 			:disabled="isDeleted"
 			v-model="newColor">
@@ -59,10 +59,15 @@
 </template>
 
 <style lang="scss" scoped>
+.container {
+    display: grid;
+    grid-template-columns: 5px auto 35% 13% 40px 60px;
+    margin-bottom: 5px;
+}
 
 .tag-indicator {
-    height: 20px;
     border-left: 2px solid white;
+    height: 20px;
 }
 </style>
 
