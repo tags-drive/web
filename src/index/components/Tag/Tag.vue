@@ -16,20 +16,22 @@
     border: 1px solid #42404033;
     border-radius: 15px;
     cursor: default;
-    height: 20px;
+    display: flex;
+    height: fit-content;
     line-height: 20px;
     margin-right: 5px;
+    min-height: 20px;
     padding: 3px;
     padding-right: 5px;
-    display: flex;
+    word-break: break-word;
 }
 
 .color-circle {
     border: 0.5px solid #0000002f;
     border-radius: 8px;
-    height: 15px;
     margin: auto 3px auto 0;
-    width: 15px;
+    min-height: 15px;
+    min-width: 15px;
 }
 </style>
 
