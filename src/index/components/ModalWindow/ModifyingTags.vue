@@ -34,11 +34,12 @@
 		<div style="display: flex;">
 			<!-- Save -->
 			<i
-			class="material-icons btn noselect"
-			style="margin-right: 5px;" 
-			title="Save"
-			@click="save"
-			:style="[isError || isDeleted || !this.isChanged ? {'opacity': '0.3', 'background-color': 'white', 'cursor': 'default'} : {'opacity': '1'}]">done</i>
+				class="material-icons btn noselect"
+				style="margin-right: 5px;" 
+				title="Save"
+				@click="save"
+				:style="saveButtonStyle"
+			>done</i>
 
 			<!-- Delete or recover -->
 			<i
@@ -111,6 +112,13 @@ export default class extends Vue {
         }
 
         return "white";
+    }
+
+    get saveButtonStyle() {
+        if (this.isError || this.isDeleted || !this.isChanged) {
+            return { opacity: "0.3", "background-color": "white", cursor: "default" };
+        }
+        return { opacity: "1" };
     }
 
     constructor() {
