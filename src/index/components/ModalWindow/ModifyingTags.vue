@@ -1,10 +1,9 @@
 <template>
 	<div style="display: inline-flex; margin-bottom: 5px; width: 95%;">
-		<div style="width: 2px; height: 20px; margin-right: 3px;" class="vertically">
-			<div v-if="isDeleted" style="height: 20px; border-left: 2px solid white;"></div>
-			<div v-else-if="isError"	style="height: 20px; border-left: 2px solid red;"></div>
-			<div v-else-if="isChanged" style="height: 20px; border-left: 2px solid blue;"></div>
-		</div>
+		<div
+			class="tag-indicator vertically"
+			:style="{'border-left-color': indicatorBorderColor}"
+		></div>
 
 		<div style="width: 35%; display: flex;">
 			<tag :tag="{ name: newName, color: newColor }"></tag>
@@ -59,6 +58,14 @@
 	</div>
 </template>
 
+<style lang="scss" scoped>
+
+.tag-indicator {
+    height: 20px;
+    border-left: 2px solid white;
+}
+</style>
+
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
@@ -86,6 +93,20 @@ export default class extends Vue {
     isChanged: boolean; // isNewTag wasn't passed,
     isError: boolean = false;
     isDeleted: boolean = false;
+
+    get indicatorBorderColor() {
+        if (this.isDeleted) {
+            return "white";
+        }
+        if (this.isError) {
+            return "red";
+        }
+        if (this.isChanged) {
+            return "blue";
+        }
+
+        return "white";
+    }
 
     constructor() {
         super();
