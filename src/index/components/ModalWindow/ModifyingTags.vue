@@ -9,14 +9,15 @@
 			<tag :tag="{ name: newName, color: newColor }"></tag>
 		</div>
 
+		<!-- Tag name -->
 		<input
 			type="text"
 			style="margin-right: 10px;"
-			maxlength="20"
 			@input="check"
 			:disabled="isDeleted"
 			v-model="newName">
 
+		<!-- Tag color -->
 		<input
 			type="text"
 			style="margin-right: 5px;"
@@ -24,6 +25,7 @@
 			:disabled="isDeleted"
 			v-model="newColor">
 
+		<!-- Generate color -->
 		<i
 			class="material-icons btn noselect"
 			style="margin-right: 10px;"
@@ -68,7 +70,7 @@
 
 .tag-indicator {
     border-left: 2px solid white;
-    height: 20px;
+    height: 100%;
 }
 </style>
 
@@ -81,7 +83,7 @@ import TagComponent from "@components/Tag/Tag.vue";
 // Classes and types
 import { Tag } from "@app/index/global";
 
-const validTagName = /^[\w\d- ]{1,20}$/;
+const validTagName = /^[\w\d- ]+$/;
 const validColor = /^#[\dabcdef]{6}$/;
 
 @Component({
