@@ -1,30 +1,31 @@
 <template>
-	<div style="display: inline-flex; margin-bottom: 5px; width: 95%;">
-		<div style="width: 2px; height: 20px; margin-right: 3px;" class="vertically">
-			<div v-if="isDeleted" style="height: 20px; border-left: 2px solid white;"></div>
-			<div v-else-if="isError"	style="height: 20px; border-left: 2px solid red;"></div>
-			<div v-else-if="isChanged" style="height: 20px; border-left: 2px solid blue;"></div>
-		</div>
+	<div class="container">
+		<div
+			class="tag-indicator vertically"
+			:style="{'border-left-color': indicatorBorderColor}"
+		></div>
 
-		<div style="width: 35%; display: flex;">
+		<div style="display: flex;">
 			<tag :tag="{ name: newName, color: newColor }"></tag>
 		</div>
 
+		<!-- Tag name -->
 		<input
 			type="text"
-			style="width: 35%; margin-right: 10px;"
-			maxlength="20"
+			style="margin-right: 10px;"
 			@input="check"
 			:disabled="isDeleted"
 			v-model="newName">
 
+		<!-- Tag color -->
 		<input
 			type="text"
-			style="width: 15%; margin-right: 5px;"
+			style="margin-right: 5px;"
 			@input="check"
 			:disabled="isDeleted"
 			v-model="newColor">
 
+		<!-- Generate color -->
 		<i
 			class="material-icons btn noselect"
 			style="margin-right: 10px;"
@@ -35,11 +36,12 @@
 		<div style="display: flex;">
 			<!-- Save -->
 			<i
-			class="material-icons btn noselect"
-			style="margin-right: 5px;" 
-			title="Save"
-			@click="save"
-			:style="[isError || isDeleted || !this.isChanged ? {'opacity': '0.3', 'background-color': 'white', 'cursor': 'default'} : {'opacity': '1'}]">done</i>
+				class="material-icons btn noselect"
+				style="margin-right: 5px;" 
+				title="Save"
+				@click="save"
+				:style="saveButtonStyle"
+			>done</i>
 
 			<!-- Delete or recover -->
 			<i
@@ -59,6 +61,19 @@
 	</div>
 </template>
 
+<style lang="scss" scoped>
+.container {
+    display: grid;
+    grid-template-columns: 5px auto 35% 13% 40px 60px;
+    margin-bottom: 5px;
+}
+
+.tag-indicator {
+    border-left: 2px solid white;
+    height: 100%;
+}
+</style>
+
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
@@ -68,7 +83,7 @@ import TagComponent from "@components/Tag/Tag.vue";
 // Classes and types
 import { Tag } from "@app/index/global";
 
-const validTagName = /^[\w\d- ]{1,20}$/;
+const validTagName = /^[\w\d- ]+$/;
 const validColor = /^#[\dabcdef]{6}$/;
 
 @Component({
@@ -86,6 +101,27 @@ export default class extends Vue {
     isChanged: boolean; // isNewTag wasn't passed,
     isError: boolean = false;
     isDeleted: boolean = false;
+
+    get indicatorBorderColor() {
+        if (this.isDeleted) {
+            return "white";
+        }
+        if (this.isError) {
+            return "red";
+        }
+        if (this.isChanged) {
+            return "blue";
+        }
+
+        return "white";
+    }
+
+    get saveButtonStyle() {
+        if (this.isError || this.isDeleted || !this.isChanged) {
+            return { opacity: "0.3", "background-color": "white", cursor: "default" };
+        }
+        return { opacity: "1" };
+    }
 
     constructor() {
         super();
