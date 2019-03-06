@@ -69,7 +69,7 @@
 
 <style scoped>
 .hover-class:hover {
-    background-color: #d3d3d3;
+    background-color: #dcdcdc70;
 }
 
 .filename,
@@ -150,7 +150,7 @@ export default class extends Vue {
         };
 
         if (this.file.selected) {
-            style["background-color"] = "#d3d3d3";
+            style["background-color"] = "#dcdcdcc0";
         }
 
         return style;
@@ -189,7 +189,7 @@ export default class extends Vue {
 
     get tagsStyle() {
         if (!this.tagsListHover && this.overflow) {
-            return { "border-left-color": "red" };
+            return { "border-left-color": "black" };
         }
 
         let list = <HTMLElement>this.$refs["tags-list"];
