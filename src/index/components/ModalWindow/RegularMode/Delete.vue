@@ -82,7 +82,7 @@ export default class extends Vue {
     // deleteFileForever is a wrapper over deleteFile
     deleteFileForever() {
         let ids = [this.file.id];
-        API.files.delete(ids, false);
+        API.files.delete(ids, true);
 
         this.hideWindow();
     }
