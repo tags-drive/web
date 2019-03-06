@@ -63,7 +63,7 @@
 
 		<div class="file-info__size">{{ fileSize }}</div>
 
-		<div class="file-info__adding-time">{{file.addTime}}</div>
+		<div class="file-info__adding-time">{{ fileAddTime }}</div>
 	</div>
 </template>
 
@@ -126,6 +126,7 @@ import { State } from "@app/index/state/types";
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
 import { Const } from "@app/index/const";
+import dateformat from "dateformat";
 
 const tagsListPadding = 4;
 const sizeSuffixes: string[] = ["B", "KB", "MB", "GB", "TB"];
@@ -263,6 +264,11 @@ export default class extends Vue {
         }
 
         return s + " " + sizeSuffixes[suffixIndex];
+    }
+
+    get fileAddTime(): string {
+        // Example: "Mar 6, 2019 14:50"
+        return dateformat(this.file.addTime, "mmm d, yyyy HH:MM");
     }
 
     created() {
