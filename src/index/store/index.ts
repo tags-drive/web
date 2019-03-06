@@ -3,8 +3,6 @@ import Vuex, { StoreOptions } from "vuex";
 // Classes and types
 import { Store } from "./types";
 import { File, Tag, FileExt } from "@app/index/global";
-// Other
-import dateformat from "dateformat";
 Vue.use(Vuex);
 
 function objectToFile(f: any, skipTimeParsing?: boolean): File | null {
@@ -50,9 +48,9 @@ function objectToFile(f: any, skipTimeParsing?: boolean): File | null {
     file.tags = <number[]>f.tags;
 
     if (!skipTimeParsing) {
-        file.addTime = dateformat(new Date(f.addTime), "dd-mm-yyyy HH:MM");
+        file.addTime = new Date(f.addTime);
     } else {
-        file.addTime = f.addTime || "";
+        file.addTime = f.addTime || new Date();
     }
 
     file.preview = f.preview ? <string>f.preview : "";

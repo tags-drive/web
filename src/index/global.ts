@@ -16,7 +16,7 @@ export class File {
     origin: string = ""; // link
     preview: string = ""; // link
     //
-    addTime: string = ""; // UNIX time
+    addTime: Date = new Date(); // UNIX time
     // Deleted info
     deleted: boolean = false;
     timeToDelete: number = 0; // UNIX time
