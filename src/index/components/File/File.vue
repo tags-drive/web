@@ -61,7 +61,7 @@
 			</div>
 		</div>
 
-		<div class="file-info__size">{{(file.size / (1024 * 1024)).toFixed(2)}}</div>
+		<div class="file-info__size">{{ fileSize }}</div>
 
 		<div class="file-info__adding-time">{{file.addTime}}</div>
 	</div>
@@ -128,6 +128,7 @@ import { Params } from "@app/global";
 import { Const } from "@app/index/const";
 
 const tagsListPadding = 4;
+const sizeSuffixes: string[] = ["B", "KB", "MB", "GB", "TB"];
 
 @Component({
     components: {
@@ -240,6 +241,28 @@ export default class extends Vue {
             position: "fixed",
             width: rect.width - tagsListPadding * 2 + "px"
         };
+    }
+
+    get fileSize(): string {
+        let suffixIndex = 0;
+        // In bytes
+        let size = this.file.size;
+        while (size / 1024 > 1) {
+            size /= 1024;
+            suffixIndex++;
+        }
+
+        if (suffixIndex >= sizeSuffixes.length) {
+            return "-";
+        }
+
+        let s = size.toFixed(1);
+        if (s[s.length - 1] == "0") {
+            // Trim trailing dot and zero
+            s = s.slice(0, s.length - 2);
+        }
+
+        return s + " " + sizeSuffixes[suffixIndex];
     }
 
     created() {
