@@ -138,7 +138,7 @@ export default class extends Vue {
         });
 
         document.addEventListener("click", event => {
-            if (!isElementInPath(event, "context-menu")) {
+            if (this.show && !isElementInPath(event, "context-menu")) {
                 this.hideMenu();
             }
         });
@@ -167,25 +167,26 @@ export default class extends Vue {
 
     hideMenu() {
         this.show = false;
+        EventBus.$emit(Events.FilesBlock.UnfocusFile);
     }
 
     // Options of context menu
     regularMode() {
         return {
             changeName: () => {
-                this.show = false;
+                this.hideMenu();
                 EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileRenamingWindow, { file: this.file });
             },
             changeTags: () => {
-                this.show = false;
+                this.hideMenu();
                 EventBus.$emit(Events.ModalWindow.RegularMode.ShowTagsChangingWindow, { file: this.file });
             },
             changeDescription: () => {
-                this.show = false;
+                this.hideMenu();
                 EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileDescriptionChangingWindow, { file: this.file });
             },
             deleteFile: () => {
-                this.show = false;
+                this.hideMenu();
                 EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileDeletingWindow, { file: this.file });
             }
         };
@@ -195,15 +196,13 @@ export default class extends Vue {
     selectMode() {
         return {
             addTags: () => {
-                this.show = false;
-
+                this.hideMenu();
                 getSelectedFiles().then(files =>
                     EventBus.$emit(Events.ModalWindow.SelectMode.ShowTagsAddingWindow, { files: files })
                 );
             },
             deleteTags: () => {
-                this.show = false;
-
+                this.hideMenu();
                 getSelectedFiles().then(files =>
                     EventBus.$emit(Events.ModalWindow.SelectMode.ShowTagsDeletingWindow, { files: files })
                 );
@@ -220,7 +219,7 @@ export default class extends Vue {
                 });
             },
             deleteFiles: () => {
-                this.show = false;
+                this.hideMenu();
                 getSelectedFiles().then(files =>
                     EventBus.$emit(Events.ModalWindow.SelectMode.ShowFilesDeletingWindow, { files: files })
                 );

@@ -25,6 +25,8 @@ export const Events = {
         // For children of TopBar
         SelectFile: "files-block-select-file",
         UnselectFile: "files-block-unselect-file",
+        // Use this event to unfocus file after click by right button
+        UnfocusFile: "files-block-unfocus-file",
         //
         UnselectAllFiles: "files-block-unselect-all-files",
         //

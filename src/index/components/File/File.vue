@@ -142,6 +142,9 @@ export default class extends Vue {
     @Prop() file!: TableFile;
     overflow: boolean = false;
     tagsListHover: boolean = false;
+    // rightClicked is true when user clicked right button to show context menu
+    // It is became false after hiding Context Menu (when Events.ContextMenu.Hide emitted)
+    rightClicked: boolean = false;
     // setInterval id
     overflowChecker: number = -1;
     //
@@ -153,7 +156,7 @@ export default class extends Vue {
             opacity: this.file.deleted && !this.file.selected ? 0.4 : 1
         };
 
-        if (this.file.selected) {
+        if (this.file.selected || this.rightClicked) {
             style["background-color"] = "#dcdcdcc0";
         }
 
@@ -290,7 +293,26 @@ export default class extends Vue {
     }
 
     showContextMenu(event: MouseEvent) {
+        // Don't show Context Menu when file isn't selected
+        if (SharedState.state.selectMode && !this.file.selected) {
+            return;
+        }
+
+        // Reset other files at first
+        EventBus.$emit(Events.FilesBlock.UnfocusFile);
+
+        this.rightClicked = true;
+
+        // Show Context Menu
         EventBus.$emit(Events.ShowContextMenu, { file: this.file, x: event.x, y: event.y });
+
+        // handler sets rightClicked to false and unregisters itself from EventBus
+        let handler = () => {
+            this.rightClicked = false;
+            EventBus.$off(Events.FilesBlock.UnfocusFile, handler);
+        };
+
+        EventBus.$on(Events.FilesBlock.UnfocusFile, handler);
     }
 
     showPreview() {
