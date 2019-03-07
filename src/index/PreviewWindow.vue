@@ -113,6 +113,14 @@
 						value="Try to open as a text file"
 						@click="openAsTextFile">
 				</div>
+
+				<!-- Filename (only in fullscreen mode) -->
+				<div
+					id="fullscreen-filename"
+					v-show="fullscreenMode"
+				>
+					<span>{{file.filename}}</span>
+				</div>
 			</div>
 
 			<!-- Info -->
@@ -120,7 +128,7 @@
 				v-show="!fullscreenMode"
 				id="info"
 			>
-				<!-- Filename -->
+				<!-- ID -->
 				<div class="card">
 					<div class="header noselect">File ID</div>
 					<div class="data">
