@@ -163,9 +163,13 @@ export default class extends Vue {
         this.left = x;
         this.top = y;
         this.show = true;
+
+        document.addEventListener("wheel", this.scrollHandler);
     }
 
     hideMenu() {
+        document.removeEventListener("wheel", this.scrollHandler);
+
         this.show = false;
         EventBus.$emit(Events.FilesBlock.UnfocusFile);
     }
@@ -225,6 +229,13 @@ export default class extends Vue {
                 );
             }
         };
+    }
+
+    // scrollHandler prevents scrolling when Context Menu is displayed
+    scrollHandler(ev: WheelEvent) {
+        if (this.show) {
+            ev.preventDefault();
+        }
     }
 }
 </script>
