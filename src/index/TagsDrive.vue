@@ -17,15 +17,6 @@
 </template>
 
 <style>
-:root {
-    --primary-color: white;
-    --secondary-color: #f7f7f7;
-    --primary-border-color: rgba(0, 0, 0, 0.3);
-    --secondary-border-color: rgba(0, 0, 0, 0.1);
-    --primary-element-color: rgba(0, 0, 0, 0.3);
-    --secondary-element-color: rgba(0, 0, 0, 0.1);
-}
-
 body {
     font-family: arial, sans-serif;
     margin: 0;
@@ -62,7 +53,7 @@ input[type="text"] {
 
 .btn {
     background-color: white;
-    border: 1px solid var(--primary-border-color);
+    border: 1px solid #b2b2b2;
     border-radius: 2px;
     cursor: pointer;
 }
@@ -71,7 +62,7 @@ input[type="text"] {
     background-color: #dfdfdf;
 }
 
-/* Scrollbar */
+/* Scrollbar (Chrome)*/
 ::-webkit-scrollbar {
     width: 10px;
 }
@@ -86,6 +77,11 @@ input[type="text"] {
 
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 0, 0, 0.3);
+}
+
+/* Scrollbar (Firefox) */
+* {
+    scrollbar-width: thin;
 }
 </style>
 

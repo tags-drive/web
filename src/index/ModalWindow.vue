@@ -65,7 +65,7 @@
 }
 
 #modal-window {
-    background-color: var(--primary-color);
+    background-color: #ffffff;
     border-radius: 5px;
     margin-bottom: 100px;
     margin-left: auto;

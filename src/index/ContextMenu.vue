@@ -41,8 +41,8 @@
 
 <style scoped>
 #context-menu {
-    background-color: var(--primary-color);
-    border: 1px solid var(--primary-border-color);
+    background-color: #ffffff;
+    border: 1px solid #b2b2b2;
     border-radius: 5px;
     padding: 5px;
     position: fixed;
@@ -52,7 +52,7 @@
 
 .btn {
     background-color: white;
-    border: 1px solid var(--primary-border-color);
+    border: 1px solid #b2b2b2;
     border-radius: 2px;
     cursor: pointer;
     margin-bottom: 3px;
@@ -61,7 +61,7 @@
 }
 
 .btn:hover {
-    background-color: var(--secondary-element-color);
+    background-color: #e5e5e5;
 }
 
 .btn--href {

@@ -22,20 +22,6 @@
 	</div>
 </template>
 
-<style scoped>
-.tags-field {
-    border: 1px dashed var(--primary-border-color);
-    border-radius: 5px;
-    display: flex;
-    flex-wrap: wrap;
-    margin: 0 auto;
-    min-height: 40px;
-    padding: 10px;
-    width: 80%;
-}
-</style>
-
-
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";

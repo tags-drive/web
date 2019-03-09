@@ -52,7 +52,7 @@
 <style scoped>
 #log-window {
     background-color: #f7f7f7;
-    border: 1px solid #00000050;
+    border: 1px solid  #b2b2b2;
     border-radius: 5px;
     bottom: 10px;
     height: 450px;
