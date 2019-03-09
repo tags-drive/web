@@ -357,7 +357,24 @@ import { isErrorStatusCode, logError, logInfo, isElementInPath } from "@app/inde
 import { Params } from "@app/global";
 import API from "@app/index/api";
 
+class Operator {
+    operator: string;
+    description: string;
+
+    constructor(op: string, desc: string = "") {
+        this.operator = op;
+        this.description = desc;
+    }
+}
+
 const validCharacters = "0123456789&|!()";
+const availableOperators: Operator[] = [
+    new Operator("!", "negation (not)"),
+    new Operator("&", "conjunction (and)"),
+    new Operator("|", "disjunction (or)"),
+    new Operator("(", "left bracket"),
+    new Operator(")", "right bracket")
+];
 
 @Component({
     components: {
@@ -366,6 +383,8 @@ const validCharacters = "0123456789&|!()";
     }
 })
 export default class TopBar extends Vue {
+    // Const members
+    readonly operators: Operator[] = availableOperators;
     // Expression
     expression: string = "";
     position: number = 0;
