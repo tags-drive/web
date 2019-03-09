@@ -58,7 +58,7 @@
 						:key="index"
 					>
 						<!-- @click in tag component doesn't work, so we need a wrapper -->
-						<div @click="insertTagID(id)">
+						<div @click="insertTextIntoExpression(id)">
 							<tag
 							style="cursor: pointer;"
 							title="Paste tag"
@@ -66,6 +66,23 @@
 							></tag>
 						</div>
 						<i style="line-height: 28px;">id: {{id}}</i>
+					</div>
+				</div>
+
+				<!-- List of operators -->
+				<div
+					v-show="focused"
+					id="operators-list"
+				>
+					<div
+						v-for="(op, index) in operators"
+						:key="index"
+					>
+						<div
+							class="operator vertically"
+							@click="insertTextIntoExpression(op.operator)"
+						>{{ op.operator }}</div>
+						<span>– {{ op.description }}</span>
 					</div>
 				</div>
 			</div>
@@ -169,7 +186,7 @@
 </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 #top-bar {
     background-color: white;
     border-bottom: 1px solid #0000002f;
@@ -241,7 +258,7 @@
     right: 5px;
 }
 
-#search-input > #tags-list {
+@mixin suggestion-blocks {
     background-color: white;
     border: 1px solid #88888880;
     border-radius: 0px 0px 5px 5px;
@@ -251,8 +268,42 @@
     overflow-y: auto;
     position: absolute;
     top: 100%;
-    width: 250px;
     z-index: 2;
+}
+
+$tags-list-width: 250px;
+
+#search-input > #tags-list {
+    @include suggestion-blocks();
+
+    width: $tags-list-width;
+}
+
+#search-input > #operators-list {
+    @include suggestion-blocks();
+
+    border-bottom-left-radius: 0;
+    border-left-color: #88888840;
+    left: $tags-list-width + 1px;
+    width: 180px;
+}
+
+#search-input > #operators-list > div {
+    display: flex;
+    line-height: 28px;
+    margin: 5px;
+}
+
+#search-input > #operators-list > div > .operator {
+    border: 1px solid #42404033;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    height: 23px;
+    line-height: 23px;
+    margin-right: 4px;
+    text-align: center;
+    width: 23px;
 }
 
 #search-wrapper > #search-additional-buttons {
@@ -357,7 +408,24 @@ import { isErrorStatusCode, logError, logInfo, isElementInPath } from "@app/inde
 import { Params } from "@app/global";
 import API from "@app/index/api";
 
+class Operator {
+    operator: string;
+    description: string;
+
+    constructor(op: string, desc: string = "") {
+        this.operator = op;
+        this.description = desc;
+    }
+}
+
 const validCharacters = "0123456789&|!()";
+const availableOperators: Operator[] = [
+    new Operator("!", "negation (not)"),
+    new Operator("&", "conjunction (and)"),
+    new Operator("|", "disjunction (or)"),
+    new Operator("(", "left bracket"),
+    new Operator(")", "right bracket")
+];
 
 @Component({
     components: {
@@ -366,6 +434,8 @@ const validCharacters = "0123456789&|!()";
     }
 })
 export default class TopBar extends Vue {
+    // Const members
+    readonly operators: Operator[] = availableOperators;
     // Expression
     expression: string = "";
     position: number = 0;
@@ -396,7 +466,7 @@ export default class TopBar extends Vue {
         });
 
         document.addEventListener("click", event => {
-            if (!isElementInPath(event, "render-wrapper", "input-wrapper", "tags-list")) {
+            if (!isElementInPath(event, "render-wrapper", "input-wrapper", "tags-list", "operators-list")) {
                 this.focused = false;
             }
         });
@@ -431,8 +501,8 @@ export default class TopBar extends Vue {
     }
 
     // insertTagID is used to insert tag id into expression
-    insertTagID(argID: number) {
-        let id = String(argID);
+    insertTextIntoExpression(arg: any) {
+        let text = String(arg);
         let elem: HTMLInputElement = <HTMLInputElement>this.$refs["expression-input"];
         if (!(this.$refs["expression-input"] instanceof HTMLInputElement)) {
             return;
@@ -441,11 +511,11 @@ export default class TopBar extends Vue {
         let l = elem.selectionStart!,
             r = elem.selectionEnd!;
 
-        this.expression = this.expression.slice(0, l) + id + this.expression.slice(r);
+        this.expression = this.expression.slice(0, l) + text + this.expression.slice(r);
 
         this.$nextTick(() => {
             elem.focus();
-            elem.setSelectionRange(l + id.length, l + id.length);
+            elem.setSelectionRange(l + text.length, l + text.length);
         });
     }
 
