@@ -61,15 +61,15 @@
 			</div>
 		</div>
 
-		<div class="file-info__size">{{(file.size / (1024 * 1024)).toFixed(2)}}</div>
+		<div class="file-info__size">{{ fileSize }}</div>
 
-		<div class="file-info__adding-time">{{file.addTime}}</div>
+		<div class="file-info__adding-time">{{ fileAddTime }}</div>
 	</div>
 </template>
 
 <style scoped>
 .hover-class:hover {
-    background-color: #d3d3d3;
+    background-color: #dcdcdc70;
 }
 
 .filename,
@@ -82,14 +82,16 @@
 
 .image-wrapper {
     height: inherit;
-    text-align: center;
+    position: relative;
 }
 
 .image-wrapper > img {
-    display: inline-block;
     height: auto;
     max-height: 100%;
     max-width: 100%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
     width: auto;
 }
 
@@ -126,8 +128,10 @@ import { State } from "@app/index/state/types";
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
 import { Const } from "@app/index/const";
+import dateformat from "dateformat";
 
 const tagsListPadding = 4;
+const sizeSuffixes: string[] = ["B", "KB", "MB", "GB", "TB"];
 
 @Component({
     components: {
@@ -138,6 +142,9 @@ export default class extends Vue {
     @Prop() file!: TableFile;
     overflow: boolean = false;
     tagsListHover: boolean = false;
+    // rightClicked is true when user clicked right button to show context menu
+    // It is became false after hiding Context Menu (when Events.ContextMenu.Hide emitted)
+    rightClicked: boolean = false;
     // setInterval id
     overflowChecker: number = -1;
     //
@@ -149,8 +156,8 @@ export default class extends Vue {
             opacity: this.file.deleted && !this.file.selected ? 0.4 : 1
         };
 
-        if (this.file.selected) {
-            style["background-color"] = "#d3d3d3";
+        if (this.file.selected || this.rightClicked) {
+            style["background-color"] = "#dcdcdcc0";
         }
 
         return style;
@@ -189,7 +196,7 @@ export default class extends Vue {
 
     get tagsStyle() {
         if (!this.tagsListHover && this.overflow) {
-            return { "border-left-color": "red" };
+            return { "border-left-color": "black" };
         }
 
         let list = <HTMLElement>this.$refs["tags-list"];
@@ -242,6 +249,33 @@ export default class extends Vue {
         };
     }
 
+    get fileSize(): string {
+        let suffixIndex = 0;
+        // In bytes
+        let size = this.file.size;
+        while (size / 1024 > 1) {
+            size /= 1024;
+            suffixIndex++;
+        }
+
+        if (suffixIndex >= sizeSuffixes.length) {
+            return "-";
+        }
+
+        let s = size.toFixed(1);
+        if (s[s.length - 1] == "0") {
+            // Trim trailing dot and zero
+            s = s.slice(0, s.length - 2);
+        }
+
+        return s + " " + sizeSuffixes[suffixIndex];
+    }
+
+    get fileAddTime(): string {
+        // Example: "Mar 6, 2019 14:50"
+        return dateformat(this.file.addTime, "mmm d, yyyy HH:MM");
+    }
+
     created() {
         this.overflowChecker = setInterval(() => {
             let list = <HTMLElement>this.$refs["tags-list"];
@@ -259,7 +293,26 @@ export default class extends Vue {
     }
 
     showContextMenu(event: MouseEvent) {
+        // Don't show Context Menu when file isn't selected
+        if (SharedState.state.selectMode && !this.file.selected) {
+            return;
+        }
+
+        // Reset other files at first
+        EventBus.$emit(Events.FilesBlock.UnfocusFile);
+
+        this.rightClicked = true;
+
+        // Show Context Menu
         EventBus.$emit(Events.ShowContextMenu, { file: this.file, x: event.x, y: event.y });
+
+        // handler sets rightClicked to false and unregisters itself from EventBus
+        let handler = () => {
+            this.rightClicked = false;
+            EventBus.$off(Events.FilesBlock.UnfocusFile, handler);
+        };
+
+        EventBus.$on(Events.FilesBlock.UnfocusFile, handler);
     }
 
     showPreview() {

@@ -3,7 +3,7 @@
 <div style="height: 100%;">
 	<div
 		class="file-info"
-		style="font-size: 17px; border-bottom: 1px solid grey;"
+		style="font-size: 17px; border-bottom: 1px solid grey; padding-right: 10px;"
 	>
 		<!-- There are some nonexistent classes. They are reserved for readability and future using -->
 		<div class="file-info__checkbox">
@@ -42,7 +42,7 @@
 		<div class="file-info__description">Description</div>
 
 		<div class="file-info__size">
-			Size (MB)
+			File size
 			<i
 				id="sortByNameSize"
 				class="material-icons noselect"
