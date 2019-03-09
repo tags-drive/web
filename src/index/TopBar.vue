@@ -58,7 +58,7 @@
 						:key="index"
 					>
 						<!-- @click in tag component doesn't work, so we need a wrapper -->
-						<div @click="insertTagID(id)">
+						<div @click="insertTextIntoExpression(id)">
 							<tag
 							style="cursor: pointer;"
 							title="Paste tag"
@@ -450,8 +450,8 @@ export default class TopBar extends Vue {
     }
 
     // insertTagID is used to insert tag id into expression
-    insertTagID(argID: number) {
-        let id = String(argID);
+    insertTextIntoExpression(arg: any) {
+        let text = String(arg);
         let elem: HTMLInputElement = <HTMLInputElement>this.$refs["expression-input"];
         if (!(this.$refs["expression-input"] instanceof HTMLInputElement)) {
             return;
@@ -460,11 +460,11 @@ export default class TopBar extends Vue {
         let l = elem.selectionStart!,
             r = elem.selectionEnd!;
 
-        this.expression = this.expression.slice(0, l) + id + this.expression.slice(r);
+        this.expression = this.expression.slice(0, l) + text + this.expression.slice(r);
 
         this.$nextTick(() => {
             elem.focus();
-            elem.setSelectionRange(l + id.length, l + id.length);
+            elem.setSelectionRange(l + text.length, l + text.length);
         });
     }
 
