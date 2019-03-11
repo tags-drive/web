@@ -333,7 +333,8 @@
     }
 
     img {
-        display: inline-block;
+		background-color: rgb(255, 255, 255);
+		display: inline-block;
         height: auto;
         max-height: 100%;
         max-width: 100%;
