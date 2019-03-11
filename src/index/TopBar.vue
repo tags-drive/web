@@ -121,7 +121,8 @@
 					<input
 						type="text"
 						:placeholder="isRegexp ? 'Enter regexp' : 'Enter text'"
-						v-model="text">
+						v-model="text"
+						@keyup.enter="search().usual()">
 				</div>
 			</div>
 
@@ -143,19 +144,23 @@
 			id="search-button"
 			class="noselect vertically button buttons__search"
 		>
-			<div>
+			<div @click="toggleAdvancedOptions">
 				<i
 					v-if="!showAdvancedOptions"
 					class="material-icons noselect"
 					title="Show advanced options"
-					@click="displayAdvancedOptions"
 				>arrow_drop_down</i>
 				<i
 					v-else
 					class="material-icons noselect"
 					title="Hide advanced options"
-					@click="hideAdvancedOptions"
 				>arrow_drop_up</i>
+
+				<!-- Show when advanced options are used -->
+				<div
+					v-if="usedAdvancedOptions"
+					style="position: absolute; right: 3px; top: -10px; z-index: 0;"
+				>*</div>
 			</div>
 		</div>
 	</div>
@@ -485,6 +490,10 @@ export default class TopBar extends Vue {
         return SharedStore.state.allTagsChangesCounter && Array.from(SharedStore.state.allTags.keys());
     }
 
+    get usedAdvancedOptions(): boolean {
+        return this.text != "" || this.isRegexp != false;
+    }
+
     created() {
         EventBus.$on(Events.Search.Usual, () => {
             this.search().usual();
@@ -554,23 +563,25 @@ export default class TopBar extends Vue {
     }
 
     // For AdvancedOptions
-    displayAdvancedOptions() {
-        this.showAdvancedOptions = true;
-        this.$nextTick(() => {
-            document.addEventListener("click", this.advancedOptionsListener);
-        });
-    }
-
-    hideAdvancedOptions() {
-        this.showAdvancedOptions = false;
-        this.$nextTick(() => {
-            document.removeEventListener("click", this.advancedOptionsListener);
-        });
+    toggleAdvancedOptions() {
+        if (this.showAdvancedOptions) {
+            // Hide
+            this.showAdvancedOptions = false;
+            this.$nextTick(() => {
+                document.removeEventListener("click", this.advancedOptionsListener);
+            });
+        } else {
+            // Show
+            this.showAdvancedOptions = true;
+            this.$nextTick(() => {
+                document.addEventListener("click", this.advancedOptionsListener);
+            });
+        }
     }
 
     advancedOptionsListener(event: MouseEvent) {
-        if (!isElementInPath(event, "advanced-options")) {
-            this.hideAdvancedOptions();
+        if (this.showAdvancedOptions && !isElementInPath(event, "advanced-options")) {
+            this.toggleAdvancedOptions();
         }
     }
 
