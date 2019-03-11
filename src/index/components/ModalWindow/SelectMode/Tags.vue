@@ -1,10 +1,10 @@
 <template>
 	<div>
-		<div style="font-size: 20px;">
+		<div style="font-size: 20px; margin-bottom: 10px;">
 			<span v-if="mode === SharedModes.addMode">Add tags</span>
 			<span v-else-if="mode === SharedModes.deleteMode">Delete tags</span>
 		</div>
-		<p></p>
+
 		<div style="margin-right: auto; margin-left: auto; width: 40%;">
 			<div
 				v-for="(tag, index) in tags"
@@ -23,11 +23,21 @@
 					</div>
 				</div>
 			</div>
-			<br>
-			<input class="btn" type="button" value="Submit" @click="processSelectedFiles">
+
+			<div style="margin-top: 15px;">
+				<input class="btn" type="button" value="Submit" @click="processSelectedFiles">
+			</div>
 		</div>
 	</div>
 </template>
+
+<style scoped>
+.btn {
+    height: 25px;
+    font-size: 15px;
+    width: 100px;
+}
+</style>
 
 <script lang="ts">
 import Vue from "vue";

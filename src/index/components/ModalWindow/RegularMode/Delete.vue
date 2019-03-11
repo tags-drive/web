@@ -32,6 +32,11 @@
 </template>
 
 <style scoped>
+.btn {
+	border: none;
+	border-radius: 5px;
+}
+
 .deleteBtn {
     background-color: rgba(255, 0, 0, 0.6);
 }

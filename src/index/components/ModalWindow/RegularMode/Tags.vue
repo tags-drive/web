@@ -3,7 +3,7 @@
 		<div
 			v-for="(tag, index) in tags"
 			:key="index"
-			style="margin-right: auto; margin-left: auto; width: 40%;"
+			style="margin: 0 auto; width: 40%;"
 		>
 			<div style="display: flex; margin-bottom: 5px; position: relative;">
 				<div style="width: 200px; display: flex">
@@ -18,9 +18,19 @@
 			</div>
 		</div>
 
-		<input class="btn" type="button" value="Change tags" @click="updateTags">
+		<div style="margin-top: 15px;">
+			<input class="btn" type="button" value="Change tags" @click="updateTags">
+		</div>
 	</div>
 </template>
+
+<style scoped>
+.btn {
+	height: 25px;
+	font-size: 15px;
+	width: 100px;
+}
+</style>
 
 <script lang="ts">
 import Vue from "vue";

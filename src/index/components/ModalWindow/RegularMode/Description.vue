@@ -1,25 +1,39 @@
 <template>
 	<div>
-		<textarea
-			style="outline: none; margin-bottom: 5px;"
-			placeholder="Current description: empty"
-			readonly="readonly"
-			v-model="file.description"
-		></textarea>
+		<div>
+			<textarea
+				style="outline: none; margin-bottom: 5px;"
+				placeholder="Current description: empty"
+				readonly="readonly"
+				v-model="file.description"
+			></textarea>
+		</div>
 
-		<textarea
-			style="margin-bottom: 5px;"
-			placeholder="New description"
-			v-model="newDescription"
-		></textarea>
+		<div>
+			<textarea
+				style="margin-bottom: 5px;"
+				placeholder="New description"
+				v-model="newDescription"
+			></textarea>
+		</div>
 
-		<input class="btn" type="button" value="Update" @click="updateDescription">
+		<div style="margin-top: 10px;">
+			<input class="btn" type="button" value="Update" @click="updateDescription">
+		</div>
 	</div>
 </template>
 
 <style scoped>
+.btn {
+    height: 25px;
+    font-size: 15px;
+    width: 100px;
+}
+
 textarea {
     display: block;
+    font-family: arial, sans-serif;
+    font-size: 15px;
     height: 70px;
     margin: auto;
     resize: none;

@@ -8,7 +8,7 @@
 			</ul>
 		</div>
 
-		<div style="border-bottom: 1px solid black; width: 90%; margin: 20px auto 20px auto;"></div>
+		<div style="border-bottom: 1px solid #00000040; width: 90%; margin: 20px auto 20px auto;"></div>
 
 		<input
 			type="button"
@@ -40,6 +40,11 @@
 </template>
 
 <style scoped>
+.btn {
+	border: none;
+	border-radius: 5px;
+}
+
 .deleteBtn {
     background-color: rgba(255, 0, 0, 0.6);
 }

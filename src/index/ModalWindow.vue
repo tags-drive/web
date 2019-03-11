@@ -26,7 +26,7 @@
 				<regular-description-changing :file="file"></regular-description-changing>
 			</div>
 			<!-- Regular delete mode -->
-			<div v-else-if="regularDeleteMode" class="modal-window__input">`
+			<div v-else-if="regularDeleteMode" class="modal-window__input">
 				<regular-file-deletnig :file="file"></regular-file-deletnig>
 			</div>
 			<!-- Select tags adding -->
