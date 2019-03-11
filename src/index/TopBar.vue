@@ -114,12 +114,26 @@
 			v-if="showAdvancedOptions"
 		>
 			<div class="advanced-option">
-				<div class="advanced-option__label">Text to search</div>
+				<div class="advanced-option__label">
+					{{ isRegexp ? "Regexp" : "Text to search" }}
+				</div>
 				<div class="advanced-option__input-wrapper">
 					<input
 						type="text"
-						placeholder="Enter text"
+						:placeholder="isRegexp ? 'Enter regexp' : 'Enter text'"
 						v-model="text">
+				</div>
+			</div>
+
+			<div class="advanced-option">
+				<div class="advanced-option__label">Use regexp</div>
+				<div class="advanced-option__input-wrapper">
+					<div class="checkbox-wrapper">
+						<input
+							type="checkbox"
+							title="Use regular expression"
+							v-model="isRegexp">
+					</div>
 				</div>
 			</div>
 		</div>
@@ -328,6 +342,8 @@ $tags-list-width: 250px;
     z-index: 2;
 }
 
+// Advanced search options
+
 .advanced-option {
     font-size: 15px;
     height: 25px;
@@ -342,12 +358,27 @@ $tags-list-width: 250px;
 }
 
 .advanced-option__input-wrapper {
+    height: 100%;
     position: absolute;
     right: 10px;
+    width: 250px;
 }
 
 .advanced-option__input-wrapper > input {
-    width: 250px;
+    width: 100%;
+}
+
+.advanced-option__input-wrapper > div.checkbox-wrapper {
+    height: 100%;
+    position: relative;
+}
+
+.advanced-option__input-wrapper > div.checkbox-wrapper > input[type="checkbox"] {
+    margin: 0;
+    outline: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 #options {
@@ -438,13 +469,16 @@ export default class TopBar extends Vue {
     readonly operators: Operator[] = availableOperators;
     // Expression
     expression: string = "";
+    //
     position: number = 0;
     showTagsList: boolean = false;
     focused: boolean = false;
     showAdvancedOptions: boolean = false;
     // Text search
     text: string = "";
-    Store: Store = SharedStore.state;
+    isRegexp: boolean = false;
+    //
+    readonly Store: Store = SharedStore.state;
 
     get allTagsIDs() {
         // For reactive updating (see @app/index/store/types.ts for more information)
@@ -476,12 +510,12 @@ export default class TopBar extends Vue {
         return {
             usual: () => {
                 EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
-                API.files.fetch(this.expression, this.text, "", "");
+                API.files.fetch(this.expression, this.text, this.isRegexp, "", "");
                 EventBus.$emit(Events.FilesBlock.RestoreSortParams);
             },
             advanced: (sType: string, sOrder: string) => {
                 EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
-                API.files.fetch(this.expression, this.text, sType, sOrder);
+                API.files.fetch(this.expression, this.text, this.isRegexp, sType, sOrder);
             }
         };
     }
