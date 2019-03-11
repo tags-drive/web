@@ -104,7 +104,7 @@ export default class extends Vue {
         let t = setInterval(() => {
             if (SharedStore.state.tagsReady) {
                 // fetch all files
-                API.files.fetch("", "", "", "");
+                API.files.fetch("", "", false, "", "");
                 clearInterval(t);
             }
         }, 10);
