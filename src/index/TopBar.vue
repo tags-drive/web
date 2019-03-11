@@ -91,11 +91,11 @@
 			<div
 				id="reset-input-button"
 				class="noselect vertically"
-				:class="{ 'button buttons__search' : expression != '' }"
+				:class="{ 'button buttons__search' : showResetButton }"
 				style="width: 25px; height: 25px;"
 			>
 				<div
-					v-show="expression != ''"
+					v-show="showResetButton"
 					style="width: 25px; height: 25px; line-height: 25px;"
 				>
 					<i
@@ -494,6 +494,10 @@ export default class TopBar extends Vue {
         return this.text != "" || this.isRegexp != false;
     }
 
+    get showResetButton(): boolean {
+        return this.expression != "" || this.usedAdvancedOptions;
+    }
+
     created() {
         EventBus.$on(Events.Search.Usual, () => {
             this.search().usual();
@@ -588,6 +592,8 @@ export default class TopBar extends Vue {
     // Secondary function
     resetExpression() {
         this.expression = "";
+        this.text = "";
+        this.isRegexp = false;
     }
 
     focusInput() {
