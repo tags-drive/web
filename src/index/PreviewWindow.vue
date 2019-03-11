@@ -104,14 +104,22 @@
 					v-else
 					id="unsupported-format"
 				>
-					<br>
-					<span>Preview for this file is unsupported</span>
-					<br>
-					<input
-						type="button"
-						class="btn"
-						value="Try to open as a text file"
-						@click="openAsTextFile">
+					<div style="padding: 15px 15px 0; word-wrap: break-word;">
+						<span>
+							File '{{ file.filename }}' can't be displayed
+						</span>
+						<br>
+						<span style="font-size: 15px;">(Preview for this file is unsupported)</span>
+					</div>
+
+					<div style="margin-top: 10px;">
+						<input
+							type="button"
+							class="btn"
+							style="padding: 3px;"
+							value="Try to open as a text file"
+							@click="openAsTextFile">
+					</div>
 				</div>
 
 				<!-- Filename (only in fullscreen mode) -->
