@@ -23,7 +23,8 @@
     min-height: 20px;
     padding: 3px;
     padding-right: 5px;
-    word-break: break-word;
+	word-break: break-all;  /* For Firefox */
+    word-break: break-word; /* For Chrome */
 }
 
 .color-circle {
