@@ -35,24 +35,29 @@
 				<!-- Turn on fullscreen button -->
 				<div
 					v-show="!fullscreenMode"
-					id="turn-on-fullscreen-button"
-					class="hover-button"
-					title="Fullscreen mode"
-					@click="fullscreenMode = true;"
+					class="fullscreen-button-wrapper"
+					style="bottom: 10px;"
 				>
-					<i style="font-size: 50px; opacity: inherit;" class="material-icons noselect">fullscreen</i>
+					<div
+						class="fullscreen-button hover-button"
+						title="Fullscreen mode"
+						@click="fullscreenMode = true;"
+					>
+						<i class="material-icons noselect">fullscreen</i>
+					</div>
 				</div>
 				<!-- Turn off fullscreen button -->
 				<div
 					v-show="fullscreenMode"
-					id="turn-off-fullscreen-button"
-					class="hover-button"
+					class="fullscreen-button-wrapper"
+					style="top: 0;"
 				>
 					<div
+						class="fullscreen-button hover-button"
 						title="Close fullscreen window"
 						@click="fullscreenMode = false;"
 					>
-						<i style="font-size: 50px; opacity: inherit;" class="material-icons noselect">close</i>
+						<i class="material-icons noselect">close</i>
 					</div>
 				</div>
 
@@ -238,6 +243,8 @@
 
 // Preview controls
 
+$switch-button-width: 80px;
+
 .switch-button {
     border-radius: 5px;
     cursor: pointer;
@@ -246,7 +253,7 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 80px;
+    width: $switch-button-width;
 
     i.arrow {
         font-size: 50px;
@@ -258,33 +265,24 @@
     }
 }
 
-#turn-on-fullscreen-button {
-    border-radius: 5px;
-    bottom: 10px;
-    cursor: pointer;
-    opacity: 0.3;
+.fullscreen-button-wrapper {
     position: absolute;
     right: 0;
-    text-align: center;
-    width: 80px;
+    width: $switch-button-width;
 }
 
-#turn-off-fullscreen-button {
+.fullscreen-button {
     border-radius: 5px;
-    position: absolute;
-    right: 0;
-    top: 0;
-    /* Same as width of switch-button */
-    width: 80px;
+    cursor: pointer;
+    margin: auto;
+    opacity: 0.3;
+    text-align: center;
+    width: fit-content;
+}
 
-    div {
-        border-radius: 5px;
-        cursor: pointer;
-        margin: auto;
-        opacity: 0.3;
-        text-align: center;
-        width: 50px;
-    }
+.fullscreen-button > i {
+    font-size: 50px;
+    opacity: inherit;
 }
 
 .hover-button:hover {
