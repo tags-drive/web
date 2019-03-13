@@ -341,8 +341,8 @@
     }
 
     img {
-		background-color: rgb(255, 255, 255);
-		display: inline-block;
+        background-color: rgb(255, 255, 255);
+        display: inline-block;
         height: auto;
         max-height: 100%;
         max-width: 100%;
@@ -391,6 +391,7 @@
     background-color: #f7f7f7;
     border-radius: 5px;
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    overflow-y: auto;
     width: 24%;
 }
 
