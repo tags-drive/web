@@ -83,7 +83,6 @@ import TagComponent from "@components/Tag/Tag.vue";
 // Classes and types
 import { Tag } from "@app/index/global";
 
-const validTagName = /^[\w\d- ]+$/;
 const validColor = /^#[\dabcdef]{6}$/;
 
 @Component({
@@ -159,7 +158,7 @@ export default class extends Vue {
         }
         this.isChanged = true;
 
-        if (this.newName.length === 0 || validTagName.exec(this.newName) === null) {
+        if (this.newName.length === 0) {
             this.isError = true;
             return;
         }
