@@ -37,11 +37,11 @@ import API from "@app/index/api";
     }
 })
 export default class extends Vue {
-    Store: Store = SharedStore.state;
+    readonly Store: Store = SharedStore.state;
 
     get allTagsIDs() {
         // For reactive updating (see @app/index/store/types.ts for more information)
-        return SharedStore.state.allTagsChangesCounter && Array.from(SharedStore.state.allTags.keys());
+        return this.Store.allTagsChangesCounter && Array.from(this.Store.allTags.keys());
     }
 
     created() {

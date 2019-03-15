@@ -148,8 +148,8 @@ export default class extends Vue {
     // setInterval id
     overflowChecker: number = -1;
     //
-    Store: Store = SharedStore.state;
-    State: State = SharedState.state;
+    readonly Store: Store = SharedStore.state;
+    readonly State: State = SharedState.state;
 
     get stylesObject() {
         let style = <any>{
@@ -294,7 +294,7 @@ export default class extends Vue {
 
     showContextMenu(event: MouseEvent) {
         // Don't show Context Menu when file isn't selected
-        if (SharedState.state.selectMode && !this.file.selected) {
+        if (this.State.selectMode && !this.file.selected) {
             return;
         }
 

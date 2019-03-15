@@ -129,7 +129,7 @@ export default class extends Vue {
     divWidth: number = 140;
     divHeight: number = 125;
     //
-    State: State = SharedState.state;
+    readonly State: State = SharedState.state;
 
     created() {
         EventBus.$on(Events.ShowContextMenu, (payload: Payload) => {

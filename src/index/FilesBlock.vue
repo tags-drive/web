@@ -184,6 +184,8 @@ export default class extends Vue {
     sortOrderDesc: boolean = false;
     //
     lastSortType: string = Const.sortType.name;
+    //
+    readonly Store = SharedStore.state;
 
     get allFiles(): TableFile[] {
         // Reset because allFiles will change
@@ -191,10 +193,10 @@ export default class extends Vue {
         this.selectedFilesCounter = 0;
 
         // For reactive updating (see @app/index/store/types.ts for more information)
-        let reactive = SharedStore.state.allFilesChangesCounter;
+        let reactive = this.Store.allFilesChangesCounter;
 
         let allFiles: TableFile[] = [];
-        SharedStore.state.allFiles.forEach((f, i) => {
+        this.Store.allFiles.forEach((f, i) => {
             if (!f.deleted || SharedState.state.settings.showDeletedFiles) {
                 allFiles.push(new TableFile(f));
             }

@@ -487,7 +487,7 @@ export default class TopBar extends Vue {
 
     get allTagsIDs() {
         // For reactive updating (see @app/index/store/types.ts for more information)
-        return SharedStore.state.allTagsChangesCounter && Array.from(SharedStore.state.allTags.keys());
+        return this.Store.allTagsChangesCounter && Array.from(this.Store.allTags.keys());
     }
 
     get usedAdvancedOptions(): boolean {

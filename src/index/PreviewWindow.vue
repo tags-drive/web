@@ -461,11 +461,11 @@ export default class extends Vue {
     // Data
     textFileContent: string = "";
     //
-    Store: Store = SharedStore.state;
+    readonly Store: Store = SharedStore.state;
 
     get allFiles() {
         // For reactive updating (see @app/index/store/types.ts for more information)
-        return SharedStore.state.allFilesChangesCounter && SharedStore.state.allFiles;
+        return this.Store.allFilesChangesCounter && this.Store.allFiles;
     }
 
     get originLink(): string {
@@ -550,8 +550,8 @@ export default class extends Vue {
             this.file = payload.file;
 
             // Define fileIndex
-            for (let i = 0; i < SharedStore.state.allFiles.length; i++) {
-                if (SharedStore.state.allFiles[i].id === this.file!.id) {
+            for (let i = 0; i < this.Store.allFiles.length; i++) {
+                if (this.Store.allFiles[i].id === this.file!.id) {
                     this.fileIndex = i;
                     break;
                 }
@@ -583,7 +583,7 @@ export default class extends Vue {
                 maxTime = 5000; // 5s
             let pastTime = 0, // in ms
                 oldFileID = this.file.id,
-                oldCounter = SharedStore.state.allFilesChangesCounter;
+                oldCounter = this.Store.allFilesChangesCounter;
 
             let intervalID = setInterval(() => {
                 pastTime += intervalTime;
@@ -598,7 +598,7 @@ export default class extends Vue {
                     return;
                 }
 
-                if (SharedStore.state.allFilesChangesCounter !== oldCounter) {
+                if (this.Store.allFilesChangesCounter !== oldCounter) {
                     clearInterval(intervalID);
                     // Changes were fetched, can update preview
                     this.updatePreview();
@@ -638,12 +638,12 @@ export default class extends Vue {
     }
 
     nextPreview() {
-        if (this.fileIndex < SharedStore.state.allFiles.length - 1) {
+        if (this.fileIndex < this.Store.allFiles.length - 1) {
             this.showAsText = false;
 
-            this.file = SharedStore.state.allFiles[++this.fileIndex];
-            if (this.fileIndex < SharedStore.state.allFiles.length - 1) {
-                let nextFile = SharedStore.state.allFiles[this.fileIndex + 1];
+            this.file = this.Store.allFiles[++this.fileIndex];
+            if (this.fileIndex < this.Store.allFiles.length - 1) {
+                let nextFile = this.Store.allFiles[this.fileIndex + 1];
                 if (nextFile.type.previewType == Const.previewTypes.image) {
                     preloadImages(nextFile.origin);
                 }
@@ -659,9 +659,9 @@ export default class extends Vue {
         if (this.fileIndex > 0) {
             this.showAsText = false;
 
-            this.file = SharedStore.state.allFiles[--this.fileIndex];
+            this.file = this.Store.allFiles[--this.fileIndex];
             if (this.fileIndex > 0) {
-                let nextFile = SharedStore.state.allFiles[this.fileIndex - 1];
+                let nextFile = this.Store.allFiles[this.fileIndex - 1];
                 if (nextFile.type.previewType == Const.previewTypes.image) {
                     preloadImages(nextFile.origin);
                 }
@@ -697,11 +697,11 @@ export default class extends Vue {
             return;
         }
 
-        for (let i = 0; i < SharedStore.state.allFiles.length; i++) {
-            if (SharedStore.state.allFiles[i].id === this.file.id) {
+        for (let i = 0; i < this.Store.allFiles.length; i++) {
+            if (this.Store.allFiles[i].id === this.file.id) {
                 // Updating fileIndex is confusing. So it's better not to change it
                 // this.fileIndex = i;
-                this.file = SharedStore.state.allFiles[i];
+                this.file = this.Store.allFiles[i];
                 break;
             }
         }

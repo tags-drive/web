@@ -231,11 +231,11 @@ export default class extends Vue {
     files: File[] = [];
     tags: Map<number, Tag> = new Map();
     //
-    Store: Store = SharedStore.state;
+    readonly Store: Store = SharedStore.state;
 
     get allTagsIDs() {
         // For reactive updating (see @app/index/store/types.ts for more information)
-        return SharedStore.state.allTagsChangesCounter && Array.from(SharedStore.state.allTags.keys());
+        return this.Store.allTagsChangesCounter && Array.from(this.Store.allTags.keys());
     }
 
     created() {
@@ -376,7 +376,7 @@ export default class extends Vue {
 
     updateTags(id: number) {
         if (!this.tags.has(id)) {
-            let t = SharedStore.state.allTags.get(id);
+            let t = this.Store.allTags.get(id);
             if (t !== undefined) {
                 this.tags.set(id, t);
             }
