@@ -15,6 +15,7 @@ module.exports = {
         }
     },
     configureWebpack: {
+        devtool: "source-map",
         resolve: {
             alias: {
                 "@app": path.resolve(__dirname, "src/"),
