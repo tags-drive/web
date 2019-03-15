@@ -571,16 +571,39 @@ export default class extends Vue {
             this.window().show();
         });
 
-        // When ModalWindow is closed the file was already changed, but we have to
-        // wait for loading of all files
+        // This handler let update Preview when a file was changed
         EventBus.$on(Events.ModalWindow.HideWindow, () => {
             if (this.file === null || !this.show) {
                 return;
             }
 
-            setTimeout(() => {
-                this.updatePreview();
-            }, 100); // 100ms is enough for 3G and faster
+            // A request already has been sent when ModalWindow was closed, but we have to wait for a response
+
+            const intervalTime = 100, // in ms
+                maxTime = 5000; // 5s
+            let pastTime = 0, // in ms
+                oldFileID = this.file.id,
+                oldCounter = SharedStore.state.allFilesChangesCounter;
+
+            let intervalID = setInterval(() => {
+                pastTime += intervalTime;
+                if (pastTime > maxTime) {
+                    // timeout, clear resources
+                    clearInterval(intervalID);
+                }
+
+                if (this.file === null || oldFileID !== this.file.id) {
+                    // User can switch a file. Clear interval in this case.
+                    clearInterval(intervalID);
+                    return;
+                }
+
+                if (SharedStore.state.allFilesChangesCounter !== oldCounter) {
+                    clearInterval(intervalID);
+                    // Changes were fetched, can update preview
+                    this.updatePreview();
+                }
+            }, intervalTime);
         });
     }
 
