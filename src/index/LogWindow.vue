@@ -10,6 +10,7 @@
 			id="open-button"
 		>
 			<i
+				id="show-window-button"
 				class="material-icons btn noselect"
 				@click="window().show()"
 			>keyboard_arrow_left</i>
@@ -49,10 +50,10 @@
 	</div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 #log-window {
     background-color: #f7f7f7;
-    border: 1px solid  #b2b2b2;
+    border: 1px solid #b2b2b2;
     border-radius: 5px;
     bottom: 10px;
     height: 450px;
@@ -64,17 +65,17 @@
 }
 
 #open-button {
-    position: absolute;
     left: 0;
+    position: absolute;
     top: 50%;
     transform: translate(-100%, -50%);
-}
 
-#open-button > i {
-    border-radius: 5px 0px 0px 5px;
-    border-right: none;
-    height: 80px;
-    width: 20px;
+    i {
+        border-radius: 5px 0px 0px 5px;
+        border-right: none;
+        height: 80px;
+        width: 20px;
+    }
 }
 
 #close-button {
@@ -83,13 +84,13 @@
     top: 50%;
     transform: translateY(-50%);
     width: 100%;
-}
 
-#close-button > i {
-    border-radius: 0px 5px 5px 0px;
-    border-left: none;
-    height: 80px;
-    width: 20px;
+    i {
+        border-radius: 0px 5px 5px 0px;
+        border-left: none;
+        height: 80px;
+        width: 20px;
+    }
 }
 
 #events {
@@ -99,42 +100,42 @@
     overflow-x: hidden;
     overflow-y: auto;
     padding-right: 3px;
+
+    .event {
+        background-color: white;
+        border: 1px solid #00000012;
+        border-bottom: 1px solid #00000060;
+        border-radius: 3px;
+        margin-bottom: 5px;
+        padding-bottom: 3px;
+        padding-top: 3px;
+        position: relative;
+
+        .indicator {
+            border-radius: 30px;
+            height: 90%;
+            margin-left: 5px;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 5px;
+        }
+
+        .message-block {
+            margin-left: 13px; // 5 + 5 + 5 - 2
+            width: calc(100% - 13px);
+        }
+
+        .message {
+            color: #000000b0;
+            font-size: 14px;
+            margin-left: 2px;
+            word-wrap: break-word;
+        }
+    }
 }
 
-.event {
-    background-color: white;
-    border: 1px solid #00000012;
-    border-bottom: 1px solid #00000060;
-    border-radius: 3px;
-    margin-bottom: 5px;
-    padding-bottom: 3px;
-    padding-top: 3px;
-    position: relative;
-}
-
-.indicator {
-    border-radius: 30px;
-    height: 90%;
-    margin-left: 5px;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 5px;
-}
-
-.message-block {
-    margin-left: 13px; /* 5 + 5 + 5 - 2*/
-    width: calc(100% - 13px);
-}
-
-.message {
-    color: #000000b0;
-    font-size: 14px;
-    margin-left: 2px;
-    word-wrap: break-word;
-}
-
-/* Scrollbar */
+// Scrollbar (Chrome)
 ::-webkit-scrollbar {
     width: 5px;
 }
