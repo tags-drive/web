@@ -47,7 +47,7 @@
     padding: 5px;
     position: fixed;
     text-align: center;
-    z-index: 2;
+    z-index: 4;
 }
 
 .btn {

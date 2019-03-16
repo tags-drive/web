@@ -57,6 +57,8 @@
     border-radius: 5px;
     bottom: 10px;
     height: 450px;
+    max-width: 350px;
+    min-width: 250px;
     padding: 10px;
     position: fixed;
     right: 25px;
@@ -66,9 +68,14 @@
 
 #open-button {
     left: 0;
+    opacity: 0.3;
     position: absolute;
     top: 50%;
     transform: translate(-100%, -50%);
+
+    &:hover {
+        opacity: 1;
+    }
 
     i {
         border-radius: 5px 0px 0px 5px;
@@ -79,7 +86,7 @@
 }
 
 #close-button {
-    left: 0;
+    left: 1px;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);

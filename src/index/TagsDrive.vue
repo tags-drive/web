@@ -59,7 +59,7 @@ input[type="text"] {
 }
 
 .btn:hover {
-    background-color: #dfdfdf;
+    background-color: #ebebeb;
 }
 
 /* Scrollbar (Chrome)*/
