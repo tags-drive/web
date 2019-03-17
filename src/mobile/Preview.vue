@@ -220,8 +220,16 @@ export default Vue.extend({
                         y = touch.clientY;
                     }
 
-                    this.deltaX = x - this.xMouseStart;
-                    this.deltaY = y - this.yMouseStart;
+                    if (Math.abs(this.deltaX) >= swipeBufferX) {
+                        // Don't update deltaY
+                        this.deltaX = x - this.xMouseStart;
+                    } else if (Math.abs(this.deltaY) >= swipeBufferY) {
+                        // Don't update deltaX
+                        this.deltaY = y - this.yMouseStart;
+                    } else {
+                        this.deltaX = x - this.xMouseStart;
+                        this.deltaY = y - this.yMouseStart;
+                    }
                 },
                 free: (ev: MouseEvent | TouchEvent) => {
                     ev.preventDefault();
