@@ -1,5 +1,8 @@
 <template>
-	<div class="file">
+	<div
+		class="file"
+		@click="showPreview"
+	>
 		<div class="preview">
 			<img :src="previewLink" alt="">
 		</div>
@@ -20,9 +23,14 @@
     grid-template-rows: $height;
     border-bottom: 1px solid #ddd;
 
+    &:hover {
+        background-color: #dcdcdc70;
+    }
+
     .preview {
         height: inherit;
         padding: 3px;
+
         img {
             display: block;
             height: inherit;
@@ -42,10 +50,13 @@
 
 <script lang="ts">
 import Vue from "vue";
+// Components and classes
 import { File } from "@app/global/classes";
+// Other
 import SharedStore from "@app/mobile/store";
 import { Params } from "@app/global";
 import { Const } from "@app/global/const";
+import { Events, EventBus } from "@app/mobile/eventBus";
 
 export default Vue.extend({
     data: function() {
@@ -63,6 +74,11 @@ export default Vue.extend({
             }
 
             return Params.Host + "/ext/" + this.file.filename.split(".").pop();
+        }
+    },
+    methods: {
+        showPreview: function() {
+            EventBus.$emit(Events.showPreview, { file: this.file });
         }
     }
 });

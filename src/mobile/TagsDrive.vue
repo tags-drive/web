@@ -3,6 +3,8 @@
 		<div id="search-bar"></div>
 
 		<div id="all-files-list"></div>
+
+		<div id="files-preview"></div>
 	</div>
 </template>
 
