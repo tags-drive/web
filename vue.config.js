@@ -12,6 +12,11 @@ module.exports = {
             entry: "src/login/index.ts",
             template: "public/login.html",
             filename: "login.html"
+        },
+        mobile: {
+            entry: "src/mobile/index.ts",
+            template: "public/mobile.html",
+            filename: "mobile.html"
         }
     },
     configureWebpack: {
