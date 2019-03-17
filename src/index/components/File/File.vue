@@ -82,16 +82,14 @@
 
 .image-wrapper {
     height: inherit;
-    position: relative;
 }
 
 .image-wrapper > img {
+    display: block;
     height: auto;
+    margin: auto;
     max-height: 100%;
     max-width: 100%;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
     width: auto;
 }
 
