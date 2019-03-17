@@ -8,26 +8,12 @@
 			id="container"
 			:style="containerStyle"
 		>
-			<div
-				id="previous-preview"
+			<preview-component
+				v-for="(file, index) in files"
+				:key="index"
 				class="preview"
-			>
-				{{ previousFile.filename }}
-			</div>
-
-			<div
-				id="current-preview"
-				class="preview"
-			>
-				{{ file.filename }}
-			</div>
-
-			<div
-				id="next-preview"
-				class="preview"
-			>
-				{{ nextFile.filename }}
-			</div>
+				:file="file"
+			></preview-component>
 		</div>
 	</div>
 </template>
@@ -51,11 +37,9 @@
     transform: translate(calc(-1 * 100%));
 
     .preview {
-        border: 1px solid red;
         min-width: 100%;
         width: 100%;
-        height: 150px;
-        pointer-events: none;
+        height: 100%;
     }
 }
 </style>
@@ -63,6 +47,7 @@
 <script lang="ts">
 import Vue from "vue";
 // Components and classes
+import PreviewComponent from "@app/mobile/components/PreviewSlide.vue";
 import { File } from "@app/global/classes";
 // Other
 import { Events, EventBus } from "@app/mobile/eventBus";
@@ -73,14 +58,15 @@ const swipeBufferX = 75,
     swipeBufferY = 120;
 
 export default Vue.extend({
+    components: {
+        "preview-component": PreviewComponent
+    },
+    //
     data: function() {
         return {
             // current file
-            file: new File(),
+            files: <File[]>[],
             currIndex: 0,
-            //
-            nextFile: new File(),
-            previousFile: new File(),
             // state
             show: false,
             xMouseStart: 0,
@@ -110,9 +96,11 @@ export default Vue.extend({
             // translate X
             let transform = "translate(-100%)";
             if (Math.abs(this.deltaX) > swipeBufferX) {
-                if (this.deltaX > 0) {
+                if (this.deltaX > 0 && this.currIndex > 0) {
+                    // Left
                     transform = `translate(calc(-100% + ${this.deltaX - swipeBufferX}px))`;
-                } else {
+                } else if (this.deltaX < 0 && this.currIndex < this.Store.allFiles.length - 1) {
+                    // Right
                     transform = `translate(calc(-100% + ${this.deltaX + swipeBufferX}px))`;
                 }
             }
@@ -146,23 +134,28 @@ export default Vue.extend({
                 return;
             }
 
-            this.file = payload.file;
+            this.files = [];
+            this.files.push(new File());
+            this.files.push(new File());
+            this.files.push(new File());
+
+            this.files[1] = payload.file;
 
             let allFiles = this.Store.allFiles;
 
             for (let i = 0; i < allFiles.length; i++) {
-                if (allFiles[i].id == this.file.id) {
+                if (allFiles[i].id == this.files[1].id) {
                     this.currIndex = i;
                     break;
                 }
             }
 
             if (this.currIndex > 0) {
-                this.previousFile = allFiles[this.currIndex - 1];
+                this.files[0] = allFiles[this.currIndex - 1];
             }
 
-            if (this.currIndex < allFiles.length) {
-                this.nextFile = allFiles[this.currIndex + 1];
+            if (this.currIndex < allFiles.length - 1) {
+                this.files[2] = allFiles[this.currIndex + 1];
             }
 
             this.show = true;
@@ -233,28 +226,81 @@ export default Vue.extend({
                 free: (ev: MouseEvent | TouchEvent) => {
                     ev.preventDefault();
 
+                    // Switch preview
                     if (this.previewWidth / 5 <= Math.abs(this.deltaX) - swipeBufferX) {
-                        // Should switch
+                        // Next preview (default)
+                        let movePreview = () => {
+                            if (this.deltaX + swipeBufferX - 20 > -this.previewWidth) {
+                                // Move preview
+                                this.deltaX -= 20;
+                                setTimeout(movePreview, 10);
+                            } else {
+                                this.nextPreview();
+                            }
+                        };
+
                         if (this.deltaX > 0) {
-                            this.previousPreview();
-                        } else {
-                            this.nextPreview();
+                            // Previous preview
+                            movePreview = () => {
+                                if (this.deltaX - swipeBufferX + 20 < this.previewWidth) {
+                                    // Move preview
+                                    this.deltaX += 20;
+                                    setTimeout(movePreview, 10);
+                                } else {
+                                    this.previousPreview();
+                                }
+                            };
                         }
-                    } else if (this.deltaY < 0 && this.previewHeight / 5 <= Math.abs(this.deltaY) - swipeBufferY) {
-                        // Should close
-                        this.show = false;
+
+                        setTimeout(movePreview, 10);
+                        return;
                     }
 
+                    // Close preview
+                    if (this.deltaY < 0 && this.previewHeight / 5 <= Math.abs(this.deltaY) - swipeBufferY) {
+                        this.show = false;
+                        this.deltaX = 0;
+                        this.deltaY = 0;
+                        return;
+                    }
+
+                    // Reset
                     this.deltaX = 0;
                     this.deltaY = 0;
                 }
             };
         },
         nextPreview() {
-            alert("next");
+            if (this.currIndex >= this.Store.allFiles.length - 1) {
+                return;
+            }
+
+            this.currIndex++;
+
+            this.files[0] = this.files[1];
+            this.files[1] = this.files[2];
+
+            if (this.currIndex < this.Store.allFiles.length - 1) {
+                this.files[2] = this.Store.allFiles[this.currIndex + 1];
+            }
+
+            this.deltaX = 0;
         },
         previousPreview() {
-            alert("prev");
+            if (this.currIndex <= 0) {
+                return;
+            }
+
+            this.currIndex--;
+
+            this.files[2] = this.files[1];
+            this.files[1] = this.files[0];
+
+            if (this.currIndex - 1 >= 0) {
+                this.files[0] = this.Store.allFiles[this.currIndex - 1];
+            }
+
+            this.deltaX = 0;
         }
     }
 });
