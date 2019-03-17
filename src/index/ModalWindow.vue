@@ -97,11 +97,11 @@ import RegularFileDeletnig from "@components/ModalWindow/RegularMode/Delete.vue"
 import SelectTagsUpdating from "@components/ModalWindow/SelectMode/Tags.vue";
 import SelectFilesDeleting from "@components/ModalWindow/SelectMode/FilesDeleting.vue";
 // Classes and types
-import { File } from "@app/index/global";
+import { File } from "@app/global/classes";
 // Shared data
 import SharedState from "@app/index/state";
 // Other
-import { Const } from "@app/index/const";
+import { Const } from "@app/global/const";
 import { Events, EventBus } from "@app/index/eventBus";
 
 @Component({

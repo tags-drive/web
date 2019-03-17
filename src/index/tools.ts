@@ -1,5 +1,5 @@
 import { EventBus, Events } from "@app/index/eventBus";
-import { Const } from "@app/index/const";
+import { Const } from "@app/global/const";
 import { Params } from "@app/global";
 
 function isErrorStatusCode(code: number): boolean {

@@ -39,7 +39,7 @@ import { Prop } from "vue-property-decorator";
 // Components
 import TagComponent from "@components/Tag/Tag.vue";
 // Classes and types
-import { File, Tag } from "@app/index/global";
+import { File, Tag } from "@app/global/classes";
 // Shared data
 import SharedStore from "@app/index/store";
 // Other

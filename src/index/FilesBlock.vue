@@ -128,14 +128,14 @@ const VirtualScroller = require("vue-virtual-scroller");
 const { RecycleScroller } = VirtualScroller;
 import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 // Classes and types
-import { File, Tag } from "@app/index/global";
+import { File, Tag } from "@app/global/classes";
 import { TableFile } from "@components/File/types";
 // Shared data
 import SharedStore from "@app/index/store";
 import SharedState from "@app/index/state";
 import { State } from "@app/index/state/types";
 // Other
-import { Const } from "@app/index/const";
+import { Const } from "@app/global/const";
 import { Events, EventBus } from "@app/index/eventBus";
 import { isElementInPath, preloadImages } from "@app/index/tools";
 

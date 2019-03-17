@@ -1,4 +1,4 @@
-import { File } from "@app/index/global";
+import { File } from "@app/global/classes";
 
 export class TableFile extends File {
     selected: boolean;

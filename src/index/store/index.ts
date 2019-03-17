@@ -2,7 +2,7 @@ import Vue from "vue";
 import Vuex, { StoreOptions } from "vuex";
 // Classes and types
 import { Store } from "./types";
-import { File, Tag, FileExt } from "@app/index/global";
+import { File, Tag, FileExt } from "@app/global/classes";
 Vue.use(Vuex);
 
 function objectToFile(f: any, skipTimeParsing?: boolean): File | null {

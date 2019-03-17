@@ -26,7 +26,7 @@ import { Prop, Watch } from "vue-property-decorator";
 // Components
 import TagComponent from "@components/Tag/Tag.vue";
 // Classes and types
-import { Tag } from "@app/index/global";
+import { Tag } from "@app/global/classes";
 // Shared data
 import SharedStore from "@app/index/store";
 

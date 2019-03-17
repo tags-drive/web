@@ -86,7 +86,7 @@
 import Vue from "vue";
 import Components from "vue-class-component";
 // Classes and types
-import { File } from "@app/index/global";
+import { File } from "@app/global/classes";
 // Shared data
 import SharedStore from "@app/index/store";
 import SharedState from "@app/index/state";

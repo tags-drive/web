@@ -1,5 +1,5 @@
 import { Params } from "@app/global";
-import { Const } from "@app/index/const.ts";
+import { Const } from "@app/global/const";
 import { EventBus, Events } from "@app/index/eventBus";
 import { isErrorStatusCode, logError, logInfo } from "@app/index/tools";
 import SharedStore from "@app/index/store";

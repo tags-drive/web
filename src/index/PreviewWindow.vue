@@ -435,7 +435,7 @@ import Component from "vue-class-component";
 // Components
 import TagComponent from "@components/Tag/Tag.vue";
 // Classes and types
-import { File } from "@app/index/global";
+import { File } from "@app/global/classes";
 // Shared data
 import SharedStore from "@app/index/store";
 import { Store } from "@app/index/store/types";
@@ -444,7 +444,7 @@ import SharedState from "@app/index/state";
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
 import { logError, preloadImages } from "@app/index/tools";
-import { Const } from "@app/index/const";
+import { Const } from "@app/global/const";
 
 @Component({
     components: {

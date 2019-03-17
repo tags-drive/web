@@ -115,7 +115,7 @@ import { Prop } from "vue-property-decorator";
 // Components
 import TagComponent from "@components/Tag/Tag.vue";
 // Classes and types
-import { Tag } from "@app/index/global";
+import { Tag } from "@app/global/classes";
 import { TableFile } from "@components/File/types";
 // Shared data
 import SharedStore from "@app/index/store";
@@ -125,7 +125,7 @@ import { State } from "@app/index/state/types";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
-import { Const } from "@app/index/const";
+import { Const } from "@app/global/const";
 import dateformat from "dateformat";
 
 const tagsListPadding = 4;

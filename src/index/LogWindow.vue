@@ -162,7 +162,7 @@ import Component from "vue-class-component";
 // Other
 import dateformat from "dateformat";
 import { Events, EventBus } from "@app/index/eventBus";
-import { Const } from "@app/index/const";
+import { Const } from "@app/global/const";
 
 interface logEvent {
     type: string;

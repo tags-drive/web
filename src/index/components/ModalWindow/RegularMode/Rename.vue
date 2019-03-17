@@ -37,7 +37,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 // Classes and types
-import { File } from "@app/index/global";
+import { File } from "@app/global/classes";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
 import API from "@app/index/api";

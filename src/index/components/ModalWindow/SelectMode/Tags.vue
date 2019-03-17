@@ -46,13 +46,13 @@ import { Prop } from "vue-property-decorator";
 // Components
 import TagComponent from "@components/Tag/Tag.vue";
 // Classes and types
-import { File } from "@app/index/global";
+import { File } from "@app/global/classes";
 // Shared data
 import SharedStore from "@app/index/store";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
-import { Const } from "@app/index/const";
+import { Const } from "@app/global/const";
 import { logError, isErrorStatusCode } from "@app/index/tools";
 import API from "@app/index/api";
 

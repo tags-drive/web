@@ -41,7 +41,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 // Classes and types
-import { Tag } from "@app/index/global";
+import { Tag } from "@app/global/classes";
 
 @Component({})
 export default class extends Vue {
