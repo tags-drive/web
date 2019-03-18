@@ -2,11 +2,11 @@
 	<div
 		v-show="show"
 		id="files-preview"
-		:style="previewStyle"
+		:class="previewClasses"
 	>
 		<div
 			id="container"
-			:style="containerStyle"
+			:class="containerClasses"
 		>
 			<preview-component
 				v-for="(file, index) in files"
@@ -18,15 +18,22 @@
 	</div>
 </template>
 
+
 <style lang="scss" scoped>
 #files-preview {
     position: fixed;
     background-color: #ddd;
     top: 0;
     left: 0;
+    transition: transform 0.5s ease-out, opacity 0.5s;
     width: 100%;
     height: 100%;
     z-index: 2;
+}
+
+.preview--animation-close {
+    transform: translate(0, -100%) !important;
+    opacity: 0;
 }
 
 #container {
@@ -34,7 +41,7 @@
     align-items: center;
     width: 100%;
     height: 100%;
-    transform: translate(calc(-1 * 100%));
+    transition: transform 0.5s ease;
 
     .preview {
         min-width: 100%;
@@ -42,7 +49,21 @@
         height: 100%;
     }
 }
+
+.container--idle {
+    transition: none !important;
+    transform: translate(-1 * 100%) !important;
+}
+
+.container--animation-switch-right {
+    transform: translate(-2 * 100%) !important;
+}
+
+.container--animation-switch-left {
+    transform: translate(0) !important;
+}
 </style>
+
 
 <script lang="ts">
 import Vue from "vue";
@@ -54,8 +75,9 @@ import { Events, EventBus } from "@app/mobile/eventBus";
 import SharedStore from "@app/mobile/store";
 
 // Swipe buffers prevent instant start of swipe
-const swipeBufferX = 75,
-    swipeBufferY = 120;
+const swipeBufferY = 120;
+
+const transformTransitionTime = 500; // ms
 
 export default Vue.extend({
     components: {
@@ -67,12 +89,14 @@ export default Vue.extend({
             // current file
             files: <File[]>[],
             currIndex: 0,
-            // state
+            // states
             show: false,
+            shouldSwitchRight: false,
+            shouldSwitchLeft: false,
+            shouldClose: false,
+            //
             xMouseStart: 0,
             yMouseStart: 0,
-            deltaX: 0,
-            deltaY: 0,
             // Preview takes up full screen
             previewHeight: window.innerHeight,
             previewWidth: window.innerWidth,
@@ -81,35 +105,16 @@ export default Vue.extend({
         };
     },
     computed: {
-        previewStyle: function() {
-            // translate Y
-            let transform = "translate(0, 0)",
-                opacity = 1;
-            if (this.deltaY < -swipeBufferY) {
-                transform = `translate(0, ${this.deltaY + swipeBufferY}px)`;
-                opacity = 1 + (this.deltaY + swipeBufferY) / this.previewHeight;
-            }
-
+        previewClasses: function() {
             return {
-                transform: transform,
-                opacity: opacity
+                "preview--animation-close": this.shouldClose
             };
         },
-        containerStyle: function() {
-            // translate X
-            let transform = "translate(-100%)";
-            if (Math.abs(this.deltaX) > swipeBufferX) {
-                if (this.deltaX > 0 && this.currIndex > 0) {
-                    // Left
-                    transform = `translate(calc(-100% + ${this.deltaX - swipeBufferX}px))`;
-                } else if (this.deltaX < 0 && this.currIndex < this.Store.allFiles.length - 1) {
-                    // Right
-                    transform = `translate(calc(-100% + ${this.deltaX + swipeBufferX}px))`;
-                }
-            }
-
+        containerClasses: function() {
             return {
-                transform: transform
+                "container--idle": !this.shouldSwitchRight && !this.shouldSwitchLeft,
+                "container--animation-switch-right": this.shouldSwitchRight,
+                "container--animation-switch-left": this.shouldSwitchLeft
             };
         }
     },
@@ -161,9 +166,6 @@ export default Vue.extend({
             container.addEventListener("mousedown", this.listeners().lock);
             container.addEventListener("touchstart", this.listeners().lock);
 
-            container.addEventListener("touchmove", this.listeners().move);
-            container.addEventListener("mousemove", this.listeners().move);
-
             container.addEventListener("mouseup", this.listeners().free);
             container.addEventListener("touchend", this.listeners().free);
         });
@@ -175,105 +177,88 @@ export default Vue.extend({
                 lock: (ev: MouseEvent | TouchEvent) => {
                     ev.preventDefault();
 
-                    let x = 0,
-                        y = 0;
-
                     if (ev instanceof MouseEvent) {
-                        x = ev.clientX;
-                        y = ev.clientY;
-                    } else if (ev instanceof TouchEvent) {
-                        let touch = ev.changedTouches.item(0);
-                        if (touch === null) {
-                            return;
-                        }
-                        x = touch.clientX;
-                        y = touch.clientY;
-                    }
-
-                    this.xMouseStart = x;
-                    this.yMouseStart = y;
-                },
-                move: (ev: MouseEvent | TouchEvent) => {
-                    ev.preventDefault();
-
-                    let x = 0,
-                        y = 0;
-
-                    if (ev instanceof MouseEvent) {
-                        x = ev.clientX;
-                        y = ev.clientY;
-                    } else if (ev instanceof TouchEvent) {
-                        let touch = ev.changedTouches.item(0);
-                        if (touch === null) {
-                            return;
-                        }
-                        x = touch.clientX;
-                        y = touch.clientY;
-                    }
-
-                    if (Math.abs(this.deltaX) >= swipeBufferX) {
-                        // Don't update deltaY
-                        this.deltaX = x - this.xMouseStart;
-                    } else if (Math.abs(this.deltaY) >= swipeBufferY) {
-                        // Don't update deltaX
-                        this.deltaY = y - this.yMouseStart;
+                        this.xMouseStart = ev.clientX;
+                        this.yMouseStart = ev.clientY;
                     } else {
-                        this.deltaX = x - this.xMouseStart;
-                        this.deltaY = y - this.yMouseStart;
+                        let touch = ev.changedTouches.item(0);
+                        if (touch === null) {
+                            return;
+                        }
+                        this.xMouseStart = touch.clientX;
+                        this.yMouseStart = touch.clientY;
                     }
                 },
                 free: (ev: MouseEvent | TouchEvent) => {
                     ev.preventDefault();
 
-                    // Switch preview
-                    if (this.previewWidth / 5 <= Math.abs(this.deltaX) - swipeBufferX) {
-                        // Next preview (default)
-                        let movePreview = () => {
-                            if (this.deltaX + swipeBufferX - 20 > -this.previewWidth) {
-                                // Move preview
-                                this.deltaX -= 20;
-                                setTimeout(movePreview, 10);
-                            } else {
-                                this.nextPreview();
-                            }
-                        };
+                    if (this.shouldSwitchRight || this.shouldSwitchLeft) {
+                        // Don't interrupt current animation
+                        return;
+                    }
 
-                        if (this.deltaX > 0) {
-                            // Previous preview
-                            movePreview = () => {
-                                if (this.deltaX - swipeBufferX + 20 < this.previewWidth) {
-                                    // Move preview
-                                    this.deltaX += 20;
-                                    setTimeout(movePreview, 10);
-                                } else {
-                                    this.previousPreview();
-                                }
+                    let xMouseEnd = 0,
+                        yMouseEnd = 0;
+
+                    if (ev instanceof MouseEvent) {
+                        xMouseEnd = ev.clientX;
+                        yMouseEnd = ev.clientY;
+                    } else {
+                        let touch = ev.changedTouches.item(0);
+                        if (touch === null) {
+                            return;
+                        }
+                        xMouseEnd = touch.clientX;
+                        yMouseEnd = touch.clientY;
+                    }
+
+                    let deltaX = xMouseEnd - this.xMouseStart,
+                        deltaY = yMouseEnd - this.yMouseStart;
+
+                    // Switch preview
+                    if (this.previewWidth / 4 <= Math.abs(deltaX)) {
+                        let func = () => {};
+
+                        if (deltaX < 0 && this.currIndex < this.Store.allFiles.length - 1) {
+                            // Next preview
+                            func = () => {
+                                this.shouldSwitchRight = true;
+                                setTimeout(() => {
+                                    this.shouldSwitchRight = false;
+                                    this.nextPreview();
+                                }, transformTransitionTime);
                             };
                         }
 
-                        setTimeout(movePreview, 10);
+                        if (deltaX > 0 && this.currIndex > 0) {
+                            // Previous preview
+                            func = () => {
+                                this.shouldSwitchLeft = true;
+                                setTimeout(() => {
+                                    this.shouldSwitchLeft = false;
+                                    this.previousPreview();
+                                }, transformTransitionTime);
+                            };
+                        }
+
+                        func();
                         return;
                     }
 
                     // Close preview
-                    if (this.deltaY < 0 && this.previewHeight / 5 <= Math.abs(this.deltaY) - swipeBufferY) {
-                        this.show = false;
-                        this.deltaX = 0;
-                        this.deltaY = 0;
+                    if (deltaY < 0 && this.previewHeight / 5 <= Math.abs(deltaY) - swipeBufferY) {
+                        this.shouldClose = true;
+                        setTimeout(() => {
+                            this.shouldClose = false;
+                            this.show = false;
+                        }, transformTransitionTime);
                         return;
                     }
-
-                    // Reset
-                    this.deltaX = 0;
-                    this.deltaY = 0;
                 }
             };
         },
         nextPreview() {
-            if (this.currIndex >= this.Store.allFiles.length - 1) {
-                return;
-            }
-
+            // The function is called only when there's a next preview
             this.currIndex++;
 
             this.files[0] = this.files[1];
@@ -282,14 +267,9 @@ export default Vue.extend({
             if (this.currIndex < this.Store.allFiles.length - 1) {
                 this.files[2] = this.Store.allFiles[this.currIndex + 1];
             }
-
-            this.deltaX = 0;
         },
         previousPreview() {
-            if (this.currIndex <= 0) {
-                return;
-            }
-
+            // The function is called only when there's a previous preview
             this.currIndex--;
 
             this.files[2] = this.files[1];
@@ -298,8 +278,6 @@ export default Vue.extend({
             if (this.currIndex - 1 >= 0) {
                 this.files[0] = this.Store.allFiles[this.currIndex - 1];
             }
-
-            this.deltaX = 0;
         }
     }
 });
