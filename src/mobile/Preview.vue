@@ -73,6 +73,9 @@ export default Vue.extend({
             yMouseStart: 0,
             deltaX: 0,
             deltaY: 0,
+            // Preview takes up full screen
+            previewHeight: window.innerHeight,
+            previewWidth: window.innerWidth,
             //
             Store: SharedStore.state
         };
@@ -108,27 +111,15 @@ export default Vue.extend({
             return {
                 transform: transform
             };
-        },
-        //
-        previewWidth: function() {
-            let container = document.getElementById("files-preview");
-            if (container === null) {
-                return 0;
-            }
-
-            return container.clientWidth;
-        },
-        previewHeight: function() {
-            let container = document.getElementById("files-preview");
-            if (container === null) {
-                return 0;
-            }
-
-            return container.clientHeight;
         }
     },
     //
     created: function() {
+        window.addEventListener("resize", () => {
+            this.previewHeight = window.innerHeight;
+            this.previewWidth = window.innerWidth;
+        });
+
         EventBus.$on(Events.showPreview, (payload: any) => {
             if (payload === undefined || !(payload.file instanceof File)) {
                 return;
