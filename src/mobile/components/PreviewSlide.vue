@@ -70,6 +70,10 @@
 
 $max-preview-height: 70vh;
 
+@mixin shadow-border {
+    box-shadow: 0px 2px 20px 0px #888;
+}
+
 @mixin preview-block-common-styles {
     margin: 10px auto;
     width: 90%;
@@ -77,6 +81,7 @@ $max-preview-height: 70vh;
 
 #text-preview {
     @include preview-block-common-styles();
+    @include shadow-border();
 
     background-color: white;
     border-radius: 5px;
@@ -96,6 +101,8 @@ $max-preview-height: 70vh;
     text-align: center;
 
     img {
+        @include shadow-border();
+
         background-color: rgb(255, 255, 255);
         display: inline-block;
         height: auto;
@@ -124,12 +131,15 @@ $max-preview-height: 70vh;
     @include preview-block-common-styles();
 
     video {
+        @include shadow-border();
+
         max-height: $max-preview-height;
     }
 }
 
 #unsupported-format {
     @include preview-block-common-styles();
+    @include shadow-border();
 
     background-color: white;
     border-radius: 5px;

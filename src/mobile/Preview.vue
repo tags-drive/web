@@ -22,7 +22,7 @@
 <style lang="scss" scoped>
 #files-preview {
     position: fixed;
-    background-color: #ddd;
+    background-color: white;
     top: 0;
     left: 0;
     transition: transform 0.5s ease-out, opacity 0.5s;
