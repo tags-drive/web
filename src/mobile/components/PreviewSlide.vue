@@ -1,5 +1,7 @@
 <template>
-	<div>
+<div>
+	<!-- Preview -->
+	<div id="preview-wrapper">
 		<!-- Text -->
 		<div
 			v-if="isTextFile()"
@@ -20,12 +22,14 @@
 			v-else-if="isAudio()"
 			id="audio-preview"
 		>
-			<audio controls style="width: 80%;" ref="audio-block">
-				<source
-					:src="originLink"
-					:type="file.type.previewType">
-				Your browser does not support the audio tag.
-			</audio>
+			<div>
+				<audio controls style="width: 80%;" ref="audio-block">
+					<source
+						:src="originLink"
+						:type="file.type.previewType">
+					Your browser does not support the audio tag.
+				</audio>
+			</div>
 		</div>
 		<!-- Video -->
 		<div
@@ -47,19 +51,26 @@
 			v-else
 			id="unsupported-format"
 		>
-			<div style="padding: 15px 15px 0; word-wrap: break-word;">
+			<div>
 				<span>File '{{ file.filename }}' can't be displayed</span>
 			</div>
 		</div>
 	</div>
+</div>
 </template>
 
 
 <style lang="scss" scoped>
+#preview-wrapper {
+    height: fit-content;
+    width: 100%;
+}
+
 // Previews
 
+$max-preview-height: 70vh;
+
 @mixin preview-block-common-styles {
-    height: 90%;
     margin: 10px auto;
     width: 90%;
 }
@@ -70,6 +81,7 @@
     background-color: white;
     border-radius: 5px;
     overflow: auto;
+    max-height: $max-preview-height;
     width: 80%;
 
     pre {
@@ -87,7 +99,7 @@
         background-color: rgb(255, 255, 255);
         display: inline-block;
         height: auto;
-        max-height: 100%;
+        max-height: $max-preview-height;
         max-width: 100%;
         width: auto;
     }
@@ -96,25 +108,23 @@
 #audio-preview {
     @include preview-block-common-styles();
 
-    position: relative;
+    div {
+        position: relative;
+        height: 60px;
 
-    audio {
-        height: 200px;
-        left: 50%;
-        position: absolute;
-        transform: translate(-50%, -50%);
+        audio {
+            left: 50%;
+            position: absolute;
+            transform: translate(-50%);
+        }
     }
 }
 
 #video-preview {
     @include preview-block-common-styles();
 
-    position: relative;
-
     video {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
+        max-height: $max-preview-height;
     }
 }
 
@@ -124,8 +134,13 @@
     background-color: white;
     border-radius: 5px;
     font-size: 25px;
+    padding: 25px;
     text-align: center;
     width: 80%;
+
+    div {
+        word-wrap: break-word;
+    }
 }
 </style>
 
@@ -154,7 +169,7 @@ export default Vue.extend({
         }
     },
     //
-    created: function() {
+    updated: function() {
         if (this.isTextFile()) {
             fetch(Params.Host + "/" + this.file!.origin, {
                 method: "GET",
