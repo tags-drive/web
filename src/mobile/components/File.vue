@@ -43,6 +43,12 @@
 
     .filename {
         line-height: $height;
+
+        // Hide extra characters
+        -o-text-overflow: ellipsis;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 }
 </style>
