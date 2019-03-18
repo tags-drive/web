@@ -173,8 +173,28 @@ export default Vue.extend({
     //
     methods: {
         listeners() {
+            const idsToSkip = ["text-preview", "audio-preview", "video-preview"];
+            const tagsToSkip = ["PRE"];
+
+            let shouldHandle = (ev: MouseEvent | TouchEvent): boolean => {
+                if (!ev.cancelable || ev.target === null) {
+                    return false;
+                }
+
+                let element = <HTMLElement>ev.target;
+                if (tagsToSkip.includes(element.tagName) || idsToSkip.includes(element.id)) {
+                    return false;
+                }
+
+                return true;
+            };
+
             return {
                 lock: (ev: MouseEvent | TouchEvent) => {
+                    if (!shouldHandle(ev)) {
+                        return;
+                    }
+
                     ev.preventDefault();
 
                     if (ev instanceof MouseEvent) {
@@ -190,6 +210,10 @@ export default Vue.extend({
                     }
                 },
                 free: (ev: MouseEvent | TouchEvent) => {
+                    if (!shouldHandle(ev)) {
+                        return;
+                    }
+
                     ev.preventDefault();
 
                     if (this.shouldSwitchRight || this.shouldSwitchLeft) {
