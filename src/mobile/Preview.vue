@@ -74,9 +74,6 @@ import { File } from "@app/global/classes";
 import { Events, EventBus } from "@app/mobile/eventBus";
 import SharedStore from "@app/mobile/store";
 
-// Swipe buffers prevent instant start of swipe
-const swipeBufferY = 120;
-
 const transformTransitionTime = 500; // ms
 
 export default Vue.extend({
@@ -270,7 +267,7 @@ export default Vue.extend({
                     }
 
                     // Close preview
-                    if (deltaY < 0 && this.previewHeight / 5 <= Math.abs(deltaY) - swipeBufferY) {
+                    if (deltaY < 0 && this.previewHeight / 6 <= Math.abs(deltaY)) {
                         this.shouldClose = true;
                         setTimeout(() => {
                             this.shouldClose = false;
