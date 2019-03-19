@@ -25,7 +25,7 @@
     background-color: white;
     top: 0;
     left: 0;
-    transition: transform 0.5s ease-out, opacity 0.5s;
+    transition: transform 0.25s ease-out, opacity 0.25s;
     width: 100%;
     height: 100%;
     z-index: 2;
@@ -41,7 +41,7 @@
     align-items: center;
     width: 100%;
     height: 100%;
-    transition: transform 0.5s ease;
+    transition: transform 0.25s ease;
 
     .preview {
         min-width: 100%;
@@ -74,7 +74,7 @@ import { File } from "@app/global/classes";
 import { Events, EventBus } from "@app/mobile/eventBus";
 import SharedStore from "@app/mobile/store";
 
-const transformTransitionTime = 500; // ms
+const transformTransitionTime = 250; // ms
 
 export default Vue.extend({
     components: {
