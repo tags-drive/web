@@ -1,6 +1,7 @@
 import Vue from "vue";
 
 export const Events = {
+    fetchNextFiles: "fetch-next-files",
     showPreview: "show-preview"
 };
 

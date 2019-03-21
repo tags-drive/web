@@ -29,7 +29,7 @@ export default Vue.extend({
             if (SharedStore.state.allTagsChangesCounter === counter) {
                 setTimeout(fetchFiles, 50);
             } else {
-                API.files.fetch("", "", false, "", "");
+                API.files.fetch("", "", false, "", "", 0, 25);
             }
         };
 
