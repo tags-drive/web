@@ -136,7 +136,8 @@ import { File } from "@app/global/classes";
 import { Events, EventBus } from "@app/mobile/eventBus";
 import SharedStore from "@app/mobile/store";
 
-const transformTransitionTime = 250; // ms
+// transition time is 250ms. We multiply it by 2/3 to improve preview scrolling
+const transformTransitionTime = (2 / 3) * 250; // ms
 
 export default Vue.extend({
     components: {
@@ -295,8 +296,10 @@ export default Vue.extend({
                             // Next preview
                             func = () => {
                                 this.shouldSwitchRight = true;
+
                                 setTimeout(() => {
                                     this.shouldSwitchRight = false;
+                                    this.scrollPreviewToTop();
                                     this.nextPreview();
                                 }, transformTransitionTime);
                             };
@@ -306,14 +309,14 @@ export default Vue.extend({
                             // Previous preview
                             func = () => {
                                 this.shouldSwitchLeft = true;
+
                                 setTimeout(() => {
                                     this.shouldSwitchLeft = false;
+                                    this.scrollPreviewToTop();
                                     this.previousPreview();
                                 }, transformTransitionTime);
                             };
                         }
-
-                        this.scrollPreviewToTop();
 
                         func();
                         return;
@@ -328,6 +331,7 @@ export default Vue.extend({
             setTimeout(() => {
                 this.shouldClose = false;
                 this.show = false;
+                this.scrollPreviewToTop();
             }, transformTransitionTime);
         },
         nextPreview() {
