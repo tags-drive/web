@@ -38,6 +38,7 @@
 			
 			<preview-component
 				class="preview"
+				ref="current-preview"
 				:file="files[1]"
 			></preview-component>
 
@@ -67,9 +68,12 @@
     opacity: 0;
 }
 
+$buttons-bar-height: 35px;
+
 #buttons-bar {
     display: flex;
     justify-content: space-between;
+    height: $buttons-bar-height;
     margin: 5px auto 0;
     width: 95%;
 
@@ -95,13 +99,16 @@
     display: flex;
     align-items: center;
     width: 100%;
-    height: 100%;
+    height: calc(100% - #{$buttons-bar-height});
     transition: transform 0.25s ease;
 
     .preview {
-        min-width: 100%;
-        width: 100%;
+        box-sizing: border-box;
         height: 100%;
+        min-width: 100%;
+        overflow-y: auto;
+        padding-bottom: 30px;
+        width: 100%;
     }
 }
 
@@ -306,6 +313,8 @@ export default Vue.extend({
                             };
                         }
 
+                        this.scrollPreviewToTop();
+
                         func();
                         return;
                     }
@@ -342,6 +351,13 @@ export default Vue.extend({
             if (this.currIndex - 1 >= 0) {
                 this.files[0] = this.Store.allFiles[this.currIndex - 1];
             }
+        },
+        scrollPreviewToTop() {
+            let preview = <Vue>this.$refs["current-preview"];
+            if (preview === undefined) {
+                return;
+            }
+            preview.$el.scrollTo(0, 0);
         },
         //
         turnOnFullscreen() {

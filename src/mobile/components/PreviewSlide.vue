@@ -56,6 +56,37 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- Info -->
+
+	<div class="info-card">
+		<div class="header">Filename</div>
+		<div class="info">{{ file.filename }}</div>
+	</div>
+
+	<div class="info-card">
+		<div class="header">Tags</div>
+		<div class="info">
+			<div v-if="file.tags.length === 0">Empty</div>
+			<div
+				v-else
+				id="tags"
+				style="display: flex; flex-wrap: wrap;"
+			>
+				<tag
+					v-for="(id, index) in file.tags"
+					:key="index"
+					:tag="Store.allTags.get(id)"
+					style="margin-bottom: 3px;"
+				></tag>
+			</div>
+		</div>
+	</div>
+
+	<div class="info-card">
+		<div class="header">Description</div>
+		<div class="info">{{ file.description ? file.description : "Empty" }}</div>
+	</div>
 </div>
 </template>
 
@@ -71,7 +102,7 @@
 $max-preview-height: 70vh;
 
 @mixin shadow-border {
-    box-shadow: 0px 2px 20px 0px #888;
+    box-shadow: 0px 2px 10px 0px #888;
 }
 
 @mixin preview-block-common-styles {
@@ -152,22 +183,59 @@ $max-preview-height: 70vh;
         word-wrap: break-word;
     }
 }
+
+// Info
+
+.info-card {
+    background-color: white;
+    border: 1px solid #00000020;
+    border-bottom: 1px solid #00000040;
+    border-radius: 5px;
+    box-sizing: border-box;
+    height: auto;
+    margin: auto;
+    margin-bottom: 10px;
+    padding: 5px;
+    text-align: center;
+    width: 90%;
+
+    .header {
+        border-bottom: 1px solid #00000020;
+        font-size: 20px;
+        margin: auto;
+        margin-bottom: 10px;
+        width: 95%;
+    }
+
+    .info {
+        font-size: 16px;
+        word-wrap: break-word;
+    }
+}
 </style>
 
 
 <script lang="ts">
 import Vue from "vue";
 // Classes and types
+import Tag from "./Tag.vue";
 import { File } from "@app/global/classes";
 // Other
 import { Params } from "@app/global";
 import { Const } from "@app/global/const";
+import SharedStore from "@app/mobile/store";
 
 export default Vue.extend({
+    components: {
+        tag: Tag
+    },
+    //
     data: function() {
         return {
             showAsText: false,
-            textFileContent: ""
+            textFileContent: "",
+            //
+            Store: SharedStore.state
         };
     },
     props: {
