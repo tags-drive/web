@@ -21,6 +21,7 @@ function logError(msg: string | TypeError) {
  * @param sOrder sort order (use "" to search with default value)
  * @param offset
  * @param count number of returned files (if count == 0, all files will be returned)
+ * @param resetFiles defines should function use "setFiles" (true) or "addFiles" (false) mutation in SharedStore
  */
 function fetchFiles(
     expression: string,
@@ -29,7 +30,8 @@ function fetchFiles(
     sType: string,
     sOrder: string,
     offset: number = 0,
-    count: number = 0
+    count: number = 0,
+    resetFiles: boolean = true
 ) {
     let params = new URLSearchParams();
     // Expression
@@ -60,6 +62,10 @@ function fetchFiles(
         credentials: "same-origin"
     })
         .then(resp => {
+            if (resp.status === 204) {
+                // No content (offset is out of bounds)
+                return;
+            }
             if (isErrorStatusCode(resp.status)) {
                 resp.text().then(text => {
                     logError(text);
@@ -73,7 +79,11 @@ function fetchFiles(
                 return;
             }
 
-            SharedStore.commit("setFiles", files);
+            if (resetFiles) {
+                SharedStore.commit("setFiles", files);
+            } else {
+                SharedStore.commit("addFiles", files);
+            }
         })
         .catch(err => logError(err));
 }
