@@ -192,8 +192,6 @@ export default Vue.extend({
                         return;
                     }
 
-                    ev.preventDefault();
-
                     if (ev instanceof MouseEvent) {
                         this.xMouseStart = ev.clientX;
                         this.yMouseStart = ev.clientY;
@@ -210,8 +208,6 @@ export default Vue.extend({
                     if (!shouldHandle(ev)) {
                         return;
                     }
-
-                    ev.preventDefault();
 
                     if (this.shouldSwitchRight || this.shouldSwitchLeft) {
                         // Don't interrupt current animation
