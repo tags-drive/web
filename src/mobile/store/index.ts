@@ -75,7 +75,7 @@ const store: StoreOptions<Store> = {
         allFilesChangesCounter: 0,
         //
         allTags: new Map(),
-		allTagsChangesCounter: 0,
+        allTagsChangesCounter: 0
     },
     mutations: {
         // allFiles

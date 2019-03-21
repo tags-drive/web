@@ -18,10 +18,10 @@
 .file {
     $height: 70px;
 
+    border-bottom: 1px solid #ddd;
     display: grid;
     grid-template-columns: 90px auto;
     grid-template-rows: $height;
-    border-bottom: 1px solid #ddd;
 
     &:active {
         background-color: #dcdcdc70;
@@ -34,10 +34,10 @@
         img {
             display: block;
             height: inherit;
+            margin: auto;
             max-height: 100%;
             max-width: 100%;
             width: auto;
-            margin: auto;
         }
     }
 

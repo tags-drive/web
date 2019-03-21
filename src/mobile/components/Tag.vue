@@ -10,6 +10,7 @@
 </div>
 </template>
 
+
 <style scoped>
 .tag {
     background-color: white;
@@ -35,6 +36,7 @@
     min-width: 15px;
 }
 </style>
+
 
 <script lang="ts">
 import Vue from "vue";

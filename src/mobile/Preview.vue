@@ -53,19 +53,19 @@
 
 <style lang="scss" scoped>
 #files-preview {
-    position: fixed;
     background-color: white;
-    top: 0;
+    height: 100%;
     left: 0;
+    position: fixed;
+    top: 0;
     transition: transform 0.25s ease-out, opacity 0.25s;
     width: 100%;
-    height: 100%;
     z-index: 2;
 }
 
 .preview--animation-close {
-    transform: translate(0, -100%) !important;
     opacity: 0;
+    transform: translate(0, -100%) !important;
 }
 
 $buttons-bar-height: 35px;
@@ -96,11 +96,11 @@ $buttons-bar-height: 35px;
 }
 
 #container {
-    display: flex;
     align-items: center;
-    width: 100%;
+    display: flex;
     height: calc(100% - #{$buttons-bar-height});
     transition: transform 0.25s ease;
+    width: 100%;
 
     .preview {
         box-sizing: border-box;
@@ -113,8 +113,8 @@ $buttons-bar-height: 35px;
 }
 
 .container--idle {
-    transition: none !important;
     transform: translate(-1 * 100%) !important;
+    transition: none !important;
 }
 
 .container--animation-switch-right {
