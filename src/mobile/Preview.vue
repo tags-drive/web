@@ -4,6 +4,28 @@
 		id="files-preview"
 		:class="previewClasses"
 	>
+		<div id="buttons-bar">
+			<div
+				id="fullscreen-button"
+				@click="turnOnFullscreen"
+			>
+				<i
+					class="material-icons noselect"
+					title="Turn on fullscreen mode"	
+				>fullscreen</i>
+			</div>
+
+			<div
+				id="close-button"
+				@click="closePreview"
+			>
+				<i
+					class="material-icons noselect"
+					title="Close"
+				>close</i>
+			</div>
+		</div>
+
 		<div
 			v-if="files.length === 3"
 			id="container"
@@ -43,6 +65,30 @@
 .preview--animation-close {
     transform: translate(0, -100%) !important;
     opacity: 0;
+}
+
+#buttons-bar {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px auto 0;
+    width: 95%;
+
+    @mixin common-styles {
+        border-radius: 3px;
+
+        &:active {
+            background-color: #ebebeb;
+        }
+
+        i {
+            font-size: 35px;
+        }
+    }
+
+    #fullscreen-button,
+    #close-button {
+        @include common-styles();
+    }
 }
 
 #container {
@@ -102,7 +148,6 @@ export default Vue.extend({
             shouldClose: false,
             //
             xMouseStart: 0,
-            yMouseStart: 0,
             // Preview takes up full screen
             previewHeight: window.innerHeight,
             previewWidth: window.innerWidth,
@@ -203,14 +248,12 @@ export default Vue.extend({
 
                     if (ev instanceof MouseEvent) {
                         this.xMouseStart = ev.clientX;
-                        this.yMouseStart = ev.clientY;
                     } else {
                         let touch = ev.changedTouches.item(0);
                         if (touch === null) {
                             return;
                         }
                         this.xMouseStart = touch.clientX;
-                        this.yMouseStart = touch.clientY;
                     }
                 },
                 free: (ev: MouseEvent | TouchEvent) => {
@@ -223,23 +266,19 @@ export default Vue.extend({
                         return;
                     }
 
-                    let xMouseEnd = 0,
-                        yMouseEnd = 0;
+                    let xMouseEnd = 0;
 
                     if (ev instanceof MouseEvent) {
                         xMouseEnd = ev.clientX;
-                        yMouseEnd = ev.clientY;
                     } else {
                         let touch = ev.changedTouches.item(0);
                         if (touch === null) {
                             return;
                         }
                         xMouseEnd = touch.clientX;
-                        yMouseEnd = touch.clientY;
                     }
 
-                    let deltaX = xMouseEnd - this.xMouseStart,
-                        deltaY = yMouseEnd - this.yMouseStart;
+                    let deltaX = xMouseEnd - this.xMouseStart;
 
                     // Switch preview
                     if (this.previewWidth / 4 <= Math.abs(deltaX)) {
@@ -270,18 +309,17 @@ export default Vue.extend({
                         func();
                         return;
                     }
-
-                    // Close preview
-                    if (deltaY < 0 && this.previewHeight / 6 <= Math.abs(deltaY)) {
-                        this.shouldClose = true;
-                        setTimeout(() => {
-                            this.shouldClose = false;
-                            this.show = false;
-                        }, transformTransitionTime);
-                        return;
-                    }
                 }
             };
+        },
+        //
+        closePreview() {
+            this.shouldClose = true;
+
+            setTimeout(() => {
+                this.shouldClose = false;
+                this.show = false;
+            }, transformTransitionTime);
         },
         nextPreview() {
             // The function is called only when there's a next preview
@@ -304,6 +342,10 @@ export default Vue.extend({
             if (this.currIndex - 1 >= 0) {
                 this.files[0] = this.Store.allFiles[this.currIndex - 1];
             }
+        },
+        //
+        turnOnFullscreen() {
+            console.log("fullscreen");
         }
     }
 });
