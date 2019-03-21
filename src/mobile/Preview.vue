@@ -5,14 +5,23 @@
 		:class="previewClasses"
 	>
 		<div
+			v-if="files.length === 3"
 			id="container"
 			:class="containerClasses"
 		>
 			<preview-component
-				v-for="(file, index) in files"
-				:key="index"
 				class="preview"
-				:file="file"
+				:file="files[0]"
+			></preview-component>
+			
+			<preview-component
+				class="preview"
+				:file="files[1]"
+			></preview-component>
+
+			<preview-component
+				class="preview"
+				:file="files[2]"
 			></preview-component>
 		</div>
 	</div>

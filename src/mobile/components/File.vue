@@ -23,7 +23,7 @@
     grid-template-rows: $height;
     border-bottom: 1px solid #ddd;
 
-    &:hover {
+    &:active {
         background-color: #dcdcdc70;
     }
 
