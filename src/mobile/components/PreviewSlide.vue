@@ -87,6 +87,11 @@
 		<div class="header">Description</div>
 		<div class="info">{{ file.description ? file.description : "Empty" }}</div>
 	</div>
+
+	<div class="info-card">
+		<div class="header">Size</div>
+		<div class="info">{{ fileSize }}</div>
+	</div>
 </div>
 </template>
 
@@ -225,6 +230,8 @@ import { Params } from "@app/global";
 import { Const } from "@app/global/const";
 import SharedStore from "@app/mobile/store";
 
+const sizeSuffixes: string[] = ["B", "KB", "MB", "GB", "TB"];
+
 export default Vue.extend({
     components: {
         tag: Tag
@@ -244,6 +251,27 @@ export default Vue.extend({
     computed: {
         originLink(): string {
             return Params.Host + "/" + this.file!.origin;
+        },
+        fileSize(): string {
+            let suffixIndex = 0;
+            // In bytes
+            let size = this.file.size;
+            while (size / 1024 > 1) {
+                size /= 1024;
+                suffixIndex++;
+            }
+
+            if (suffixIndex >= sizeSuffixes.length) {
+                return "-";
+            }
+
+            let s = size.toFixed(1);
+            if (s[s.length - 1] == "0") {
+                // Trim trailing dot and zero
+                s = s.slice(0, s.length - 2);
+            }
+
+            return s + " " + sizeSuffixes[suffixIndex];
         }
     },
     //
