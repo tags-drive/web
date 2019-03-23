@@ -5,6 +5,7 @@ import { Tag, File } from "@app/global/classes";
 export interface Store {
     allFiles: File[];
     allFilesChangesCounter: number;
+    allFilesFetched: boolean;
     //
     allTags: Map<number, Tag>;
     allTagsChangesCounter: number;

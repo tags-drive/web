@@ -28,24 +28,69 @@
 <script lang="ts">
 import Vue from "vue";
 // Components
+import { File } from "@app/global/classes";
 import FileComponent from "@app/mobile/components/File.vue";
 // Other
-import { File } from "@app/global/classes";
 import SharedStore from "@app/mobile/store";
+import { API } from "@app/mobile/api";
+import { EventBus, Events } from "@app/mobile/eventBus";
 
 export default Vue.extend({
+    components: { file: FileComponent },
+    //
     data: function() {
         return {
+            // It is true, when we sent a request, but didn't get a response
+            fetchingNextFiles: false,
+            //
             Store: SharedStore.state
         };
     },
-    components: { file: FileComponent },
     computed: {
         allFiles: function() {
             // reactive
             let reactive = this.Store.allFilesChangesCounter;
             return this.Store.allFiles;
         }
+    },
+    //
+    created: function() {
+        let scrollListener = (ev: UIEvent) => {
+            if (ev.srcElement === null) {
+                return;
+            }
+
+            let bottom = ev.srcElement.scrollHeight - (ev.srcElement.scrollTop + ev.srcElement.clientHeight);
+
+            if (!this.Store.allFilesFetched && !this.fetchingNextFiles && bottom <= ev.srcElement.scrollHeight / 10) {
+                this.fetchingNextFiles = true;
+
+                let oldCounter = this.Store.allFilesChangesCounter;
+                let func = () => {
+                    if (oldCounter !== this.Store.allFilesChangesCounter || this.Store.allFilesFetched) {
+                        this.fetchingNextFiles = false;
+                        return;
+                    }
+                    setTimeout(func, 50);
+                };
+
+                EventBus.$emit(Events.fetchNextFiles);
+                setTimeout(func, 50);
+            }
+        };
+
+        this.$nextTick(() => {
+            // Element was rendered
+            let elem = document.getElementById("all-files");
+            if (elem === null) {
+                /* eslint-disable no-console */
+                console.error("ERR: #all-files wasn't rendered");
+                /* eslint-enable no-console */
+                return;
+            }
+
+            elem.addEventListener("scroll", scrollListener);
+        });
     }
 });
 </script>
