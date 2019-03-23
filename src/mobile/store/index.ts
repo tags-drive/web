@@ -73,6 +73,7 @@ const store: StoreOptions<Store> = {
     state: {
         allFiles: [],
         allFilesChangesCounter: 0,
+        allFilesFetched: false,
         //
         allTags: new Map(),
         allTagsChangesCounter: 0
@@ -108,6 +109,9 @@ const store: StoreOptions<Store> = {
 
             state.allFiles = updatedFiles;
             state.allFilesChangesCounter++;
+        },
+        allFilesFetched(state) {
+            state.allFilesFetched = true;
         },
         // allTags
         setTags(state, tags: any) {

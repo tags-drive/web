@@ -40,6 +40,7 @@ export default Vue.extend({
     //
     data: function() {
         return {
+            // It is true, when we sent a request, but didn't get a response
             fetchingNextFiles: false,
             //
             Store: SharedStore.state
@@ -61,12 +62,12 @@ export default Vue.extend({
 
             let bottom = ev.srcElement.scrollHeight - (ev.srcElement.scrollTop + ev.srcElement.clientHeight);
 
-            if (!this.fetchingNextFiles && bottom <= ev.srcElement.scrollHeight / 10) {
+            if (!this.Store.allFilesFetched && !this.fetchingNextFiles && bottom <= ev.srcElement.scrollHeight / 10) {
                 this.fetchingNextFiles = true;
 
                 let oldCounter = this.Store.allFilesChangesCounter;
                 let func = () => {
-                    if (oldCounter !== this.Store.allFilesChangesCounter) {
+                    if (oldCounter !== this.Store.allFilesChangesCounter || this.Store.allFilesFetched) {
                         this.fetchingNextFiles = false;
                         return;
                     }

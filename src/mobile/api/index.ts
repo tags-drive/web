@@ -63,7 +63,8 @@ function fetchFiles(
     })
         .then(resp => {
             if (resp.status === 204) {
-                // No content (offset is out of bounds)
+                // No content (offset is out of bounds). All files were fetched
+                SharedStore.commit("allFilesFetched");
                 return;
             }
             if (isErrorStatusCode(resp.status)) {
