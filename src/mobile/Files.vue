@@ -14,7 +14,10 @@
 
 <style lang="scss" scoped>
 #wrapper {
+    position: fixed;
+    top: 41px;
     height: calc(100vh - 41px);
+    width: 100%;
 }
 
 #all-files {
