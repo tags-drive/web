@@ -10,7 +10,14 @@
 		>
 			<div id="logo" class="noselect">Tags Drive</div>
 
-			<div style="text-align: center;">TODO</div>
+			<div>
+				<div
+					id="search-button"
+					@click="search"
+				>
+					<i class="material-icons noselect">search</i>
+				</div>
+			</div>
 
 			<div
 				id="expand-button"
@@ -77,7 +84,7 @@ $height: 40px;
 #bar {
     display: grid;
     grid-template-columns: 111px auto 40px;
-    padding: 0 5px;
+    padding: 0 10px;
 
     #logo {
         cursor: default;
@@ -85,6 +92,19 @@ $height: 40px;
         font-size: 25px;
         height: $height;
         line-height: $height;
+    }
+
+    div {
+        position: relative;
+
+        #search-button {
+            @include button();
+
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
     }
 
     #expand-button {
@@ -161,6 +181,21 @@ export default Vue.extend({
                 bar.classList.remove("search-bar-expand-animation");
             }
             this.opened = false;
+        },
+        //
+        search() {
+            EventBus.$emit(Events.resetFilesBlockScroll);
+
+            API.files.fetch(
+                this.expression,
+                this.textToSearch,
+                this.isRegexp,
+                this.sortType,
+                this.sortOrder,
+                0,
+                fetchLimit,
+                true
+            );
         }
     }
 });
