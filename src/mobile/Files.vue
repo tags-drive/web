@@ -1,6 +1,6 @@
 <template>
 <div id="wrapper">
-	<div id="all-files">
+	<div id="all-files" ref="all-files">
 		<div
 			v-for="(file, index) in allFiles"
 			:key="index"
@@ -93,6 +93,13 @@ export default Vue.extend({
             }
 
             elem.addEventListener("scroll", scrollListener);
+        });
+
+        EventBus.$on(Events.resetFilesBlockScroll, () => {
+            let elem = <HTMLElement>this.$refs["all-files"];
+            if (elem !== undefined) {
+                elem.scrollTo(0, 0);
+            }
         });
     }
 });
