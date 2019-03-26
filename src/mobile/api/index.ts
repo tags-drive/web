@@ -57,6 +57,10 @@ function fetchFiles(
         params.append("count", String(count));
     }
 
+    if (resetFiles) {
+        SharedStore.commit("unsetAllFilesFetched");
+    }
+
     fetch(Params.Host + "/api/files?" + params, {
         method: "GET",
         credentials: "same-origin"
@@ -64,7 +68,7 @@ function fetchFiles(
         .then(resp => {
             if (resp.status === 204) {
                 // No content (offset is out of bounds). All files were fetched
-                SharedStore.commit("allFilesFetched");
+                SharedStore.commit("setAllFilesFetched");
                 return;
             }
             if (isErrorStatusCode(resp.status)) {

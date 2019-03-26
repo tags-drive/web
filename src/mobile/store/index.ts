@@ -110,8 +110,11 @@ const store: StoreOptions<Store> = {
             state.allFiles = updatedFiles;
             state.allFilesChangesCounter++;
         },
-        allFilesFetched(state) {
+        setAllFilesFetched(state) {
             state.allFilesFetched = true;
+        },
+        unsetAllFilesFetched(state) {
+            state.allFilesFetched = false;
         },
         // allTags
         setTags(state, tags: any) {
