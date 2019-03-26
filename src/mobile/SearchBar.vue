@@ -29,9 +29,37 @@
 
 		<!-- Expanded window -->
 		<div
-			v-if="opened"
+			v-show="opened"
 			id="expanded-window"
 		>
+			<!-- Logical expression -->
+			<div id="search-input">
+				<!-- Input -->
+				<div
+					v-show="focused || expression === ''"
+					id="input-wrapper"
+					@click="focused = true"
+				>
+					<input
+						id="expression-input"
+						type="text"
+						placeholder="Enter logical expression"
+						ref="expression-input"
+						v-model="expression">
+				</div>
+
+				<!-- Render -->
+				<div
+					v-show="!(focused || expression === '')"
+					id="render-wrapper"
+					@click="focusInput"
+				>
+					<render-tags-input
+						:expression="expression"
+					></render-tags-input>
+				</div>
+			</div>
+
 			<div
 				id="close-button"
 				@click="closeBar"
@@ -115,6 +143,44 @@ $height: 40px;
 }
 
 #expanded-window {
+    padding: 5px;
+
+    #search-input {
+        $min-height: 40px;
+
+        border-bottom: 1px solid #888888;
+        height: fit-content;
+        position: relative;
+        margin: auto 0 10px;
+        width: 100%;
+
+        @mixin wrapper {
+            box-sizing: border-box;
+            cursor: text;
+            min-height: $min-height;
+            width: 100%;
+        }
+
+        #input-wrapper {
+            @include wrapper();
+
+            #expression-input {
+                border: none;
+                box-sizing: border-box;
+                font-size: 16px;
+                height: $min-height;
+                outline: none;
+                width: inherit;
+            }
+        }
+
+        #render-wrapper {
+            @include wrapper();
+
+            min-height: $min-height;
+        }
+    }
+
     #close-button {
         @include button();
 
@@ -131,17 +197,44 @@ $height: 40px;
 
 <script lang="ts">
 import Vue from "vue";
+// Components and classes
+import RenderTagsInput from "@app/mobile/components/RenderTagsInput.vue";
 // Other
 import SharedStore from "@app/mobile/store";
-
 import { API } from "@app/mobile/api";
 import { EventBus, Events } from "@app/mobile/eventBus";
+
+function isElementInPath(event: Event, ...ids: string[]): boolean {
+    // We need to use type any because Event hasn't property path, composedPath and composedPath().
+    // Nevertheless, it's a cross browser way to get path.
+    let path = (<any>event).path || ((<any>event).composedPath && (<any>event).composedPath());
+    if (path === undefined || path.length === undefined) {
+        return false;
+    }
+
+    for (let i = 0; i < path.length; i++) {
+        for (let j = 0; j < ids.length; j++) {
+            if (path[i].id === ids[j]) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
 
 const fetchLimit = 25;
 
 export default Vue.extend({
+    components: {
+        "render-tags-input": RenderTagsInput
+    },
+    //
     data: function() {
         return {
+            opened: false,
+            focused: false,
+            //
             expression: "",
             textToSearch: "",
             isRegexp: false,
@@ -153,6 +246,15 @@ export default Vue.extend({
     },
     //
     created: function() {
+        document.addEventListener("click", ev => {
+            if (this.opened) {
+                // TODO
+                if (!isElementInPath(ev, "render-wrapper", "input-wrapper", "tags-list", "operators-list")) {
+                    this.focused = false;
+                }
+            }
+        });
+
         EventBus.$on(Events.fetchNextFiles, () => {
             API.files.fetch(
                 this.expression,
@@ -181,6 +283,14 @@ export default Vue.extend({
                 bar.classList.remove("search-bar-expand-animation");
             }
             this.opened = false;
+        },
+        focusInput() {
+            this.focused = true;
+
+            this.$nextTick(() => {
+                let elem = this.$refs["expression-input"];
+                if (elem instanceof HTMLElement) elem.focus();
+            });
         },
         //
         search() {
