@@ -60,6 +60,67 @@
 				</div>
 			</div>
 
+			<div id="advanced-options">
+				<!-- Sort options -->
+				<div class="advanced-option">
+					<div class="label">Sort options</div>
+
+					<div class="select-wrapper">
+						<select v-model="sortType">
+							<option
+								v-for="(option, index) in sortTypeOptions"
+								:key="index"
+								:value="option.value"
+							>{{ option.text }}</option>
+						</select>
+
+						<select v-model="sortOrder">
+							<option
+								v-for="(option, index) in sortOrderOptions"
+								:key="index"
+								:value="option.value"
+							>{{ option.text }}</option>
+						</select>
+					</div>
+				</div>
+
+				<!-- Text/Regexp to search -->
+				<div class="advanced-option">
+					<div class="label">{{ isRegexp ? "Regexp" : "Text to search" }}</div>
+
+					<div class="input-wrapper">
+						<input
+							type="text"
+							:placeholder="isRegexp ? 'Enter regexp' : 'Enter text'"
+							v-model="textToSearch"
+							@keyup.enter="search().usual()">
+					</div>
+				</div>
+
+				<!-- isRegexp checkbox -->
+				<div class="advanced-option">
+					<div class="label">Use regexp</div>
+
+					<div class="checkbox-wrapper">
+						<input
+							type="checkbox"
+							title="Use regular expression"
+							v-model="isRegexp">
+					</div>
+				</div>
+
+				<div class="advanced-option" style="margin-top: 30px;">
+					<div class="label">Reset</div>
+
+					<div
+						class="button-wrapper"
+						@click="resetOptions"
+					>
+						<i class="material-icons noselect">clear</i>
+					</div>
+				</div>
+			</div>
+
 			<div
 				id="close-button"
 				@click="closeBar"
@@ -181,6 +242,69 @@ $height: 40px;
         }
     }
 
+    #advanced-options {
+        .advanced-option {
+            $height: 30px;
+            $label-width: 120px;
+            $option-width: 200px;
+
+            display: flex;
+            height: $height;
+            margin-bottom: 10px;
+
+            .label {
+                font-size: 18px;
+                line-height: $height;
+                margin-right: 10px;
+                min-width: 120px;
+            }
+
+            .input-wrapper {
+                height: $height;
+                width: $option-width;
+
+                input {
+                    height: $height;
+                    padding: 0;
+                    width: 100%;
+                }
+            }
+
+            .select-wrapper {
+                display: flex;
+                justify-content: space-between;
+                width: $option-width;
+
+                select {
+                    height: $height;
+                }
+            }
+
+            .checkbox-wrapper {
+                height: fit-content;
+                margin: auto 0;
+
+                input[type="checkbox"] {
+                    margin: 0;
+                    padding: 0;
+                    outline: none;
+                }
+            }
+
+            .button-wrapper {
+                border-radius: 3px;
+
+                &:active {
+                    background-color: #dcdcdc70;
+                }
+
+                i {
+                    font-size: $height;
+                }
+            }
+        }
+    }
+
     #close-button {
         @include button();
 
@@ -238,10 +362,15 @@ export default Vue.extend({
             expression: "",
             textToSearch: "",
             isRegexp: false,
-            sortType: "",
-            sortOrder: "",
+            sortType: "name",
+            sortOrder: "asc",
             //
-            opened: false
+            sortTypeOptions: [
+                { text: "By name", value: "name" },
+                { text: "By size", value: "size" },
+                { text: "By time", value: "time" }
+            ],
+            sortOrderOptions: [{ text: "Ascending", value: "asc" }, { text: "Descending", value: "desc" }]
         };
     },
     //
@@ -306,6 +435,13 @@ export default Vue.extend({
                 fetchLimit,
                 true
             );
+        },
+        resetOptions() {
+            this.expression = "";
+            this.textToSearch = "";
+            this.isRegexp = false;
+            this.sortType = "name";
+            this.sortOrder = "asc";
         }
     }
 });
