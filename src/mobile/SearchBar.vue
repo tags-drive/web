@@ -48,9 +48,17 @@
 					<input
 						id="expression-input"
 						type="text"
+						readonly="true"
 						placeholder="Enter logical expression"
 						ref="expression-input"
 						v-model="expression">
+
+					<div id="backspace">
+						<i
+							class="material-icons noselect"
+							@click="backspace"
+						>backspace</i>
+					</div>
 				</div>
 
 				<!-- Render -->
@@ -251,7 +259,6 @@ $height: 40px;
     justify-content: space-between;
     flex-wrap: wrap;
     padding: 5px;
-    width: 100%;
 
     @media screen and (min-width: 795px) {
         #separator {
@@ -281,6 +288,8 @@ $height: 40px;
         #input-wrapper {
             @include wrapper();
 
+            background-color: white;
+            display: flex;
             position: sticky;
             top: 0;
 
@@ -290,7 +299,24 @@ $height: 40px;
                 font-size: 16px;
                 height: $min-height;
                 outline: none;
-                width: inherit;
+                width: 90%;
+            }
+
+            #backspace {
+                @include button();
+
+                position: relative;
+                height: 30px;
+                margin: auto 0;
+                width: 30px;
+
+                i {
+                    font-size: 24px;
+                    left: 50%;
+                    position: absolute;
+                    top: 50%;
+                    transform: translate(-50%, -50%);
+                }
             }
         }
 
@@ -315,7 +341,7 @@ $height: 40px;
 
                     display: grid;
                     grid-template-columns: $width auto;
-                    height: $height;
+                    min-height: $height;
                     line-height: $height;
                     margin: 5px 0;
 
@@ -577,6 +603,32 @@ export default Vue.extend({
                 r = elem.selectionEnd!;
 
             this.expression = this.expression.slice(0, l) + text + this.expression.slice(r);
+
+            elem.focus();
+            this.$nextTick(() => {
+                elem.selectionStart = l + text.length;
+                elem.selectionEnd = elem.selectionStart;
+            });
+        },
+        backspace() {
+            let elem: HTMLInputElement = <HTMLInputElement>this.$refs["expression-input"];
+            if (!(this.$refs["expression-input"] instanceof HTMLInputElement)) {
+                return;
+            }
+
+            let l = elem.selectionStart!,
+                r = elem.selectionEnd!;
+            if (l === 0 && r === 0) {
+                return;
+            }
+
+            this.expression = this.expression.slice(0, l - 1) + this.expression.slice(r);
+
+            elem.focus();
+            this.$nextTick(() => {
+                elem.selectionStart = l - 1;
+                elem.selectionEnd = elem.selectionStart;
+            });
         }
     }
 });
