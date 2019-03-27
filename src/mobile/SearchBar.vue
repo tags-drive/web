@@ -5,7 +5,6 @@
 	>
 		<!-- Bar -->
 		<div
-			v-if="!opened"
 			id="bar"
 		>
 			<div id="logo" class="noselect">Tags Drive</div>
@@ -19,11 +18,17 @@
 				</div>
 			</div>
 
-			<div
-				id="expand-button"
-				@click="expandBar"
-			>
-				<i class="material-icons noselect">expand_more</i>
+			<div id="expand-button">
+				<i
+					v-if="!opened"
+					@click="expandBar"
+					class="material-icons noselect"
+				>expand_more</i>
+				<i
+					v-else
+					@click="closeBar"
+					class="material-icons noselect"
+				>expand_less</i>
 			</div>
 		</div>
 
@@ -120,13 +125,6 @@
 					</div>
 				</div>
 			</div>
-
-			<div
-				id="close-button"
-				@click="closeBar"
-			>
-				<i class="material-icons noselect">expand_less</i>
-			</div>
 		</div>
 	</div>
 </template>
@@ -137,7 +135,6 @@ $height: 40px;
 
 #search-bar {
     background-color: white;
-    border: 1px solid #0000002f;
     height: $height;
     left: 0;
     position: fixed;
@@ -171,8 +168,9 @@ $height: 40px;
 }
 
 #bar {
+    border: 1px solid #0000002f;
     display: grid;
-    grid-template-columns: 111px auto 40px;
+    grid-template-columns: 120px auto 40px;
     padding: 0 10px;
 
     #logo {
@@ -303,17 +301,6 @@ $height: 40px;
                 }
             }
         }
-    }
-
-    #close-button {
-        @include button();
-
-        border: 1px solid #00000010;
-        bottom: 5px;
-        left: 50%;
-        position: absolute;
-        transform: translateX(-50%);
-        width: 100px;
     }
 }
 </style>
