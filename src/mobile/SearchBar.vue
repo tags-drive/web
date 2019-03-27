@@ -63,8 +63,53 @@
 						:expression="expression"
 					></render-tags-input>
 				</div>
+
+				<div
+					v-if="focused"
+					id="suggestions"
+				>
+					<!-- List of tags -->
+					<div id="tags-list">
+						<div
+							v-for="(id, index) in allTagsIDs"
+							style="display: flex; margin: 5px;"
+							:key="index"
+						>
+							<!-- @click in tag component doesn't work, so we need a wrapper -->
+							<div @click="insertTextIntoExpression(id)">
+								<tag
+								style="cursor: pointer;"
+								title="Paste tag"
+									:tag="Store.allTags.get(id)"
+								></tag>
+							</div>
+							<i style="line-height: 28px;">id: {{id}}</i>
+						</div>
+					</div>
+
+					<!-- List of operators -->
+					<div
+						v-show="focused"
+						id="operators-list"
+					>
+						<div
+							v-for="(op, index) in operators"
+							:key="index"
+							class="element"
+						>
+							<div
+								class="operator vertically"
+								@click="insertTextIntoExpression(op.operator)"
+							>{{ op.operator }}</div>
+							<div class="description">– {{ op.description }}</div>
+						</div>
+					</div>
+				</div>
 			</div>
 
+			<div id="separator"></div>
+
+			<!-- Advanced options -->
 			<div id="advanced-options">
 				<!-- Sort options -->
 				<div class="advanced-option">
@@ -202,18 +247,31 @@ $height: 40px;
 }
 
 #expanded-window {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
     padding: 5px;
+    width: 100%;
+
+    @media screen and (min-width: 795px) {
+        #separator {
+            border: 0.5px solid #0000002f;
+        }
+    }
 
     #search-input {
         $min-height: 40px;
 
-        border-bottom: 1px solid #888888;
         height: fit-content;
+        overflow-y: auto;
         position: relative;
-        margin: auto 0 10px;
+        margin-bottom: 10px;
+        max-height: 320px;
+        max-width: 450px;
         width: 100%;
 
         @mixin wrapper {
+            border-bottom: 1px solid #888888;
             box-sizing: border-box;
             cursor: text;
             min-height: $min-height;
@@ -222,6 +280,9 @@ $height: 40px;
 
         #input-wrapper {
             @include wrapper();
+
+            position: sticky;
+            top: 0;
 
             #expression-input {
                 border: none;
@@ -238,9 +299,49 @@ $height: 40px;
 
             min-height: $min-height;
         }
+
+        #suggestions {
+            display: flex;
+            height: 200px;
+
+            #operators-list {
+                margin: 0 5px 0 auto;
+
+                .element {
+                    $operator-size: 23px;
+                    $operator-border-size: 1px;
+                    $height: 28px;
+                    $width: $operator-size + 2 * $operator-border-size;
+
+                    display: grid;
+                    grid-template-columns: $width auto;
+                    height: $height;
+                    line-height: $height;
+                    margin: 5px 0;
+
+                    .operator {
+                        border: $operator-border-size solid #42404033;
+                        border-radius: 50%;
+                        cursor: pointer;
+                        font-size: 18px;
+                        height: $operator-size;
+                        line-height: $operator-size;
+                        margin: auto 0;
+                        text-align: center;
+                        width: 23px;
+                    }
+
+                    .description {
+                        padding-left: 5px;
+                    }
+                }
+            }
+        }
     }
 
     #advanced-options {
+        min-width: 340px;
+
         .advanced-option {
             $height: 30px;
             $label-width: 120px;
@@ -309,6 +410,7 @@ $height: 40px;
 <script lang="ts">
 import Vue from "vue";
 // Components and classes
+import TagComponent from "@app/mobile/components/Tag.vue";
 import RenderTagsInput from "@app/mobile/components/RenderTagsInput.vue";
 // Other
 import SharedStore from "@app/mobile/store";
@@ -336,9 +438,29 @@ function isElementInPath(event: Event, ...ids: string[]): boolean {
 
 const fetchLimit = 25;
 
+class Operator {
+    operator: string;
+    description: string;
+
+    constructor(op: string, desc: string = "") {
+        this.operator = op;
+        this.description = desc;
+    }
+}
+
+const validCharacters = "0123456789&|!()";
+const availableOperators: Operator[] = [
+    new Operator("!", "negation (not)"),
+    new Operator("&", "conjunction (and)"),
+    new Operator("|", "disjunction (or)"),
+    new Operator("(", "left bracket"),
+    new Operator(")", "right bracket")
+];
+
 export default Vue.extend({
     components: {
-        "render-tags-input": RenderTagsInput
+        "render-tags-input": RenderTagsInput,
+        tag: TagComponent
     },
     //
     data: function() {
@@ -357,14 +479,22 @@ export default Vue.extend({
                 { text: "By size", value: "size" },
                 { text: "By time", value: "time" }
             ],
-            sortOrderOptions: [{ text: "Ascending", value: "asc" }, { text: "Descending", value: "desc" }]
+            sortOrderOptions: [{ text: "Ascending", value: "asc" }, { text: "Descending", value: "desc" }],
+            //
+            Store: SharedStore.state,
+            operators: availableOperators
         };
+    },
+    computed: {
+        allTagsIDs: function() {
+            // For reactive updating (see @app/index/store/types.ts for more information)
+            return Array.from(this.Store.allTags.keys());
+        }
     },
     //
     created: function() {
         document.addEventListener("click", ev => {
             if (this.opened) {
-                // TODO
                 if (!isElementInPath(ev, "render-wrapper", "input-wrapper", "tags-list", "operators-list")) {
                     this.focused = false;
                 }
@@ -410,6 +540,11 @@ export default Vue.extend({
         },
         //
         search() {
+            // Close window
+            if (this.opened) {
+                this.closeBar();
+            }
+
             EventBus.$emit(Events.resetFilesBlockScroll);
 
             API.files.fetch(
@@ -429,6 +564,19 @@ export default Vue.extend({
             this.isRegexp = false;
             this.sortType = "name";
             this.sortOrder = "asc";
+        },
+        //
+        insertTextIntoExpression(arg: any) {
+            let text = String(arg);
+            let elem: HTMLInputElement = <HTMLInputElement>this.$refs["expression-input"];
+            if (!(this.$refs["expression-input"] instanceof HTMLInputElement)) {
+                return;
+            }
+
+            let l = elem.selectionStart!,
+                r = elem.selectionEnd!;
+
+            this.expression = this.expression.slice(0, l) + text + this.expression.slice(r);
         }
     }
 });
