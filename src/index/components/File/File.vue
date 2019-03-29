@@ -67,7 +67,7 @@
 	</div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .hover-class:hover {
     background-color: #dcdcdc70;
 }
@@ -82,22 +82,21 @@
 
 .image-wrapper {
     height: inherit;
-}
+    text-align: center;
 
-.image-wrapper > img {
-    display: block;
-    height: auto;
-    margin: auto;
-    max-height: 100%;
-    max-width: 100%;
-    width: auto;
+    img {
+        display: inline-block;
+        height: auto;
+        max-height: 100%;
+        max-width: 100%;
+        vertical-align: middle;
+        width: auto;
+    }
 }
 
 .tags-list {
-    /*
-		If there are too many tags, we change color of left border.
-		Without border-left in style there are some layout bugs.
-	*/
+    // If there are too many tags, we change color of left border.
+    // Without border-left in style there are some layout bugs.
     border-left: 1px solid #00000000;
     display: flex;
     flex-wrap: wrap;
