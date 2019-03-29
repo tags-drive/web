@@ -93,6 +93,35 @@ function fetchFiles(
         .catch(err => logError(err));
 }
 
+function downloadFile(id: number, filename: string) {
+    fetch(Params.Host + "/data/" + id, {
+        method: "GET",
+        credentials: "same-origin"
+    })
+        .then(resp => {
+            if (isErrorStatusCode(resp.status)) {
+                resp.text().then(text => {
+                    logError(text);
+                });
+                return;
+            }
+
+            resp.blob().then(file => {
+                let a = document.createElement("a"),
+                    url = URL.createObjectURL(file);
+
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            });
+        })
+        .catch(err => logError(err));
+}
+
 function fetchTags() {
     fetch(Params.Host + "/api/tags", {
         method: "GET",
@@ -119,7 +148,8 @@ function fetchTags() {
 
 export const API = {
     files: {
-        fetch: fetchFiles
+        fetch: fetchFiles,
+        downloadSingleFile: downloadFile
     },
     tags: {
         fetch: fetchTags

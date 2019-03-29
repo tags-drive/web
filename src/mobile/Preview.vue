@@ -6,13 +6,13 @@
 	>
 		<div id="buttons-bar">
 			<div
-				id="fullscreen-button"
-				@click="turnOnFullscreen"
+				id="download-button"
+				title="Turn on fullscreen mode"
+				@click="downloadFile"
 			>
-				<i
-					class="material-icons noselect"
-					title="Turn on fullscreen mode"	
-				>fullscreen</i>
+				<svg viewBox="0 0 24 24">
+					<path fill="#000000" d="M13,5V11H14.17L12,13.17L9.83,11H11V5H13M15,3H9V9H5L12,16L19,9H15V3M19,18H5V20H19V18Z" />
+				</svg>
 			</div>
 
 			<div
@@ -35,7 +35,7 @@
 				class="preview"
 				:file="files[0]"
 			></preview-component>
-			
+
 			<preview-component
 				class="preview"
 				ref="current-preview"
@@ -84,12 +84,19 @@ $buttons-bar-height: 35px;
             background-color: #ebebeb;
         }
 
+        $size: 35px;
+
         i {
-            font-size: 35px;
+            font-size: $size;
+        }
+
+        svg {
+            height: $size;
+            width: $size;
         }
     }
 
-    #fullscreen-button,
+    #download-button,
     #close-button {
         @include common-styles();
     }
@@ -135,6 +142,7 @@ import { File } from "@app/global/classes";
 // Other
 import { Events, EventBus } from "@app/mobile/eventBus";
 import SharedStore from "@app/mobile/store";
+import { API } from "@app/mobile/api";
 
 // transition time is 250ms. We multiply it by 2/3 to improve preview scrolling
 const transformTransitionTime = (2 / 3) * 250; // ms
@@ -364,8 +372,8 @@ export default Vue.extend({
             preview.$el.scrollTo(0, 0);
         },
         //
-        turnOnFullscreen() {
-            console.log("fullscreen");
+        downloadFile() {
+            API.files.downloadSingleFile(this.files[1].id, this.files[1].filename);
         }
     }
 });
