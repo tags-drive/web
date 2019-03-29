@@ -4,6 +4,7 @@
 		@click="showPreview"
 	>
 		<div class="preview">
+			<span class="helper"></span>
 			<img :src="previewLink" alt="">
 		</div>
 
@@ -29,14 +30,22 @@
 
     .preview {
         height: inherit;
-        padding: 3px;
+        padding: 5px;
+        text-align: center;
+
+        span.helper {
+            display: inline-block;
+            height: 100%;
+            vertical-align: middle;
+        }
 
         img {
-            display: block;
-            height: inherit;
-            margin: auto;
+            background-color: rgb(255, 255, 255);
+            display: inline-block;
+            height: auto;
             max-height: 100%;
             max-width: 100%;
+            vertical-align: middle;
             width: auto;
         }
     }
