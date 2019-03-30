@@ -11,7 +11,7 @@
 			</div>
 			<!-- Global tags mode -->
 			<div v-else-if="globalTagsMode" class="modal-window__input">
-				<global-tags-changing></global-tags-changing>
+				<global-tags-manager></global-tags-manager>
 			</div>
 			<!-- Regular rename mode -->
 			<div v-else-if="regularRenameMode" class="modal-window__input">
@@ -87,7 +87,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 // Components
 import Settings from "@components/ModalWindow/Settings.vue";
-import GlobalTagsChanging from "@components/ModalWindow/TagsChanging.vue";
+import GlobalTagsManager from "@components/ModalWindow/TagsManager/TagsManager.vue";
 // Components: Regular Mode
 import RegularRenaming from "@components/ModalWindow/RegularMode/Rename.vue";
 import RegularTagsUpdating from "@components/ModalWindow/RegularMode/Tags.vue";
@@ -107,7 +107,7 @@ import { Events, EventBus } from "@app/index/eventBus";
 @Component({
     components: {
         "settings-menu": Settings,
-        "global-tags-changing": GlobalTagsChanging,
+        "global-tags-manager": GlobalTagsManager,
         // Regular mode
         "regular-renaming": RegularRenaming,
         "regular-tags-updating": RegularTagsUpdating,
