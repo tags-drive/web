@@ -24,18 +24,18 @@
 	</div>
 </template>
 
+
 <style scoped>
 .btn {
-	height: 25px;
-	font-size: 15px;
-	width: 100px;
+    height: 25px;
+    font-size: 15px;
+    width: 100px;
 }
 </style>
 
+
 <script lang="ts">
 import Vue from "vue";
-import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
 // Components
 import TagComponent from "@components/Tag/Tag.vue";
 // Classes and types
@@ -46,44 +46,56 @@ import SharedStore from "@app/index/store";
 import { Events, EventBus } from "@app/index/eventBus";
 import API from "@app/index/api";
 
-interface CustomTag {
+class CustomTag extends Tag {
     id: number;
-    name: string;
-    color: string;
     selected: boolean;
+
+    constructor(id: number, t: Tag) {
+        super();
+
+        this.id = id;
+        this.name = t.name;
+        this.color = t.color;
+        this.selected = false;
+    }
 }
 
-@Component({
+export default Vue.extend({
+    props: {
+        file: File
+    },
+    data: function() {
+        return {
+            tags: <CustomTag[]>[]
+        };
+    },
+    //
     components: {
         tag: TagComponent
-    }
-})
-export default class extends Vue {
-    @Prop() file!: File;
-    tags: CustomTag[] = [];
-
-    created() {
+    },
+    //
+    created: function() {
         for (let [id, tag] of SharedStore.state.allTags) {
-            let t: CustomTag = { id: id, name: tag.name, color: tag.color, selected: false };
+            let t = new CustomTag(id, tag);
             if (this.file.tags.includes(id)) {
                 t.selected = true;
             }
 
             this.tags.push(t);
         }
-    }
+    },
+    //
+    methods: {
+        updateTags: function() {
+            let tagsIDs: number[] = [];
+            this.tags.filter(tag => tag.selected).forEach(tag => tagsIDs.push(tag.id));
 
-    updateTags() {
-        let tagsIDs: number[] = [];
-        this.tags.filter(tag => tag.selected).forEach(tag => tagsIDs.push(tag.id));
-
-        API.files.changeTags(this.file.id, tagsIDs);
-        this.hideWindow();
+            API.files.changeTags(this.file.id, tagsIDs);
+            this.hideWindow();
+        },
+        hideWindow: function() {
+            EventBus.$emit(Events.ModalWindow.HideWindow);
+        }
     }
-
-    hideWindow() {
-        EventBus.$emit(Events.ModalWindow.HideWindow);
-    }
-}
+});
 </script>
-

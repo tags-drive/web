@@ -31,10 +31,11 @@
 	</div>
 </template>
 
+
 <style scoped>
 .btn {
-	border: none;
-	border-radius: 5px;
+    border: none;
+    border-radius: 5px;
 }
 
 .deleteBtn {
@@ -65,42 +66,40 @@
 
 <script lang="ts">
 import Vue from "vue";
-import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
 // Classes and types
 import { File } from "@app/global/classes";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
 import API from "@app/index/api";
 
-@Component({})
-export default class extends Vue {
-    @Prop() file!: File;
+export default Vue.extend({
+    props: {
+        file: File
+    },
+    //
+    methods: {
+        deleteFile: function() {
+            let ids = [this.file.id];
+            API.files.delete(ids, false);
 
-    deleteFile() {
-        let ids = [this.file.id];
-        API.files.delete(ids, false);
+            this.hideWindow();
+        },
+        // deleteFileForever is a wrapper over deleteFile
+        deleteFileForever: function() {
+            let ids = [this.file.id];
+            API.files.delete(ids, true);
 
-        this.hideWindow();
+            this.hideWindow();
+        },
+        recoverFile: function() {
+            let ids = [this.file.id];
+            API.files.recover(ids);
+
+            this.hideWindow();
+        },
+        hideWindow: function() {
+            EventBus.$emit(Events.ModalWindow.HideWindow);
+        }
     }
-
-    // deleteFileForever is a wrapper over deleteFile
-    deleteFileForever() {
-        let ids = [this.file.id];
-        API.files.delete(ids, true);
-
-        this.hideWindow();
-    }
-
-    recoverFile() {
-        let ids = [this.file.id];
-        API.files.recover(ids);
-
-        this.hideWindow();
-    }
-
-    hideWindow() {
-        EventBus.$emit(Events.ModalWindow.HideWindow);
-    }
-}
+});
 </script>
