@@ -205,6 +205,7 @@
 </div>
 </template>
 
+
 <style lang="scss" scoped>
 #top-bar {
     background-color: white;
@@ -429,9 +430,9 @@ $tags-list-width: 250px;
 }
 </style>
 
+
 <script lang="ts">
 import Vue from "vue";
-import Component from "vue-class-component";
 // Components
 import TagComponent from "@components/Tag/Tag.vue";
 import RenderTagsInput from "@components/RenderTagsInput/RenderTagsInput.vue";
@@ -463,42 +464,44 @@ const availableOperators: Operator[] = [
     new Operator(")", "right bracket")
 ];
 
-@Component({
+export default Vue.extend({
+    data: function() {
+        return {
+            // Const members
+            operators: <Operator[]>availableOperators,
+            // Expression
+            expression: "",
+            //
+            position: 0,
+            showTagsList: false,
+            focused: false,
+            showAdvancedOptions: false,
+            // Text search
+            text: "",
+            isRegexp: false,
+            //
+            Store: SharedStore.state
+        };
+    },
+    computed: {
+        allTagsIDs: function() {
+            // For reactive updating (see @app/index/store/types.ts for more information)
+            return this.Store.allTagsChangesCounter && Array.from(this.Store.allTags.keys());
+        },
+        usedAdvancedOptions: function(): boolean {
+            return this.text != "" || this.isRegexp != false;
+        },
+        showResetButton: function(): boolean {
+            return this.expression != "" || this.usedAdvancedOptions;
+        }
+    },
+    //
     components: {
         tag: TagComponent,
         "render-tags-input": RenderTagsInput
-    }
-})
-export default class TopBar extends Vue {
-    // Const members
-    readonly operators: Operator[] = availableOperators;
-    // Expression
-    expression: string = "";
+    },
     //
-    position: number = 0;
-    showTagsList: boolean = false;
-    focused: boolean = false;
-    showAdvancedOptions: boolean = false;
-    // Text search
-    text: string = "";
-    isRegexp: boolean = false;
-    //
-    readonly Store: Store = SharedStore.state;
-
-    get allTagsIDs() {
-        // For reactive updating (see @app/index/store/types.ts for more information)
-        return this.Store.allTagsChangesCounter && Array.from(this.Store.allTags.keys());
-    }
-
-    get usedAdvancedOptions(): boolean {
-        return this.text != "" || this.isRegexp != false;
-    }
-
-    get showResetButton(): boolean {
-        return this.expression != "" || this.usedAdvancedOptions;
-    }
-
-    created() {
+    created: function() {
         EventBus.$on(Events.Search.Usual, () => {
             this.search().usual();
         });
@@ -517,97 +520,91 @@ export default class TopBar extends Vue {
                 this.focused = false;
             }
         });
-    }
-
-    search() {
-        return {
-            usual: () => {
-                EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
-                API.files.fetch(this.expression, this.text, this.isRegexp, "", "");
-                EventBus.$emit(Events.FilesBlock.RestoreSortParams);
-            },
-            advanced: (sType: string, sOrder: string) => {
-                EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
-                API.files.fetch(this.expression, this.text, this.isRegexp, sType, sOrder);
+    },
+    methods: {
+        search: function() {
+            return {
+                usual: () => {
+                    EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
+                    API.files.fetch(this.expression, this.text, this.isRegexp, "", "");
+                    EventBus.$emit(Events.FilesBlock.RestoreSortParams);
+                },
+                advanced: (sType: string, sOrder: string) => {
+                    EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
+                    API.files.fetch(this.expression, this.text, this.isRegexp, sType, sOrder);
+                }
+            };
+        },
+        management: function() {
+            return {
+                globalTags: () => {
+                    EventBus.$emit(Events.ModalWindow.ShowTagsChangingWindow);
+                },
+                settings: () => {
+                    EventBus.$emit(Events.ModalWindow.ShowSettingsWindow);
+                },
+                logout: () => {
+                    API.management.logout();
+                }
+            };
+        },
+        // insertTagID is used to insert tag id into expression
+        insertTextIntoExpression: function(arg: any) {
+            let text = String(arg);
+            let elem: HTMLInputElement = <HTMLInputElement>this.$refs["expression-input"];
+            if (!(this.$refs["expression-input"] instanceof HTMLInputElement)) {
+                return;
             }
-        };
-    }
 
-    management() {
-        return {
-            globalTags: () => {
-                EventBus.$emit(Events.ModalWindow.ShowTagsChangingWindow);
-            },
-            settings: () => {
-                EventBus.$emit(Events.ModalWindow.ShowSettingsWindow);
-            },
-            logout: () => {
-                API.management.logout();
+            let l = elem.selectionStart!,
+                r = elem.selectionEnd!;
+
+            this.expression = this.expression.slice(0, l) + text + this.expression.slice(r);
+
+            this.$nextTick(() => {
+                elem.focus();
+                elem.setSelectionRange(l + text.length, l + text.length);
+            });
+        },
+        // For AdvancedOptions
+        toggleAdvancedOptions: function() {
+            if (this.showAdvancedOptions) {
+                // Hide
+                this.showAdvancedOptions = false;
+                this.$nextTick(() => {
+                    document.removeEventListener("click", this.advancedOptionsListener);
+                });
+            } else {
+                // Show
+                this.showAdvancedOptions = true;
+                this.$nextTick(() => {
+                    document.addEventListener("click", this.advancedOptionsListener);
+                });
             }
-        };
-    }
-
-    // insertTagID is used to insert tag id into expression
-    insertTextIntoExpression(arg: any) {
-        let text = String(arg);
-        let elem: HTMLInputElement = <HTMLInputElement>this.$refs["expression-input"];
-        if (!(this.$refs["expression-input"] instanceof HTMLInputElement)) {
-            return;
-        }
-
-        let l = elem.selectionStart!,
-            r = elem.selectionEnd!;
-
-        this.expression = this.expression.slice(0, l) + text + this.expression.slice(r);
-
-        this.$nextTick(() => {
-            elem.focus();
-            elem.setSelectionRange(l + text.length, l + text.length);
-        });
-    }
-
-    // For AdvancedOptions
-    toggleAdvancedOptions() {
-        if (this.showAdvancedOptions) {
-            // Hide
-            this.showAdvancedOptions = false;
+        },
+        advancedOptionsListener: function(event: MouseEvent) {
+            if (this.showAdvancedOptions && !isElementInPath(event, "advanced-options")) {
+                this.toggleAdvancedOptions();
+            }
+        },
+        // Secondary function
+        resetExpression: function() {
+            this.expression = "";
+            this.text = "";
+            this.isRegexp = false;
+        },
+        focusInput: function() {
+            this.focused = true;
             this.$nextTick(() => {
-                document.removeEventListener("click", this.advancedOptionsListener);
+                let elem = this.$refs["expression-input"];
+                if (elem instanceof HTMLElement) elem.focus();
             });
-        } else {
-            // Show
-            this.showAdvancedOptions = true;
-            this.$nextTick(() => {
-                document.addEventListener("click", this.advancedOptionsListener);
-            });
+        },
+        validateInput: function(ev: KeyboardEvent) {
+            if (!validCharacters.includes(ev.key)) {
+                ev.preventDefault();
+            }
         }
     }
-
-    advancedOptionsListener(event: MouseEvent) {
-        if (this.showAdvancedOptions && !isElementInPath(event, "advanced-options")) {
-            this.toggleAdvancedOptions();
-        }
-    }
-
-    // Secondary function
-    resetExpression() {
-        this.expression = "";
-        this.text = "";
-        this.isRegexp = false;
-    }
-
-    focusInput() {
-        this.focused = true;
-        this.$nextTick(() => {
-            let elem = this.$refs["expression-input"];
-            if (elem instanceof HTMLElement) elem.focus();
-        });
-    }
-
-    validateInput(ev: KeyboardEvent) {
-        if (!validCharacters.includes(ev.key)) {
-            ev.preventDefault();
-        }
-    }
-}
+});
 </script>
