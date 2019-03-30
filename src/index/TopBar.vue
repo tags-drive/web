@@ -521,6 +521,7 @@ export default Vue.extend({
             }
         });
     },
+    //
     methods: {
         search: function() {
             return {

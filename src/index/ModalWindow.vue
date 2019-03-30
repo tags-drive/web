@@ -127,6 +127,7 @@ export default Vue.extend({
             SharedTagsChangingModes: Const.tagsChanging
         };
     },
+    //
     components: {
         "settings-menu": Settings,
         "global-tags-manager": GlobalTagsManager,
@@ -139,6 +140,7 @@ export default Vue.extend({
         "select-tags-updating": SelectTagsUpdating,
         "select-files-deleting": SelectFilesDeleting
     },
+    //
     created: function() {
         EventBus.$on(Events.ModalWindow.HideWindow, () => {
             this.hideWindow();
@@ -190,6 +192,7 @@ export default Vue.extend({
             this.showWindow();
         });
     },
+    //
     methods: {
         // UI
         showWindow: function() {

@@ -147,6 +147,7 @@ export default Vue.extend({
             }
         });
     },
+    //
     methods: {
         setFile: function(file: File) {
             this.file = file;

@@ -604,6 +604,7 @@ export default Vue.extend({
             }, intervalTime);
         });
     },
+    //
     methods: {
         window: function() {
             return {
