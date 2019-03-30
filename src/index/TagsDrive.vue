@@ -16,21 +16,21 @@
 	</div>
 </template>
 
+
 <style lang="scss">
 @import url("../global/styles.scss");
 </style>
 
+
 <script lang="ts">
 import Vue from "vue";
-import Component from "vue-class-component";
 // Shared data
 import SharedStore from "@app/index/store";
 import SharedState from "@app/index/state";
 import API from "@app/index/api";
 
-@Component({})
-export default class extends Vue {
-    created() {
+export default Vue.extend({
+    created: function() {
         SharedState.commit("readSettings");
         API.tags.fetch();
 
@@ -44,5 +44,5 @@ export default class extends Vue {
             }
         }, 10);
     }
-}
+})
 </script>

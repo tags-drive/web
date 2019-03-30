@@ -39,10 +39,11 @@
 	</div>
 </template>
 
+
 <style scoped>
 .btn {
-	border: none;
-	border-radius: 5px;
+    border: none;
+    border-radius: 5px;
 }
 
 .deleteBtn {
@@ -73,50 +74,48 @@
 
 <script lang="ts">
 import Vue from "vue";
-import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
 // Classes and types
 import { File } from "@app/global/classes";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
 import API from "@app/index/api";
 
-@Component({})
-export default class extends Vue {
-    @Prop() selectedFiles!: File[];
+export default Vue.extend({
+    props: {
+        selectedFiles: Array as () => Array<File>
+    },
+    //
+    methods: {
+        deleteSelectedFiles: function() {
+            let ids = new Array<number>(this.selectedFiles.length);
+            this.selectedFiles.forEach((elem, i) => (ids[i] = elem.id));
+            API.files.delete(ids, false);
+            this.hideWindow();
 
-    deleteSelectedFiles() {
-        let ids = new Array<number>(this.selectedFiles.length);
-        this.selectedFiles.forEach((elem, i) => (ids[i] = elem.id));
-        API.files.delete(ids, false);
-        this.hideWindow();
+            // If we don't call this function, next files will become selected.
+            EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
+        },
+        // deleteSelectedFilesForever is a wrapper over deleteFile
+        deleteSelectedFilesForever: function() {
+            let ids = new Array<number>(this.selectedFiles.length);
+            this.selectedFiles.forEach((elem, i) => (ids[i] = elem.id));
+            API.files.delete(ids, true);
+            this.hideWindow();
 
-        // If we don't call this function, next files will become selected.
-        EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
+            // If we don't call this function, next files will become selected.
+            EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
+        },
+        recoverSelectedFiles: function() {
+            let ids: number[] = new Array<number>(this.selectedFiles.length);
+            this.selectedFiles.forEach((elem, i) => (ids[i] = elem.id));
+            API.files.recover(ids);
+            this.hideWindow();
+
+            EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
+        },
+        hideWindow: function() {
+            EventBus.$emit(Events.ModalWindow.HideWindow);
+        }
     }
-
-    // deleteSelectedFilesForever is a wrapper over deleteFile
-    deleteSelectedFilesForever() {
-        let ids = new Array<number>(this.selectedFiles.length);
-        this.selectedFiles.forEach((elem, i) => (ids[i] = elem.id));
-        API.files.delete(ids, true);
-        this.hideWindow();
-
-        // If we don't call this function, next files will become selected.
-        EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
-    }
-
-    recoverSelectedFiles() {
-        let ids: number[] = new Array<number>(this.selectedFiles.length);
-        this.selectedFiles.forEach((elem, i) => (ids[i] = elem.id));
-        API.files.recover(ids);
-        this.hideWindow();
-
-        EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
-    }
-
-    hideWindow() {
-        EventBus.$emit(Events.ModalWindow.HideWindow);
-    }
-}
+});
 </script>

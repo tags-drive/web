@@ -39,6 +39,7 @@
 	</div>
 </template>
 
+
 <style scoped>
 #context-menu {
     background-color: #ffffff;
@@ -82,9 +83,9 @@
 }
 </style>
 
+
 <script lang="ts">
 import Vue from "vue";
-import Components from "vue-class-component";
 // Classes and types
 import { File } from "@app/global/classes";
 // Shared data
@@ -118,19 +119,22 @@ function getSelectedFiles(): Promise<File[]> {
     });
 }
 
-@Components({})
-export default class extends Vue {
-    file: File | null = null;
-    // Style
-    top: number = 0;
-    left: number = 0;
-    show: boolean = false;
-    // For calculation of position
-    divWidth: number = 140;
-    divHeight: number = 125;
+export default Vue.extend({
+    data: function() {
+        return {
+            file: <File | null>null,
+            // Style
+            top: 0,
+            left: 0,
+            show: false,
+            // For calculation of position
+            divWidth: 140,
+            divHeight: 125,
+            //
+            State: SharedState.state
+        };
+    },
     //
-    readonly State: State = SharedState.state;
-
     created() {
         EventBus.$on(Events.ShowContextMenu, (payload: Payload) => {
             this.setFile(payload.file);
@@ -142,100 +146,99 @@ export default class extends Vue {
                 this.hideMenu();
             }
         });
-    }
-
-    setFile(file: File) {
-        this.file = file;
-    }
-
-    showMenu(x: number, y: number) {
-        const offset = 10;
-        x += offset;
-        y += offset;
-        if (x + this.divWidth > window.innerWidth) {
-            x -= offset * 2;
-            x -= this.divWidth;
-        }
-        if (y + this.divHeight > window.innerHeight) {
-            y -= offset * 2;
-            y -= this.divHeight;
-        }
-        this.left = x;
-        this.top = y;
-        this.show = true;
-
-        document.addEventListener("wheel", this.scrollHandler);
-    }
-
-    hideMenu() {
-        document.removeEventListener("wheel", this.scrollHandler);
-
-        this.show = false;
-        EventBus.$emit(Events.FilesBlock.UnfocusFile);
-    }
-
-    // Options of context menu
-    regularMode() {
-        return {
-            changeName: () => {
-                this.hideMenu();
-                EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileRenamingWindow, { file: this.file });
-            },
-            changeTags: () => {
-                this.hideMenu();
-                EventBus.$emit(Events.ModalWindow.RegularMode.ShowTagsChangingWindow, { file: this.file });
-            },
-            changeDescription: () => {
-                this.hideMenu();
-                EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileDescriptionChangingWindow, { file: this.file });
-            },
-            deleteFile: () => {
-                this.hideMenu();
-                EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileDeletingWindow, { file: this.file });
+    },
+    //
+    methods: {
+        setFile: function(file: File) {
+            this.file = file;
+        },
+        showMenu: function(x: number, y: number) {
+            const offset = 10;
+            x += offset;
+            y += offset;
+            if (x + this.divWidth > window.innerWidth) {
+                x -= offset * 2;
+                x -= this.divWidth;
             }
-        };
-    }
-
-    // Options of context menu (select mode)
-    selectMode() {
-        return {
-            addTags: () => {
-                this.hideMenu();
-                getSelectedFiles().then(files =>
-                    EventBus.$emit(Events.ModalWindow.SelectMode.ShowTagsAddingWindow, { files: files })
-                );
-            },
-            deleteTags: () => {
-                this.hideMenu();
-                getSelectedFiles().then(files =>
-                    EventBus.$emit(Events.ModalWindow.SelectMode.ShowTagsDeletingWindow, { files: files })
-                );
-            },
-            downloadSingleFile: () => {
-                API.files.downloadFile(this.file!.id, this.file!.filename);
-            },
-            downloadFiles: () => {
-                getSelectedFiles().then(files => {
-                    let ids: number[] = [];
-                    files.forEach(elem => ids.push(elem.id));
-                    API.files.downloadFiles(ids);
-                    EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
-                });
-            },
-            deleteFiles: () => {
-                this.hideMenu();
-                getSelectedFiles().then(files =>
-                    EventBus.$emit(Events.ModalWindow.SelectMode.ShowFilesDeletingWindow, { files: files })
-                );
+            if (y + this.divHeight > window.innerHeight) {
+                y -= offset * 2;
+                y -= this.divHeight;
             }
-        };
-    }
+            this.left = x;
+            this.top = y;
+            this.show = true;
 
-    // scrollHandler prevents scrolling when Context Menu is displayed
-    scrollHandler(ev: WheelEvent) {
-        if (this.show) {
-            ev.preventDefault();
+            document.addEventListener("wheel", this.scrollHandler);
+        },
+        hideMenu: function() {
+            document.removeEventListener("wheel", this.scrollHandler);
+
+            this.show = false;
+            EventBus.$emit(Events.FilesBlock.UnfocusFile);
+        },
+        // Options of context menu
+        regularMode: function() {
+            return {
+                changeName: () => {
+                    this.hideMenu();
+                    EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileRenamingWindow, { file: this.file });
+                },
+                changeTags: () => {
+                    this.hideMenu();
+                    EventBus.$emit(Events.ModalWindow.RegularMode.ShowTagsChangingWindow, { file: this.file });
+                },
+                changeDescription: () => {
+                    this.hideMenu();
+                    EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileDescriptionChangingWindow, {
+                        file: this.file
+                    });
+                },
+                deleteFile: () => {
+                    this.hideMenu();
+                    EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileDeletingWindow, { file: this.file });
+                }
+            };
+        },
+        // Options of context menu (select mode)
+        selectMode: function() {
+            return {
+                addTags: () => {
+                    this.hideMenu();
+                    getSelectedFiles().then(files =>
+                        EventBus.$emit(Events.ModalWindow.SelectMode.ShowTagsAddingWindow, { files: files })
+                    );
+                },
+                deleteTags: () => {
+                    this.hideMenu();
+                    getSelectedFiles().then(files =>
+                        EventBus.$emit(Events.ModalWindow.SelectMode.ShowTagsDeletingWindow, { files: files })
+                    );
+                },
+                downloadSingleFile: () => {
+                    API.files.downloadFile(this.file!.id, this.file!.filename);
+                },
+                downloadFiles: () => {
+                    getSelectedFiles().then(files => {
+                        let ids: number[] = [];
+                        files.forEach(elem => ids.push(elem.id));
+                        API.files.downloadFiles(ids);
+                        EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
+                    });
+                },
+                deleteFiles: () => {
+                    this.hideMenu();
+                    getSelectedFiles().then(files =>
+                        EventBus.$emit(Events.ModalWindow.SelectMode.ShowFilesDeletingWindow, { files: files })
+                    );
+                }
+            };
+        },
+        // scrollHandler prevents scrolling when Context Menu is displayed
+        scrollHandler: function(ev: WheelEvent) {
+            if (this.show) {
+                ev.preventDefault();
+            }
         }
     }
-}
+});
 </script>

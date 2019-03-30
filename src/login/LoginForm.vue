@@ -63,6 +63,7 @@
 	</div>
 </template>
 
+
 <style scoped>
 * {
     font-family: arial, sans-serif;
@@ -150,58 +151,61 @@ input[type="password"] {
 }
 </style>
 
+
 <script lang="ts">
 import Vue from "vue";
-import Component from "vue-class-component";
 // Other
 import { sha256 } from "js-sha256";
 import { Params } from "@app/global";
 
-@Component({})
-export default class extends Vue {
-    // data
-    login: string = "";
-    password: string = "";
-    errorMsg: string = "";
-    // flags
-    showPassword: boolean = false;
-    isError: boolean = false;
+export default Vue.extend({
+    data: function() {
+        return {
+            login: "",
+            password: "",
+            errorMsg: "",
+            // flags
+            showPassword: false,
+            isError: false
+        };
+    },
+    //
+    methods: {
+        fail: function(error: string) {
+            setTimeout(() => {
+                this.errorMsg = error;
+                this.isError = true;
+                this.password = "";
+            }, 300);
+        },
+        auth: function() {
+            this.isError = false;
 
-    fail(error: string) {
-        setTimeout(() => {
-            this.errorMsg = error;
-            this.isError = true;
-            this.password = "";
-        }, 300);
-    }
+            // 11 times
+            let hash = sha256(this.password);
+            for (var i = 0; i < 10; i++) {
+                hash = sha256(hash);
+            }
 
-    auth() {
-        this.isError = false;
+            let params = new URLSearchParams();
+            params.append("login", this.login);
+            params.append("password", hash);
 
-        // 11 times
-        let hash = sha256(this.password);
-        for (var i = 0; i < 10; i++) {
-            hash = sha256(hash);
-        }
-
-        let params = new URLSearchParams();
-        params.append("login", this.login);
-        params.append("password", hash);
-
-        fetch(Params.Host + "/login?" + params, {
-            method: "POST",
-            credentials: "same-origin"
-        })
-            .then(data => {
-                // Valid login and password
-                if (data.status === 200) {
-                    window.location.href = "/";
-                    return;
-                }
-
-                data.text().then(msg => this.fail(msg));
+            fetch(Params.Host + "/login?" + params, {
+                method: "POST",
+                credentials: "same-origin"
             })
-            .catch(err => this.fail(err));
+                .then(data => {
+                    // Valid login and password
+                    if (data.status === 200) {
+                        window.location.href = "/";
+                        return;
+                    }
+
+                    data.text().then(msg => this.fail(msg));
+                })
+                .catch(err => this.fail(err));
+        }
     }
-}
+});
 </script>

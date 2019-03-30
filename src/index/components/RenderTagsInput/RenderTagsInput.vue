@@ -19,10 +19,9 @@
 	</div>
 </template>
 
+
 <script lang="ts">
 import Vue from "vue";
-import Component from "vue-class-component";
-import { Prop, Watch } from "vue-property-decorator";
 // Components
 import TagComponent from "@components/Tag/Tag.vue";
 // Classes and types
@@ -51,66 +50,70 @@ class TextElement {
     }
 }
 
-@Component({
+export default Vue.extend({
+    props: {
+        expression: String
+    },
+    data: function() {
+        return {
+            elements: [] as Array<TagElement | TextElement>
+        };
+    },
     components: {
         tag: TagComponent
-    }
-})
-export default class extends Vue {
-    @Prop() expression!: string;
+    },
+    //
+    watch: {
+        expression: function() {
+            this.elements = [];
 
-    elements: (TagElement | TextElement)[] = [];
+            let addTag = (id: number) => {
+                let tag = SharedStore.state.allTags.get(id);
+                let name = "undefined";
+                let color = "#ffffff";
 
-    @Watch("expression", { immediate: true })
-    onExpressionChanged() {
-        this.elements = [];
+                if (tag !== undefined) {
+                    name = tag.name;
+                    color = tag.color;
+                }
 
-        let addTag = (id: number) => {
-            let tag = SharedStore.state.allTags.get(id);
-            let name = "undefined";
-            let color = "#ffffff";
+                this.elements.push(new TagElement(name, color));
+            };
 
-            if (tag !== undefined) {
-                name = tag.name;
-                color = tag.color;
+            let addText = (text: string) => {
+                this.elements.push(new TextElement(text));
+            };
+
+            let id = "";
+            let text = "";
+
+            for (let i = 0; i < this.expression.length; i++) {
+                if ("0" <= this.expression[i] && this.expression[i] <= "9") {
+                    if (text !== "") {
+                        // text
+                        addText(text);
+                        text = "";
+                    }
+                    id += this.expression[i];
+                } else {
+                    if (id !== "") {
+                        // tag
+                        addTag(Number(id));
+                        id = "";
+                    }
+                    text += this.expression[i];
+                }
             }
 
-            this.elements.push(new TagElement(name, color));
-        };
-
-        let addText = (text: string) => {
-            this.elements.push(new TextElement(text));
-        };
-
-        let id = "";
-        let text = "";
-
-        for (let i = 0; i < this.expression.length; i++) {
-            if ("0" <= this.expression[i] && this.expression[i] <= "9") {
-                if (text !== "") {
-                    // text
-                    addText(text);
-                    text = "";
-                }
-                id += this.expression[i];
-            } else {
-                if (id !== "") {
-                    // tag
-                    addTag(Number(id));
-                    id = "";
-                }
-                text += this.expression[i];
+            // Add last tag or text
+            if (id !== "") {
+                addTag(Number(id));
+                id = "";
+            } else if (text !== "") {
+                addText(text);
+                text = "";
             }
         }
-
-        // Add last tag or text
-        if (id !== "") {
-            addTag(Number(id));
-            id = "";
-        } else if (text !== "") {
-            addText(text);
-            text = "";
-        }
     }
-}
+});
 </script>

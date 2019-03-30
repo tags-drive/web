@@ -31,6 +31,7 @@
 	</div>
 </template>
 
+
 <style scoped>
 .btn {
     height: 25px;
@@ -39,14 +40,13 @@
 }
 </style>
 
+
 <script lang="ts">
 import Vue from "vue";
-import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
 // Components
 import TagComponent from "@components/Tag/Tag.vue";
 // Classes and types
-import { File } from "@app/global/classes";
+import { File, Tag } from "@app/global/classes";
 // Shared data
 import SharedStore from "@app/index/store";
 // Other
@@ -56,47 +56,59 @@ import { Const } from "@app/global/const";
 import { logError, isErrorStatusCode } from "@app/index/tools";
 import API from "@app/index/api";
 
-interface CustomTag {
+class CustomTag extends Tag {
     id: number;
-    name: string;
-    color: string;
     selected: boolean;
+
+    constructor(id: number, t: Tag) {
+        super();
+
+        this.id = id;
+        this.name = t.name;
+        this.color = t.color;
+        this.selected = false;
+    }
 }
 
-@Component({
+export default Vue.extend({
+    props: {
+        selectedFiles: Array as () => Array<File>,
+        mode: String
+    },
+    data: function() {
+        return {
+            SharedModes: Const.tagsChanging,
+            tags: <CustomTag[]>[]
+        };
+    },
+    //
     components: {
         tag: TagComponent
-    }
-})
-export default class extends Vue {
-    @Prop() selectedFiles!: File[];
-    @Prop() mode!: string;
-    SharedModes = Const.tagsChanging;
-    tags: CustomTag[] = [];
-
-    created() {
+    },
+    //
+    created: function() {
         for (let [id, tag] of SharedStore.state.allTags) {
-            let t: CustomTag = { id: id, name: tag.name, color: tag.color, selected: false };
+            let t = new CustomTag(id, tag);
             this.tags.push(t);
         }
-    }
+    },
+    methods: {
+        processSelectedFiles: function() {
+            let tagIDs: number[] = [];
+            this.tags.filter(tag => tag.selected).forEach(tag => tagIDs.push(tag.id));
+            let fileIDs: number[] = [];
+            this.selectedFiles.forEach(file => fileIDs.push(file.id));
 
-    processSelectedFiles() {
-        let tagIDs: number[] = [];
-        this.tags.filter(tag => tag.selected).forEach(tag => tagIDs.push(tag.id));
-        let fileIDs: number[] = [];
-        this.selectedFiles.forEach(file => fileIDs.push(file.id));
+            if (tagIDs.length === 0 || fileIDs.length === 0) {
+                return;
+            }
 
-        if (tagIDs.length === 0 || fileIDs.length === 0) {
-            return;
+            API.files.changeFilesTags(fileIDs, tagIDs, this.mode);
+            this.hideWindow();
+        },
+        hideWindow: function() {
+            EventBus.$emit(Events.ModalWindow.HideWindow);
         }
-
-        API.files.changeFilesTags(fileIDs, tagIDs, this.mode);
-        this.hideWindow();
     }
-
-    hideWindow() {
-        EventBus.$emit(Events.ModalWindow.HideWindow);
-    }
-}
+});
 </script>

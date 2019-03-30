@@ -30,6 +30,7 @@
 	</div>
 </template>
 
+
 <style scoped>
 h2 {
     margin-top: 0;
@@ -55,9 +56,9 @@ input[type="checkbox"] {
 }
 </style>
 
+
 <script lang="ts">
 import Vue from "vue";
-import Component from "vue-class-component";
 // Classes and types
 import { Settings } from "@app/index/state/types";
 // Shared data
@@ -66,12 +67,15 @@ import SharedState from "@app/index/state";
 import { Events, EventBus } from "@app/index/eventBus";
 import { Version } from "@app/global";
 
-@Component({})
-export default class extends Vue {
-    settings: Settings = { showDeletedFiles: false };
-    version: string = Version;
-
-    created() {
+export default Vue.extend({
+    data: function() {
+        return {
+            settings: <Settings>{ showDeletedFiles: false },
+            version: Version
+        };
+    },
+    //
+    created: function() {
         this.$nextTick(function() {
             // Add onchange handlers to input["checkbox"]
             let elements = document.getElementById("settings")!.getElementsByTagName("input");
@@ -82,25 +86,25 @@ export default class extends Vue {
 
         // Copy global settings to local ones
         this.settings = JSON.parse(JSON.stringify(SharedState.state.settings));
-    }
-
-    destroyed() {
+    },
+    destroyed: function() {
         // If user pressed Save button, readSettings will read same settings,
         // else readSettings will recover saved settings
         SharedState.commit("readSettings");
-    }
+    },
+    //
+    methods: {
+        apply: function() {
+            SharedState.commit("applySettings", this.settings);
+        },
+        saveSettings: function() {
+            // Update global settings from local ones
+            // We will save current settings because we call apply() on every change
+            SharedState.commit("saveSettings");
 
-    apply() {
-        SharedState.commit("applySettings", this.settings);
+            // Close window
+            EventBus.$emit(Events.ModalWindow.HideWindow);
+        }
     }
-
-    saveSettings() {
-        // Update global settings from local ones
-        // We will save current settings because we call apply() on every change
-        SharedState.commit("saveSettings");
-
-        // Close window
-        EventBus.$emit(Events.ModalWindow.HideWindow);
-    }
-}
+});
 </script>

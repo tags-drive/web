@@ -50,6 +50,7 @@
 	</div>
 </template>
 
+
 <style lang="scss" scoped>
 #log-window {
     background-color: #f7f7f7;
@@ -156,9 +157,9 @@
 }
 </style>
 
+
 <script lang="ts">
 import Vue from "vue";
-import Component from "vue-class-component";
 // Other
 import dateformat from "dateformat";
 import { Events, EventBus } from "@app/index/eventBus";
@@ -175,36 +176,40 @@ const animationStart = 500; // 500ms
 const msTimeout = 20; // 20ms is good enough
 const maxEventsNumber = 1000;
 
-@Component({})
-export default class extends Vue {
-    errorType: string = Const.logType.error;
-    infoType: string = Const.logType.info;
-    // States
-    show: boolean = false;
-    isMouseInside: boolean = false; // if isMouseInside, hideAfter isn't changed
-    hideAfter: number = 0;
-    // Data
-    events: logEvent[] = [];
-
-    get logWindowStyles() {
-        if (this.show) {
-            if (this.isMouseInside || this.hideAfter > 1000) {
-                return {};
-            }
-        }
-
-        let transform: number = 0;
-        if (0 <= this.hideAfter && this.hideAfter <= animationStart) {
-            transform = 100 - Math.ceil((this.hideAfter / animationStart) * 100);
-        }
-
+export default Vue.extend({
+    data: function() {
         return {
-            right: transform === 0 ? "25px" : "0",
-            transform: `translateX(${transform}%)`
+            errorType: Const.logType.error,
+            infoType: Const.logType.info,
+            // States
+            show: false,
+            isMouseInside: false, // if isMouseInside, hideAfter isn't changed
+            hideAfter: 0,
+            // Data
+            events: [] as Array<logEvent>
         };
-    }
+    },
+    computed: {
+        logWindowStyles: function() {
+            if (this.show) {
+                if (this.isMouseInside || this.hideAfter > 1000) {
+                    return {};
+                }
+            }
 
-    created() {
+            let transform: number = 0;
+            if (0 <= this.hideAfter && this.hideAfter <= animationStart) {
+                transform = 100 - Math.ceil((this.hideAfter / animationStart) * 100);
+            }
+
+            return {
+                right: transform === 0 ? "25px" : "0",
+                transform: `translateX(${transform}%)`
+            };
+        }
+    },
+    //
+    created: function() {
         EventBus.$on(Events.LogEvent, (payload: any) => {
             if (payload.type === undefined || payload.msg === undefined) {
                 /* eslint-disable no-console */
@@ -228,56 +233,56 @@ export default class extends Vue {
 
             this.hideAfter -= msTimeout;
         }, msTimeout);
-    }
-
-    // UI
-    window() {
-        return {
-            show: () => {
-                this.hideAfter = hideTimeout;
-                this.show = true;
-            },
-            hide: () => {
-                this.hideAfter = animationStart;
-                this.isMouseInside = false;
-            },
-            mouseEnter: () => {
-                // Don't interrupt animation
-                if (this.hideAfter > animationStart) {
+    },
+    methods: {
+        // UI
+        window: function() {
+            return {
+                show: () => {
                     this.hideAfter = hideTimeout;
-                    this.isMouseInside = true;
-                }
-            },
-            mouseLeave: () => {
-                this.isMouseInside = false;
-            },
-            scrollToEnd: () => {
-                let elem = <HTMLElement>this.$refs["events"];
-                if (elem === undefined) {
-                    return;
-                }
+                    this.show = true;
+                },
+                hide: () => {
+                    this.hideAfter = animationStart;
+                    this.isMouseInside = false;
+                },
+                mouseEnter: () => {
+                    // Don't interrupt animation
+                    if (this.hideAfter > animationStart) {
+                        this.hideAfter = hideTimeout;
+                        this.isMouseInside = true;
+                    }
+                },
+                mouseLeave: () => {
+                    this.isMouseInside = false;
+                },
+                scrollToEnd: () => {
+                    let elem = <HTMLElement>this.$refs["events"];
+                    if (elem === undefined) {
+                        return;
+                    }
 
-                // We have to wait for render of a new element
-                setTimeout(() => {
-                    elem.scrollTop = elem.scrollHeight;
-                }, 20);
+                    // We have to wait for render of a new element
+                    setTimeout(() => {
+                        elem.scrollTop = elem.scrollHeight;
+                    }, 20);
+                }
+            };
+        },
+        // Data
+        add: function(type: string, msg: string) {
+            let time = dateformat(new Date(), "HH:MM:ss");
+            let obj: logEvent = { type: type, msg: msg, time: time };
+            this.events.push(obj);
+
+            // Remove old events
+            while (this.events.length > maxEventsNumber) {
+                this.events.splice(0, 1);
             }
-        };
-    }
 
-    // Data
-    add(type: string, msg: string) {
-        let time = dateformat(new Date(), "HH:MM:ss");
-        let obj: logEvent = { type: type, msg: msg, time: time };
-        this.events.push(obj);
-
-        // Remove old events
-        while (this.events.length > maxEventsNumber) {
-            this.events.splice(0, 1);
+            this.window().show();
+            this.window().scrollToEnd();
         }
-
-        this.window().show();
-        this.window().scrollToEnd();
     }
-}
+});
 </script>

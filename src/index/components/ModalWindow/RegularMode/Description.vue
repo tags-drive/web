@@ -23,6 +23,7 @@
 	</div>
 </template>
 
+
 <style scoped>
 .btn {
     height: 25px;
@@ -41,33 +42,38 @@ textarea {
 }
 </style>
 
+
 <script lang="ts">
 import Vue from "vue";
-import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
 // Classes and types
 import { File } from "@app/global/classes";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
 import API from "@app/index/api";
 
-@Component({})
-export default class extends Vue {
-    @Prop() file!: File;
-    newDescription: string = "";
-
-    created() {
+export default Vue.extend({
+    props: {
+        file: File
+    },
+    data: function() {
+        return {
+            newDescription: ""
+        };
+    },
+    //
+    created: function() {
         this.newDescription = this.file.description;
+    },
+    //
+    methods: {
+        updateDescription: function() {
+            API.files.changeDescription(this.file.id, this.newDescription);
+            this.hideWindow();
+        },
+        hideWindow: function() {
+            EventBus.$emit(Events.ModalWindow.HideWindow);
+        }
     }
-
-    updateDescription() {
-        API.files.changeDescription(this.file.id, this.newDescription);
-        this.hideWindow();
-    }
-
-    hideWindow() {
-        EventBus.$emit(Events.ModalWindow.HideWindow);
-    }
-}
+});
 </script>
 

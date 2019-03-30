@@ -10,6 +10,7 @@
 </div>
 </template>
 
+
 <style scoped>
 .tag {
     background-color: white;
@@ -23,7 +24,7 @@
     min-height: 20px;
     padding: 3px;
     padding-right: 5px;
-	word-break: break-all;  /* For Firefox */
+    word-break: break-all; /* For Firefox */
     word-break: break-word; /* For Chrome */
 }
 
@@ -36,16 +37,16 @@
 }
 </style>
 
+
 <script lang="ts">
 import Vue from "vue";
-import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
 // Classes and types
 import { Tag } from "@app/global/classes";
 
-@Component({})
-export default class extends Vue {
-    @Prop() tag!: Tag;
-}
+export default Vue.extend({
+    props: {
+        tag: Tag
+    }
+});
 </script>
 

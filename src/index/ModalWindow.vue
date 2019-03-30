@@ -11,7 +11,7 @@
 			</div>
 			<!-- Global tags mode -->
 			<div v-else-if="globalTagsMode" class="modal-window__input">
-				<global-tags-changing></global-tags-changing>
+				<global-tags-manager></global-tags-manager>
 			</div>
 			<!-- Regular rename mode -->
 			<div v-else-if="regularRenameMode" class="modal-window__input">
@@ -51,6 +51,7 @@
 	</div>
 </template>
 
+
 <style scoped>
 #background {
     background-color: rgba(0, 0, 0, 0.3);
@@ -82,12 +83,12 @@
 }
 </style>
 
+
 <script lang="ts">
 import Vue from "vue";
-import Component from "vue-class-component";
 // Components
 import Settings from "@components/ModalWindow/Settings.vue";
-import GlobalTagsChanging from "@components/ModalWindow/TagsChanging.vue";
+import GlobalTagsManager from "@components/ModalWindow/TagsManager/TagsManager.vue";
 // Components: Regular Mode
 import RegularRenaming from "@components/ModalWindow/RegularMode/Rename.vue";
 import RegularTagsUpdating from "@components/ModalWindow/RegularMode/Tags.vue";
@@ -104,10 +105,32 @@ import SharedState from "@app/index/state";
 import { Const } from "@app/global/const";
 import { Events, EventBus } from "@app/index/eventBus";
 
-@Component({
+export default Vue.extend({
+    data: function() {
+        return {
+            file: <File | null>null,
+            show: false,
+            selectedFiles: [] as Array<File>,
+            // Modes
+            settingsMode: false,
+            globalTagsMode: false,
+            //
+            regularRenameMode: false,
+            regularFileTagsMode: false,
+            regularDescriptionMode: false,
+            regularDeleteMode: false,
+            //
+            selectFilesTagsAddMode: false,
+            selectFilesTagsDeleteMode: false,
+            selectDeleteMode: false,
+            //
+            SharedTagsChangingModes: Const.tagsChanging
+        };
+    },
+    //
     components: {
         "settings-menu": Settings,
-        "global-tags-changing": GlobalTagsChanging,
+        "global-tags-manager": GlobalTagsManager,
         // Regular mode
         "regular-renaming": RegularRenaming,
         "regular-tags-updating": RegularTagsUpdating,
@@ -116,28 +139,9 @@ import { Events, EventBus } from "@app/index/eventBus";
         // Select mode
         "select-tags-updating": SelectTagsUpdating,
         "select-files-deleting": SelectFilesDeleting
-    }
-})
-export default class extends Vue {
-    file: File | null = null;
-    show: boolean = false;
-    selectedFiles: File[] = [];
-    // Modes
-    settingsMode: boolean = false;
-    globalTagsMode: boolean = false;
+    },
     //
-    regularRenameMode: boolean = false;
-    regularFileTagsMode: boolean = false;
-    regularDescriptionMode: boolean = false;
-    regularDeleteMode: boolean = false;
-    //
-    selectFilesTagsAddMode: boolean = false;
-    selectFilesTagsDeleteMode: boolean = false;
-    selectDeleteMode: boolean = false;
-    //
-    SharedTagsChangingModes = Const.tagsChanging;
-
-    created() {
+    created: function() {
         EventBus.$on(Events.ModalWindow.HideWindow, () => {
             this.hideWindow();
         });
@@ -187,45 +191,46 @@ export default class extends Vue {
             this.selectDeleteMode = true;
             this.showWindow();
         });
-    }
+    },
+    //
+    methods: {
+        // UI
+        showWindow: function() {
+            SharedState.commit("hideDropLayer");
+            SharedState.commit("showModalWindow");
+            this.addListener();
+            this.show = true;
+        },
+        hideWindow: function() {
+            this.settingsMode = false;
+            this.globalTagsMode = false;
+            this.regularRenameMode = false;
+            this.regularFileTagsMode = false;
+            this.regularDescriptionMode = false;
+            this.regularDeleteMode = false;
+            this.selectFilesTagsAddMode = false;
+            this.selectFilesTagsDeleteMode = false;
+            this.selectDeleteMode = false;
 
-    // UI
-    showWindow() {
-        SharedState.commit("hideDropLayer");
-        SharedState.commit("showModalWindow");
-        this.addListener();
-        this.show = true;
-    }
-    hideWindow() {
-        this.settingsMode = false;
-        this.globalTagsMode = false;
-        this.regularRenameMode = false;
-        this.regularFileTagsMode = false;
-        this.regularDescriptionMode = false;
-        this.regularDeleteMode = false;
-        this.selectFilesTagsAddMode = false;
-        this.selectFilesTagsDeleteMode = false;
-        this.selectDeleteMode = false;
+            this.show = false;
 
-        this.show = false;
+            this.removeListener();
 
-        this.removeListener();
-
-        SharedState.commit("showDropLayer");
-        SharedState.commit("hideModalWindow");
-    }
-
-    // Listener
-    addListener() {
-        document.addEventListener("keydown", this.onkeydownListener);
-    }
-    removeListener() {
-        document.removeEventListener("keydown", this.onkeydownListener);
-    }
-    onkeydownListener(event: KeyboardEvent) {
-        if (event.key === "Escape") {
-            this.hideWindow();
+            SharedState.commit("showDropLayer");
+            SharedState.commit("hideModalWindow");
+        },
+        // Listener
+        addListener: function() {
+            document.addEventListener("keydown", this.onkeydownListener);
+        },
+        removeListener: function() {
+            document.removeEventListener("keydown", this.onkeydownListener);
+        },
+        onkeydownListener: function(event: KeyboardEvent) {
+            if (event.key === "Escape") {
+                this.hideWindow();
+            }
         }
     }
-}
+});
 </script>
