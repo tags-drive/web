@@ -63,14 +63,14 @@
 
 				<!-- Text -->
 				<div
-					v-if="isTextFile()"
+					v-if="isTextFile"
 					id="text-preview"
 				>
 					<pre>{{textFileContent}}</pre>
 				</div>
 				<!-- Image -->
 				<div
-					v-else-if="isImage()"
+					v-else-if="isImage"
 					id="image-preview"
 					class="noselect"
 				>
@@ -79,7 +79,7 @@
 				</div>
 				<!-- Audio -->
 				<div
-					v-else-if="isAudio()"
+					v-else-if="isAudio"
 					id="audio-preview"
 				>
 					<audio controls style="width: 80%;" ref="audio-block">
@@ -91,7 +91,7 @@
 				</div>
 				<!-- Video -->
 				<div
-					v-else-if="isVideo()"
+					v-else-if="isVideo"
 					id="video-preview"
 				>
 					<video
@@ -209,6 +209,7 @@
 		</div>
 	</div>
 </template>
+
 
 <style lang="scss" scoped>
 #preview-background {
@@ -429,9 +430,9 @@ $switch-button-width: 80px;
 }
 </style>
 
+
 <script lang="ts">
 import Vue from "vue";
-import Component from "vue-class-component";
 // Components
 import TagComponent from "@components/Tag/Tag.vue";
 // Classes and types
@@ -446,99 +447,96 @@ import { Params } from "@app/global";
 import { logError, preloadImages } from "@app/index/tools";
 import { Const } from "@app/global/const";
 
-@Component({
+export default Vue.extend({
+    data: function() {
+        return {
+            show: false,
+            showAsText: false,
+            fullscreenMode: false,
+            // File
+            fileIndex: 0,
+            file: <File | null>null,
+            // Data
+            textFileContent: "",
+            //
+            Store: SharedStore.state
+        };
+    },
+    computed: {
+        allFiles: function() {
+            // For reactive updating (see @app/index/store/types.ts for more information)
+            return this.Store.allFilesChangesCounter && this.Store.allFiles;
+        },
+        originLink: function(): string {
+            return Params.Host + "/" + this.file!.origin;
+        },
+        previewWindowStyle: function() {
+            if (!this.fullscreenMode) {
+                return {};
+            }
+
+            return {
+                "background-color": "gray",
+                "border-radius": "0px",
+                height: "100%",
+                "max-width": "none",
+                padding: "0px",
+                top: "0",
+                width: "100%"
+            };
+        },
+        previewStyle: function() {
+            if (!this.fullscreenMode) {
+                return {};
+            }
+
+            return {
+                height: "90%",
+                margin: "auto",
+                "margin-top": "30px",
+                width: "96%"
+            };
+        },
+        // Types
+        isTextFile: function(): boolean {
+            return this.file !== null && (this.file.type.previewType === Const.previewTypes.text || this.showAsText);
+        },
+        isImage: function(): boolean {
+            return this.file !== null && this.file.type.previewType === Const.previewTypes.image;
+        },
+        isAudio: function(): boolean {
+            let res = this.file !== null && this.file.type.previewType.includes(Const.previewTypes.audio);
+            if (res) {
+                let audio = <HTMLAudioElement>this.$refs["audio-block"];
+                if (audio !== undefined) {
+                    // We have to reload video with new src
+                    this.$nextTick(() => {
+                        audio.load();
+                    });
+                }
+            }
+            return res;
+        },
+        isVideo: function(): boolean {
+            let res = this.file !== null && this.file.type.previewType.includes(Const.previewTypes.video);
+            if (res) {
+                let video = <HTMLVideoElement>this.$refs["video-block"];
+                if (video !== undefined) {
+                    // We have to reload video with new src
+                    this.$nextTick(() => {
+                        video.load();
+                    });
+                }
+            }
+            return res;
+        }
+    },
+    //
     components: {
         tag: TagComponent
-    }
-})
-export default class extends Vue {
-    show: boolean = false;
-    showAsText: boolean = false;
-    fullscreenMode: boolean = false;
-    // File
-    fileIndex: number = 0;
-    file: File | null = null;
-    // Data
-    textFileContent: string = "";
+    },
     //
-    readonly Store: Store = SharedStore.state;
-
-    get allFiles() {
-        // For reactive updating (see @app/index/store/types.ts for more information)
-        return this.Store.allFilesChangesCounter && this.Store.allFiles;
-    }
-
-    get originLink(): string {
-        return Params.Host + "/" + this.file!.origin;
-    }
-
-    get previewWindowStyle() {
-        if (!this.fullscreenMode) {
-            return {};
-        }
-
-        return {
-            "background-color": "gray",
-            "border-radius": "0px",
-            height: "100%",
-            "max-width": "none",
-            padding: "0px",
-            top: "0",
-            width: "100%"
-        };
-    }
-
-    get previewStyle() {
-        if (!this.fullscreenMode) {
-            return {};
-        }
-
-        return {
-            height: "90%",
-            margin: "auto",
-            "margin-top": "30px",
-            width: "96%"
-        };
-    }
-
-    // Types
-    isTextFile(): boolean {
-        return this.file !== null && (this.file.type.previewType === Const.previewTypes.text || this.showAsText);
-    }
-
-    isImage(): boolean {
-        return this.file !== null && this.file.type.previewType === Const.previewTypes.image;
-    }
-
-    isAudio(): boolean {
-        let res = this.file !== null && this.file.type.previewType.includes(Const.previewTypes.audio);
-        if (res) {
-            let audio = <HTMLAudioElement>this.$refs["audio-block"];
-            if (audio !== undefined) {
-                // We have to reload video with new src
-                this.$nextTick(() => {
-                    audio.load();
-                });
-            }
-        }
-        return res;
-    }
-
-    isVideo(): boolean {
-        let res = this.file !== null && this.file.type.previewType.includes(Const.previewTypes.video);
-        if (res) {
-            let video = <HTMLVideoElement>this.$refs["video-block"];
-            if (video !== undefined) {
-                // We have to reload video with new src
-                this.$nextTick(() => {
-                    video.load();
-                });
-            }
-        }
-        return res;
-    }
-
-    created() {
+    created: function() {
         EventBus.$on(Events.ShowPreview, (payload: any) => {
             if (payload === undefined || !(payload.file instanceof File)) {
                 /* eslint-disable no-console */
@@ -558,7 +556,7 @@ export default class extends Vue {
             }
 
             this.textFileContent = "";
-            if (this.isTextFile()) {
+            if (this.isTextFile) {
                 fetch(Params.Host + "/" + this.file!.origin, {
                     method: "GET",
                     credentials: "same-origin"
@@ -605,128 +603,124 @@ export default class extends Vue {
                 }
             }, intervalTime);
         });
-    }
-
-    window() {
-        return {
-            show: () => {
-                SharedState.commit("hideDropLayer");
-                document.addEventListener("keydown", this.onkeydownListener);
-                this.show = true;
-            },
-            hide: () => {
-                SharedState.commit("showDropLayer");
-                document.removeEventListener("keydown", this.onkeydownListener);
-                this.fullscreenMode = false;
-                this.show = false;
-            }
-        };
-    }
-
-    edit() {
-        return {
-            filename: () => {
-                EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileRenamingWindow, { file: this.file });
-            },
-            tags: () => {
-                EventBus.$emit(Events.ModalWindow.RegularMode.ShowTagsChangingWindow, { file: this.file });
-            },
-            description: () => {
-                EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileDescriptionChangingWindow, { file: this.file });
-            }
-        };
-    }
-
-    nextPreview() {
-        if (this.fileIndex < this.Store.allFiles.length - 1) {
-            this.showAsText = false;
-
-            this.file = this.Store.allFiles[++this.fileIndex];
-            if (this.fileIndex < this.Store.allFiles.length - 1) {
-                let nextFile = this.Store.allFiles[this.fileIndex + 1];
-                if (nextFile.type.previewType == Const.previewTypes.image) {
-                    preloadImages(nextFile.origin);
-                }
-            }
-
-            if (this.isTextFile()) {
-                this.setPreviewText();
-            }
-        }
-    }
-
-    previousPreview() {
-        if (this.fileIndex > 0) {
-            this.showAsText = false;
-
-            this.file = this.Store.allFiles[--this.fileIndex];
-            if (this.fileIndex > 0) {
-                let nextFile = this.Store.allFiles[this.fileIndex - 1];
-                if (nextFile.type.previewType == Const.previewTypes.image) {
-                    preloadImages(nextFile.origin);
-                }
-            }
-
-            if (this.isTextFile()) {
-                this.setPreviewText();
-            }
-        }
-    }
-
-    setPreviewText() {
-        if (this.file === null) return;
-
-        this.textFileContent = "";
-
-        fetch(Params.Host + "/" + this.file.origin, {
-            method: "GET",
-            credentials: "same-origin"
-        })
-            .then(resp => resp.text())
-            .then(text => (this.textFileContent = text))
-            .catch(err => logError(err));
-    }
-
-    openAsTextFile() {
-        this.showAsText = true;
-        this.setPreviewText();
-    }
-
-    updatePreview() {
-        if (this.file === null) {
-            return;
-        }
-
-        for (let i = 0; i < this.Store.allFiles.length; i++) {
-            if (this.Store.allFiles[i].id === this.file.id) {
-                // Updating fileIndex is confusing. So it's better not to change it
-                // this.fileIndex = i;
-                this.file = this.Store.allFiles[i];
-                break;
-            }
-        }
-    }
-
-    onkeydownListener(event: KeyboardEvent) {
-        if (SharedState.state.showModalWindow) {
-            return;
-        }
-
-        switch (event.key) {
-            case "ArrowRight":
-                this.nextPreview();
-                break;
-            case "ArrowLeft":
-                this.previousPreview();
-                break;
-            case "Escape":
-                if (this.fullscreenMode) {
+    },
+    methods: {
+        window: function() {
+            return {
+                show: () => {
+                    SharedState.commit("hideDropLayer");
+                    document.addEventListener("keydown", this.onkeydownListener);
+                    this.show = true;
+                },
+                hide: () => {
+                    SharedState.commit("showDropLayer");
+                    document.removeEventListener("keydown", this.onkeydownListener);
                     this.fullscreenMode = false;
+                    this.show = false;
+                }
+            };
+        },
+        edit: function() {
+            return {
+                filename: () => {
+                    EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileRenamingWindow, { file: this.file });
+                },
+                tags: () => {
+                    EventBus.$emit(Events.ModalWindow.RegularMode.ShowTagsChangingWindow, { file: this.file });
+                },
+                description: () => {
+                    EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileDescriptionChangingWindow, {
+                        file: this.file
+                    });
+                }
+            };
+        },
+        nextPreview: function() {
+            if (this.fileIndex < this.Store.allFiles.length - 1) {
+                this.showAsText = false;
+
+                this.file = this.Store.allFiles[++this.fileIndex];
+                if (this.fileIndex < this.Store.allFiles.length - 1) {
+                    let nextFile = this.Store.allFiles[this.fileIndex + 1];
+                    if (nextFile.type.previewType == Const.previewTypes.image) {
+                        preloadImages(nextFile.origin);
+                    }
+                }
+
+                if (this.isTextFile) {
+                    this.setPreviewText();
+                }
+            }
+        },
+        previousPreview: function() {
+            if (this.fileIndex > 0) {
+                this.showAsText = false;
+
+                this.file = this.Store.allFiles[--this.fileIndex];
+                if (this.fileIndex > 0) {
+                    let nextFile = this.Store.allFiles[this.fileIndex - 1];
+                    if (nextFile.type.previewType == Const.previewTypes.image) {
+                        preloadImages(nextFile.origin);
+                    }
+                }
+
+                if (this.isTextFile) {
+                    this.setPreviewText();
+                }
+            }
+        },
+        setPreviewText: function() {
+            if (this.file === null) return;
+
+            this.textFileContent = "";
+
+            fetch(Params.Host + "/" + this.file.origin, {
+                method: "GET",
+                credentials: "same-origin"
+            })
+                .then(resp => resp.text())
+                .then(text => (this.textFileContent = text))
+                .catch(err => logError(err));
+        },
+        openAsTextFile: function() {
+            this.showAsText = true;
+            this.setPreviewText();
+        },
+        updatePreview: function() {
+            if (this.file === null) {
+                return;
+            }
+
+            for (let i = 0; i < this.Store.allFiles.length; i++) {
+                if (this.Store.allFiles[i].id === this.file.id) {
+                    // Updating fileIndex is confusing. So it's better not to change it
+                    // this.fileIndex = i;
+                    this.file = this.Store.allFiles[i];
                     break;
                 }
-                this.window().hide();
-                break;
+            }
+        },
+        onkeydownListener: function(event: KeyboardEvent) {
+            if (SharedState.state.showModalWindow) {
+                return;
+            }
+
+            switch (event.key) {
+                case "ArrowRight":
+                    this.nextPreview();
+                    break;
+                case "ArrowLeft":
+                    this.previousPreview();
+                    break;
+                case "Escape":
+                    if (this.fullscreenMode) {
+                        this.fullscreenMode = false;
+                        break;
+                    }
+                    this.window().hide();
+                    break;
+            }
         }
     }
-}
+});
 </script>
