@@ -4,7 +4,7 @@
 		class="file-info hover-class"
 		:style="stylesObject"
 		:title="titleMessage"
-		@click.right.prevent="showContextMenu($event, file);"
+		@click.right.prevent.exact="showContextMenu($event, file);"
 		@click.ctrl="() => { file.selected = !file.selected; toggleSelect(); }"
 	>
 		<!-- There are some nonexistent classes. They are reserved for readability and future using -->
