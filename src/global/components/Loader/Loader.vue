@@ -8,9 +8,9 @@
 <script lang="ts">
 import Vue from "vue";
 
-const LoaderGIF = "/static/icons/loader.gif";
+const LoaderGIF = "/static/icons/loader.svg";
 
-const ResetTimeout = 100; // ms
+const ResetTimeout = 50; // ms
 
 export default Vue.extend({
     props: {
@@ -36,7 +36,8 @@ export default Vue.extend({
         style: function(): any {
             if (!this.isLoaded) {
                 return {
-                    "max-width": "200px"
+                    "max-width": "200px",
+                    "border-radius": "20px"
                 };
             }
 
@@ -56,28 +57,24 @@ export default Vue.extend({
     //
     methods: {
         load() {
-            let done = false;
+            // Reset with timeout. It prevents image flicker
+            let timeoutID = setTimeout(() => {
+                // Reset, if image wasn't loaded
+                this.isLoaded = false;
+                this.isError = false;
+            }, ResetTimeout);
 
             // Create a new Image with passed src
             let img = new Image();
             img.onload = () => {
-                done = true;
+                clearTimeout(timeoutID);
                 this.isLoaded = true;
             };
             img.onerror = () => {
-                done = true;
+                clearTimeout(timeoutID);
                 this.isError = true;
             };
             img.src = this.src;
-
-            // Reset with timeout. It prevents image flicker
-            setTimeout(() => {
-                if (!done) {
-                    // Reset, if image wasn't loaded
-                    this.isLoaded = false;
-                    this.isError = false;
-                }
-            }, ResetTimeout);
         }
     }
 });
