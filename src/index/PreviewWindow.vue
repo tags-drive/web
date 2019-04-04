@@ -75,7 +75,7 @@
 					class="noselect"
 				>
 					<span class="helper"></span>
-					<img :src="originLink">
+					<loader :src="originLink"></loader>
 				</div>
 				<!-- Audio -->
 				<div
@@ -435,6 +435,7 @@ $switch-button-width: 80px;
 import Vue from "vue";
 // Components
 import TagComponent from "@components/Tag/Tag.vue";
+import LoaderComponent from "@app/global/components/Loader/Loader.vue";
 // Classes and types
 import { File } from "@app/global/classes";
 // Shared data
@@ -533,7 +534,8 @@ export default Vue.extend({
     },
     //
     components: {
-        tag: TagComponent
+        tag: TagComponent,
+        loader: LoaderComponent
     },
     //
     created: function() {

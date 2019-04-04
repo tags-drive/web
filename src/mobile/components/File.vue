@@ -5,7 +5,7 @@
 	>
 		<div class="preview">
 			<span class="helper"></span>
-			<img :src="previewLink" alt="">
+			<loader :src="previewLink"></loader>
 		</div>
 
 		<div class="filename">
@@ -67,6 +67,7 @@
 import Vue from "vue";
 // Components and classes
 import { File } from "@app/global/classes";
+import LoaderComponent from "@app/global/components/Loader/Loader.vue";
 // Other
 import SharedStore from "@app/mobile/store";
 import { Params } from "@app/global";
@@ -74,13 +75,13 @@ import { Const } from "@app/global/const";
 import { Events, EventBus } from "@app/mobile/eventBus";
 
 export default Vue.extend({
+    props: {
+        file: File
+    },
     data: function() {
         return {
             Store: SharedStore.state
         };
-    },
-    props: {
-        file: File
     },
     computed: {
         previewLink(): string {
@@ -91,6 +92,11 @@ export default Vue.extend({
             return Params.Host + "/ext/" + this.file.filename.split(".").pop();
         }
     },
+    //
+    components: {
+        loader: LoaderComponent
+    },
+    //
     methods: {
         showPreview: function() {
             EventBus.$emit(Events.showPreview, { file: this.file });

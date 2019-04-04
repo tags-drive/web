@@ -15,7 +15,7 @@
 			id="image-preview"
 			class="noselect"
 		>
-			<img :src="originLink">
+			<loader :src="originLink"></loader>
 		</div>
 		<!-- Audio -->
 		<div
@@ -225,6 +225,7 @@ import Vue from "vue";
 // Classes and types
 import Tag from "./Tag.vue";
 import { File } from "@app/global/classes";
+import LoaderComponent from "@app/global/components/Loader/Loader.vue";
 // Other
 import { Params } from "@app/global";
 import { Const } from "@app/global/const";
@@ -233,10 +234,9 @@ import SharedStore from "@app/mobile/store";
 const sizeSuffixes: string[] = ["B", "KB", "MB", "GB", "TB"];
 
 export default Vue.extend({
-    components: {
-        tag: Tag
+    props: {
+        file: File
     },
-    //
     data: function() {
         return {
             showAsText: false,
@@ -244,9 +244,6 @@ export default Vue.extend({
             //
             Store: SharedStore.state
         };
-    },
-    props: {
-        file: File
     },
     computed: {
         originLink(): string {
@@ -275,6 +272,11 @@ export default Vue.extend({
         }
     },
     //
+    components: {
+        tag: Tag,
+        loader: LoaderComponent
+    },
+    //
     updated: function() {
         if (this.isTextFile()) {
             fetch(Params.Host + "/" + this.file!.origin, {
@@ -285,6 +287,7 @@ export default Vue.extend({
                 .then(text => (this.textFileContent = text));
         }
     },
+    //
     methods: {
         // Types
         isTextFile(): boolean {

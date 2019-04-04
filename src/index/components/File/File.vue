@@ -25,7 +25,7 @@
 			@click="showPreview"
 		>
 			<div class="image-wrapper">
-				<img :src="previewLink">
+				<loader :src="previewLink"></loader>
 			</div>
 		</div>
 
@@ -111,6 +111,7 @@
 import Vue from "vue";
 // Components
 import TagComponent from "@components/Tag/Tag.vue";
+import LoaderComponent from "@app/global/components/Loader/Loader.vue";
 // Classes and types
 import { Tag } from "@app/global/classes";
 import { TableFile } from "@components/File/types";
@@ -269,7 +270,8 @@ export default Vue.extend({
     },
     //
     components: {
-        tag: TagComponent
+        tag: TagComponent,
+        loader: LoaderComponent
     },
     //
     created: function() {
