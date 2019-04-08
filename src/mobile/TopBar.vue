@@ -17,9 +17,11 @@
 					<i class="material-icons noselect">exit_to_app</i>
 				</div>
 
+				<!-- Modes Switchers -->
 				<div
+					v-if="!shouldShowCloseButton"
 					class="button"
-					@click="toggleUploadBar"
+					@click="showUploadWindow"
 				>
 					<svg viewBox="0 0 24 24">
 						<path fill="#000000" d="M9,10V16H15V10H19L12,3L5,10H9M12,5.8L14.2,8H13V14H11V8H9.8L12,5.8M19,18H5V20H19V18Z" />
@@ -27,10 +29,20 @@
 				</div>
 
 				<div
+					v-if="!shouldShowCloseButton"
 					class="button"
-					@click="toggleSearchBar"
+					@click="showSearchWindow"
 				>
 					<i class="material-icons noselect">search</i>
+				</div>
+
+				<!-- Close Expanded Window button -->
+				<div
+					v-if="shouldShowCloseButton"
+					class="button"
+					@click="closeWindow"
+				>
+					<i class="material-icons noselect">expand_less</i>
 				</div>
 			</div>
 		</div>
@@ -138,10 +150,15 @@ export default Vue.extend({
             uploadMode: false
         };
     },
+    computed: {
+        shouldShowCloseButton: function() {
+            return this.searchMode || this.uploadMode;
+        }
+    },
     //
     created: function() {
         this.$on("close-bar", () => {
-            this.closeBar();
+            this.closeWindow();
         });
     },
     //
@@ -157,23 +174,23 @@ export default Vue.extend({
             }
         },
         //
-        toggleSearchBar: function() {
-            if (!this.opened) {
-                this.expandBar();
-                this.searchMode = true;
-            } else {
-                this.closeBar();
-                this.searchMode = false;
-            }
+        showSearchWindow: function() {
+            this.expandBar();
+            this.searchMode = true;
         },
-        toggleUploadBar: function() {
-            if (!this.opened) {
-                this.expandBar();
-                this.uploadMode = true;
-            } else {
-                this.closeBar();
-                this.uploadMode = false;
+        showUploadWindow: function() {
+            this.expandBar();
+            this.uploadMode = true;
+        },
+        closeWindow: function() {
+            let bar = <HTMLAudioElement>this.$refs["top-bar"];
+            if (bar !== undefined) {
+                bar.classList.remove("top-bar-expand-animation");
             }
+
+            this.opened = false;
+            this.uploadMode = false;
+            this.searchMode = false;
         },
         // Internal functions
         expandBar: function() {
@@ -182,13 +199,6 @@ export default Vue.extend({
                 bar.classList.add("top-bar-expand-animation");
             }
             this.opened = true;
-        },
-        closeBar: function() {
-            let bar = <HTMLAudioElement>this.$refs["top-bar"];
-            if (bar !== undefined) {
-                bar.classList.remove("top-bar-expand-animation");
-            }
-            this.opened = false;
         }
     }
 });
