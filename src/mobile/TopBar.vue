@@ -1,7 +1,7 @@
 <template>
 	<div
-		id="search-bar"
-		ref="search-bar"
+		id="top-bar"
+		ref="top-bar"
 	>
 		<!-- Bar -->
 		<div
@@ -186,7 +186,7 @@
 <style lang="scss" scoped>
 $height: 40px;
 
-#search-bar {
+#top-bar {
     background-color: white;
     height: $height;
     left: 0;
@@ -198,7 +198,7 @@ $height: 40px;
     z-index: 2;
 }
 
-.search-bar-expand-animation {
+.top-bar-expand-animation {
     height: 100% !important;
 }
 
@@ -538,16 +538,16 @@ export default Vue.extend({
     //
     methods: {
         expandBar() {
-            let bar = <HTMLAudioElement>this.$refs["search-bar"];
+            let bar = <HTMLAudioElement>this.$refs["top-bar"];
             if (bar !== undefined) {
-                bar.classList.add("search-bar-expand-animation");
+                bar.classList.add("top-bar-expand-animation");
             }
             this.opened = true;
         },
         closeBar() {
-            let bar = <HTMLAudioElement>this.$refs["search-bar"];
+            let bar = <HTMLAudioElement>this.$refs["top-bar"];
             if (bar !== undefined) {
-                bar.classList.remove("search-bar-expand-animation");
+                bar.classList.remove("top-bar-expand-animation");
             }
             this.opened = false;
         },

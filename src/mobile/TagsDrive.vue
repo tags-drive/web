@@ -1,6 +1,6 @@
 <template>
 	<div id="tags-drive">
-		<div id="search-bar"></div>
+		<div id="top-bar"></div>
 
 		<div id="all-files-list"></div>
 
