@@ -12,6 +12,13 @@
 			<div id="buttons">
 				<div
 					class="button"
+					@click="logout"
+				>
+					<i class="material-icons noselect">exit_to_app</i>
+				</div>
+
+				<div
+					class="button"
 					@click="toggleSearchBar"
 				>
 					<i class="material-icons noselect">search</i>
@@ -101,6 +108,8 @@ $height: 40px;
 import Vue from "vue";
 // Components
 import SearchWindow from "@app/mobile/components/SearchWindow.vue";
+// Other
+import { API } from "@app/mobile/api";
 
 export default Vue.extend({
     data: function() {
@@ -122,6 +131,12 @@ export default Vue.extend({
     },
     //
     methods: {
+        logout: function() {
+            if (confirm("Are you sure you want to log out?")) {
+                API.logout();
+            }
+        },
+        //
         toggleSearchBar: function() {
             if (!this.opened) {
                 this.expandBar();
