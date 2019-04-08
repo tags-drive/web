@@ -254,13 +254,15 @@ $height: 40px;
     }
 }
 
+$min-flex-screen-width: 800px;
+
 #expanded-window {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     flex-wrap: wrap;
     padding: 5px;
 
-    @media screen and (min-width: 795px) {
+    @media screen and (min-width: $min-flex-screen-width) {
         #separator {
             border: 0.5px solid #0000002f;
         }
@@ -274,8 +276,12 @@ $height: 40px;
         position: relative;
         margin-bottom: 10px;
         max-height: 320px;
-        max-width: 450px;
         width: 100%;
+
+        @media screen and (min-width: $min-flex-screen-width) {
+            width: 45%;
+            max-width: 45%;
+        }
 
         @mixin wrapper {
             border-bottom: 1px solid #888888;
@@ -299,7 +305,7 @@ $height: 40px;
                 font-size: 16px;
                 height: $min-height;
                 outline: none;
-                width: 90%;
+                width: calc(100% - 34px);
             }
 
             #backspace {
@@ -329,6 +335,10 @@ $height: 40px;
         #suggestions {
             display: flex;
             height: 200px;
+            margin: auto;
+            max-width: 500px;
+            min-width: 350px;
+            width: 90%;
 
             #operators-list {
                 margin: 0 5px 0 auto;
@@ -366,7 +376,10 @@ $height: 40px;
     }
 
     #advanced-options {
-        min-width: 340px;
+        @media screen and (min-width: $min-flex-screen-width) {
+            max-width: 45%;
+            width: 45%;
+        }
 
         .advanced-option {
             $height: 30px;
