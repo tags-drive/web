@@ -297,7 +297,7 @@ export default Vue.extend({
                     let deltaX = xMouseEnd - this.xMouseStart;
 
                     // Switch preview
-                    if (this.previewWidth / 4 <= Math.abs(deltaX)) {
+                    if (this.previewWidth / 6 <= Math.abs(deltaX)) {
                         let func = () => {};
 
                         if (deltaX < 0 && this.currIndex < this.Store.allFiles.length - 1) {
