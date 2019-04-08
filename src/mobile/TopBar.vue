@@ -19,6 +19,15 @@
 
 				<div
 					class="button"
+					@click="toggleUploadBar"
+				>
+					<svg viewBox="0 0 24 24">
+						<path fill="#000000" d="M9,10V16H15V10H19L12,3L5,10H9M12,5.8L14.2,8H13V14H11V8H9.8L12,5.8M19,18H5V20H19V18Z" />
+					</svg>
+				</div>
+
+				<div
+					class="button"
 					@click="toggleSearchBar"
 				>
 					<i class="material-icons noselect">search</i>
@@ -33,6 +42,9 @@
 		>
 			<div v-show="searchMode">
 				<search-window></search-window>
+			</div>
+			<div v-show="uploadMode">
+				<upload-window></upload-window>
 			</div>
 		</div>
 	</div>
@@ -59,11 +71,11 @@ $height: 40px;
 }
 
 @mixin button {
-    $padding: 4px;
+    $size: 35px;
 
     border-radius: 3px;
-    height: $height - $padding;
-    width: $height - $padding; // it is a square by default
+    height: $size;
+    width: $size; // it is a square by default
     text-align: center;
 
     &:active {
@@ -71,7 +83,12 @@ $height: 40px;
     }
 
     i {
-        font-size: $height - $padding;
+        font-size: $size;
+    }
+
+    svg {
+        height: $size;
+        width: $size;
     }
 }
 
@@ -108,6 +125,7 @@ $height: 40px;
 import Vue from "vue";
 // Components
 import SearchWindow from "@app/mobile/components/SearchWindow.vue";
+import UploadWindow from "@app/mobile/components/UploadWindow.vue";
 // Other
 import { API } from "@app/mobile/api";
 
@@ -116,7 +134,8 @@ export default Vue.extend({
         return {
             opened: false,
             //
-            searchMode: false
+            searchMode: false,
+            uploadMode: false
         };
     },
     //
@@ -127,7 +146,8 @@ export default Vue.extend({
     },
     //
     components: {
-        "search-window": SearchWindow
+        "search-window": SearchWindow,
+        "upload-window": UploadWindow
     },
     //
     methods: {
@@ -144,6 +164,15 @@ export default Vue.extend({
             } else {
                 this.closeBar();
                 this.searchMode = false;
+            }
+        },
+        toggleUploadBar: function() {
+            if (!this.opened) {
+                this.expandBar();
+                this.uploadMode = true;
+            } else {
+                this.closeBar();
+                this.uploadMode = false;
             }
         },
         // Internal functions
