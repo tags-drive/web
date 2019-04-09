@@ -469,6 +469,7 @@ export default Vue.extend({
             }
         });
 
+        // Fetch new files
         EventBus.$on(Events.fetchNextFiles, () => {
             API.files.fetch(
                 this.expression,
@@ -479,6 +480,20 @@ export default Vue.extend({
                 SharedStore.state.allFiles.length,
                 fetchLimit,
                 false
+            );
+        });
+
+        // Refresh files
+        EventBus.$on(Events.refreshFiles, () => {
+            API.files.fetch(
+                this.expression,
+                this.textToSearch,
+                this.isRegexp,
+                this.sortType,
+                this.sortOrder,
+                0,
+                fetchLimit,
+                true
             );
         });
     },

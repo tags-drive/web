@@ -194,8 +194,9 @@ import TagComponent from "./Tag.vue";
 import SharedStore from "@app/mobile/store";
 // Other
 import { Params } from "@app/global";
-import axios from "axios";
 import { IsErrorStatusCode } from "@app/global/utils";
+import { EventBus, Events } from "@app/mobile/eventBus";
+import axios from "axios";
 
 function logError(msg: string) {
     alert("[ERR] " + msg);
@@ -313,9 +314,11 @@ export default Vue.extend({
                         return;
                     }
 
+                    // Reset scroll
+                    EventBus.$emit(Events.resetFilesBlockScroll);
                     // Update list of files
-                    // TODO
-                    // EventBus.$emit(Events.Search.Usual);
+                    EventBus.$emit(Events.refreshFiles);
+
                     return resp.data;
                 })
                 .then(log => {
