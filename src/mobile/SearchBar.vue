@@ -455,7 +455,7 @@ import RenderTagsInput from "@app/mobile/components/RenderTagsInput.vue";
 import SharedStore from "@app/mobile/store";
 import { API } from "@app/mobile/api";
 import { EventBus, Events } from "@app/mobile/eventBus";
-import { isElementInPath } from "@app/global/utils";
+import { IsElementInPath } from "@app/global/utils";
 
 const fetchLimit = 25;
 
@@ -516,7 +516,7 @@ export default Vue.extend({
     created: function() {
         document.addEventListener("click", ev => {
             if (this.opened) {
-                if (!isElementInPath(ev, "render-wrapper", "input-wrapper", "tags-list", "operators-list")) {
+                if (!IsElementInPath(ev, "render-wrapper", "input-wrapper", "tags-list", "operators-list")) {
                     this.focused = false;
                 }
             }

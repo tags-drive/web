@@ -2,7 +2,7 @@ import { Params } from "@app/global";
 import { Const } from "@app/global/const";
 import { EventBus, Events } from "@app/index/eventBus";
 import { logError, logInfo } from "@app/index/utils";
-import { isErrorStatusCode } from "@app/global/utils";
+import { IsErrorStatusCode } from "@app/global/utils";
 import SharedStore from "@app/index/store";
 import SharedState from "@app/index/state";
 
@@ -19,7 +19,7 @@ function fetchFile(id: number) {
         credentials: "same-origin"
     })
         .then(resp => {
-            if (isErrorStatusCode(resp.status)) {
+            if (IsErrorStatusCode(resp.status)) {
                 resp.text().then(text => {
                     logError(text);
                 });
@@ -70,7 +70,7 @@ function fetchFiles(expression: string, text: string, isRegexp: boolean, sType: 
         credentials: "same-origin"
     })
         .then(resp => {
-            if (isErrorStatusCode(resp.status)) {
+            if (IsErrorStatusCode(resp.status)) {
                 resp.text().then(text => {
                     logError(text);
                 });
@@ -94,7 +94,7 @@ function downloadFile(id: number, filename: string) {
         credentials: "same-origin"
     })
         .then(resp => {
-            if (isErrorStatusCode(resp.status)) {
+            if (IsErrorStatusCode(resp.status)) {
                 resp.text().then(text => {
                     logError(text);
                 });
@@ -149,7 +149,7 @@ function changeFileName(id: number, newName: string) {
         credentials: "same-origin"
     })
         .then(resp => {
-            if (isErrorStatusCode(resp.status)) {
+            if (IsErrorStatusCode(resp.status)) {
                 resp.text().then(text => {
                     logError(text);
                 });
@@ -175,7 +175,7 @@ function changeFileDescription(id: number, newDesc: string) {
         credentials: "same-origin"
     })
         .then(resp => {
-            if (isErrorStatusCode(resp.status)) {
+            if (IsErrorStatusCode(resp.status)) {
                 resp.text().then(text => {
                     logError(text);
                 });
@@ -201,7 +201,7 @@ function changeFileTags(id: number, newTagsIDs: number[]) {
         credentials: "same-origin"
     })
         .then(resp => {
-            if (isErrorStatusCode(resp.status)) {
+            if (IsErrorStatusCode(resp.status)) {
                 resp.text().then(text => {
                     logError(text);
                 });
@@ -232,7 +232,7 @@ function changeFilesTags(filesIDs: number[], tagsIDs: number[], mode: string) {
         method: method
     })
         .then(resp => {
-            if (isErrorStatusCode(resp.status)) {
+            if (IsErrorStatusCode(resp.status)) {
                 resp.text().then(text => {
                     logError(text);
                 });
@@ -255,7 +255,7 @@ function recoverFiles(ids: number[]) {
         credentials: "same-origin"
     })
         .then(resp => {
-            if (isErrorStatusCode(resp.status)) {
+            if (IsErrorStatusCode(resp.status)) {
                 resp.text().then(text => {
                     logError(text);
                 });
@@ -281,7 +281,7 @@ function deleteFiles(ids: number[], force: boolean) {
         credentials: "same-origin"
     })
         .then(resp => {
-            if (isErrorStatusCode(resp.status)) {
+            if (IsErrorStatusCode(resp.status)) {
                 resp.text().then(text => {
                     logError(text);
                 });
@@ -331,7 +331,7 @@ function fetchTags() {
         credentials: "same-origin"
     })
         .then(resp => {
-            if (isErrorStatusCode(resp.status)) {
+            if (IsErrorStatusCode(resp.status)) {
                 resp.text().then(text => {
                     logError(text);
                 });
@@ -359,7 +359,7 @@ function addTag(name: string, color: string) {
         credentials: "same-origin"
     })
         .then(resp => {
-            if (isErrorStatusCode(resp.status)) {
+            if (IsErrorStatusCode(resp.status)) {
                 resp.text().then(text => {
                     logError(text);
                 });
@@ -384,7 +384,7 @@ function changeTag(tagID: number, newName: string, newColor: string) {
         credentials: "same-origin"
     })
         .then(resp => {
-            if (isErrorStatusCode(resp.status)) {
+            if (IsErrorStatusCode(resp.status)) {
                 resp.text().then(text => {
                     logError(text);
                 });
@@ -408,7 +408,7 @@ function deleteTag(tagID: number) {
         credentials: "same-origin"
     })
         .then(resp => {
-            if (isErrorStatusCode(resp.status)) {
+            if (IsErrorStatusCode(resp.status)) {
                 resp.text().then(text => {
                     logError(text);
                 });
@@ -437,7 +437,7 @@ function logout() {
         credentials: "same-origin"
     })
         .then(resp => {
-            if (isErrorStatusCode(resp.status)) {
+            if (IsErrorStatusCode(resp.status)) {
                 resp.text().then(text => {
                     logError(text);
                 });

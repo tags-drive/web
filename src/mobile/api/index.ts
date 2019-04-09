@@ -1,6 +1,6 @@
 import { Params } from "@app/global";
 import SharedStore from "@app/mobile/store";
-import { isErrorStatusCode } from "@app/global/utils";
+import { IsErrorStatusCode } from "@app/global/utils";
 
 function logError(msg: string | TypeError) {
     /* eslint-disable no-console */
@@ -68,7 +68,7 @@ function fetchFiles(
                 SharedStore.commit("setAllFilesFetched");
                 return;
             }
-            if (isErrorStatusCode(resp.status)) {
+            if (IsErrorStatusCode(resp.status)) {
                 resp.text().then(text => {
                     logError(text);
                 });
@@ -96,7 +96,7 @@ function downloadFile(id: number, filename: string) {
         credentials: "same-origin"
     })
         .then(resp => {
-            if (isErrorStatusCode(resp.status)) {
+            if (IsErrorStatusCode(resp.status)) {
                 resp.text().then(text => {
                     logError(text);
                 });
@@ -125,7 +125,7 @@ function fetchTags() {
         credentials: "same-origin"
     })
         .then(resp => {
-            if (isErrorStatusCode(resp.status)) {
+            if (IsErrorStatusCode(resp.status)) {
                 resp.text().then(text => {
                     logError(text);
                 });

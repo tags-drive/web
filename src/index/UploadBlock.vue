@@ -216,7 +216,7 @@ import axios from "axios";
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
 import { logError, logInfo } from "@app/index/utils";
-import { isErrorStatusCode } from "@app/global/utils";
+import { IsErrorStatusCode } from "@app/global/utils";
 
 export default Vue.extend({
     data: function() {
@@ -304,7 +304,7 @@ export default Vue.extend({
                 .then(resp => {
                     this.uploading = false;
 
-                    if (isErrorStatusCode(resp.status)) {
+                    if (IsErrorStatusCode(resp.status)) {
                         logError(resp.data);
                         return;
                     }

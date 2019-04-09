@@ -54,7 +54,6 @@ import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
 import { Const } from "@app/global/const";
 import { logError } from "@app/index/utils";
-import { isErrorStatusCode } from "@app/global/utils";
 import API from "@app/index/api";
 
 class CustomTag extends Tag {

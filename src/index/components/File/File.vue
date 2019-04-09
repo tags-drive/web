@@ -124,7 +124,7 @@ import { State } from "@app/index/state/types";
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
 import { Const } from "@app/global/const";
-import { convertBytesToString } from "@app/global/utils";
+import { ConvertBytesToString } from "@app/global/utils";
 import dateformat from "dateformat";
 
 const tagsListPadding = 4;
@@ -243,7 +243,7 @@ export default Vue.extend({
             };
         },
         fileSize: function(): string {
-            return convertBytesToString(this.file.size);
+            return ConvertBytesToString(this.file.size);
         },
         fileAddTime(): string {
             // Example: "Mar 6, 2019 14:50"

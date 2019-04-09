@@ -442,7 +442,7 @@ import { Store } from "@app/index/store/types";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
 import { logError, logInfo } from "@app/index/utils";
-import { isErrorStatusCode, isElementInPath } from "@app/global/utils";
+import { IsElementInPath } from "@app/global/utils";
 import { Params } from "@app/global";
 import API from "@app/index/api";
 
@@ -517,7 +517,7 @@ export default Vue.extend({
         });
 
         document.addEventListener("click", event => {
-            if (!isElementInPath(event, "render-wrapper", "input-wrapper", "tags-list", "operators-list")) {
+            if (!IsElementInPath(event, "render-wrapper", "input-wrapper", "tags-list", "operators-list")) {
                 this.focused = false;
             }
         });
@@ -585,7 +585,7 @@ export default Vue.extend({
             }
         },
         advancedOptionsListener: function(event: MouseEvent) {
-            if (this.showAdvancedOptions && !isElementInPath(event, "advanced-options")) {
+            if (this.showAdvancedOptions && !IsElementInPath(event, "advanced-options")) {
                 this.toggleAdvancedOptions();
             }
         },

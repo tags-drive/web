@@ -94,7 +94,7 @@ import SharedState from "@app/index/state";
 import { State } from "@app/index/state/types";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
-import { isElementInPath } from "@app/global/utils";
+import { IsElementInPath } from "@app/global/utils";
 import API from "@app/index/api";
 
 interface Payload {
@@ -142,7 +142,7 @@ export default Vue.extend({
         });
 
         document.addEventListener("click", event => {
-            if (this.show && !isElementInPath(event, "context-menu")) {
+            if (this.show && !IsElementInPath(event, "context-menu")) {
                 this.hideMenu();
             }
         });

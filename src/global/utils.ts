@@ -1,8 +1,8 @@
-export function isErrorStatusCode(code: number): boolean {
+export function IsErrorStatusCode(code: number): boolean {
     return code >= 400;
 }
 
-export function isElementInPath(event: Event, ...ids: string[]): boolean {
+export function IsElementInPath(event: Event, ...ids: string[]): boolean {
     // We need to use type any because Event hasn't property path, composedPath and composedPath().
     // Nevertheless, it's a cross browser way to get path.
     let path = (<any>event).path || ((<any>event).composedPath && (<any>event).composedPath());
@@ -21,14 +21,14 @@ export function isElementInPath(event: Event, ...ids: string[]): boolean {
     return false;
 }
 
-const sizeSuffixes: string[] = ["B", "KB", "MB", "GB", "TB"];
+const _sizeSuffixes: string[] = ["B", "KB", "MB", "GB", "TB"];
 
 /**
  *
  * @param size in bytes
  * @returns size as a string. Examples: 1.5 KB, 33 MB and etc
  */
-export function convertBytesToString(size: number): string {
+export function ConvertBytesToString(size: number): string {
     let suffixIndex = 0;
     // In bytes
     while (size / 1024 > 1) {
@@ -36,7 +36,7 @@ export function convertBytesToString(size: number): string {
         suffixIndex++;
     }
 
-    if (suffixIndex >= sizeSuffixes.length) {
+    if (suffixIndex >= _sizeSuffixes.length) {
         return "-";
     }
 
@@ -46,5 +46,5 @@ export function convertBytesToString(size: number): string {
         s = s.slice(0, s.length - 2);
     }
 
-    return s + " " + sizeSuffixes[suffixIndex];
+    return s + " " + _sizeSuffixes[suffixIndex];
 }
