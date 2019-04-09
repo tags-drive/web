@@ -124,10 +124,10 @@ import { State } from "@app/index/state/types";
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
 import { Const } from "@app/global/const";
+import { convertBytesToString } from "@app/global/utils";
 import dateformat from "dateformat";
 
 const tagsListPadding = 4;
-const sizeSuffixes: string[] = ["B", "KB", "MB", "GB", "TB"];
 
 export default Vue.extend({
     props: {
@@ -243,25 +243,7 @@ export default Vue.extend({
             };
         },
         fileSize: function(): string {
-            let suffixIndex = 0;
-            // In bytes
-            let size = this.file.size;
-            while (size / 1024 > 1) {
-                size /= 1024;
-                suffixIndex++;
-            }
-
-            if (suffixIndex >= sizeSuffixes.length) {
-                return "-";
-            }
-
-            let s = size.toFixed(1);
-            if (s[s.length - 1] == "0") {
-                // Trim trailing dot and zero
-                s = s.slice(0, s.length - 2);
-            }
-
-            return s + " " + sizeSuffixes[suffixIndex];
+            return convertBytesToString(this.file.size);
         },
         fileAddTime(): string {
             // Example: "Mar 6, 2019 14:50"

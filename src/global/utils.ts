@@ -20,3 +20,31 @@ export function isElementInPath(event: Event, ...ids: string[]): boolean {
 
     return false;
 }
+
+const sizeSuffixes: string[] = ["B", "KB", "MB", "GB", "TB"];
+
+/**
+ *
+ * @param size in bytes
+ * @returns size as a string. Examples: 1.5 KB, 33 MB and etc
+ */
+export function convertBytesToString(size: number): string {
+    let suffixIndex = 0;
+    // In bytes
+    while (size / 1024 > 1) {
+        size /= 1024;
+        suffixIndex++;
+    }
+
+    if (suffixIndex >= sizeSuffixes.length) {
+        return "-";
+    }
+
+    let s = size.toFixed(1);
+    if (s[s.length - 1] == "0") {
+        // Trim trailing dot and zero
+        s = s.slice(0, s.length - 2);
+    }
+
+    return s + " " + sizeSuffixes[suffixIndex];
+}
