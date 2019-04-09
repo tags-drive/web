@@ -1,7 +1,8 @@
 import { Params } from "@app/global";
 import { Const } from "@app/global/const";
 import { EventBus, Events } from "@app/index/eventBus";
-import { isErrorStatusCode, logError, logInfo } from "@app/index/tools";
+import { logError, logInfo } from "@app/index/utils";
+import { isErrorStatusCode } from "@app/global/utils";
 import SharedStore from "@app/index/store";
 import SharedState from "@app/index/state";
 
@@ -53,10 +54,10 @@ function fetchFiles(expression: string, text: string, isRegexp: boolean, sType: 
     }
     if (text !== "") {
         params.append("search", text);
-	}
-	if (isRegexp) {
-		params.append("regexp", "true");
-	}
+    }
+    if (isRegexp) {
+        params.append("regexp", "true");
+    }
     if (sType !== "") {
         params.append("sort", sType);
     }

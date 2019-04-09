@@ -1,9 +1,6 @@
 import { Params } from "@app/global";
 import SharedStore from "@app/mobile/store";
-
-function isErrorStatusCode(code: number): boolean {
-    return code >= 400;
-}
+import { isErrorStatusCode } from "@app/global/utils";
 
 function logError(msg: string | TypeError) {
     /* eslint-disable no-console */

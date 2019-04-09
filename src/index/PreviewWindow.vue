@@ -445,7 +445,7 @@ import SharedState from "@app/index/state";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
-import { logError, preloadImages } from "@app/index/tools";
+import { logError, preloadImages } from "@app/index/utils";
 import { Const } from "@app/global/const";
 
 export default Vue.extend({

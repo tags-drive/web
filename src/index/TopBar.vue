@@ -441,7 +441,8 @@ import SharedStore from "@app/index/store";
 import { Store } from "@app/index/store/types";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
-import { isErrorStatusCode, logError, logInfo, isElementInPath } from "@app/index/tools";
+import { logError, logInfo } from "@app/index/utils";
+import { isErrorStatusCode, isElementInPath } from "@app/global/utils";
 import { Params } from "@app/global";
 import API from "@app/index/api";
 

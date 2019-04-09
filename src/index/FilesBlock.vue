@@ -137,7 +137,8 @@ import { State } from "@app/index/state/types";
 // Other
 import { Const } from "@app/global/const";
 import { Events, EventBus } from "@app/index/eventBus";
-import { isElementInPath, preloadImages } from "@app/index/tools";
+import { preloadImages } from "@app/index/utils";
+import { isElementInPath } from "@app/global/utils";
 
 export default Vue.extend({
     data: function() {

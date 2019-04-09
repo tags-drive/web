@@ -28,7 +28,8 @@ import { Store } from "@app/index/store/types";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
-import { logError, logInfo, isErrorStatusCode } from "@app/index/tools";
+import { logError, logInfo } from "@app/index/utils";
+import { isErrorStatusCode } from "@app/global/utils";
 import API from "@app/index/api";
 
 export default Vue.extend({

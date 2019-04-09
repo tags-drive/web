@@ -215,7 +215,8 @@ import SharedState from "@app/index/state";
 import axios from "axios";
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
-import { isErrorStatusCode, logError, logInfo } from "@app/index/tools";
+import { logError, logInfo } from "@app/index/utils";
+import { isErrorStatusCode } from "@app/global/utils";
 
 export default Vue.extend({
     data: function() {

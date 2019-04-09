@@ -94,7 +94,7 @@ import SharedState from "@app/index/state";
 import { State } from "@app/index/state/types";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
-import { isElementInPath } from "@app/index/tools";
+import { isElementInPath } from "@app/global/utils";
 import API from "@app/index/api";
 
 interface Payload {

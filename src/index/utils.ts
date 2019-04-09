@@ -2,11 +2,7 @@ import { EventBus, Events } from "@app/index/eventBus";
 import { Const } from "@app/global/const";
 import { Params } from "@app/global";
 
-function isErrorStatusCode(code: number): boolean {
-    return code >= 400;
-}
-
-function logError(msg: string | TypeError) {
+export function logError(msg: string | TypeError) {
     /* eslint-disable no-console */
     console.error(msg);
     /* eslint-enable no-console */
@@ -22,38 +18,17 @@ function logError(msg: string | TypeError) {
     EventBus.$emit(Events.LogEvent, { type: Const.logType.error, msg: msg });
 }
 
-function logInfo(msg: string) {
+export function logInfo(msg: string) {
     /* eslint-disable no-console */
     console.info(msg);
     /* eslint-enable no-console */
     EventBus.$emit(Events.LogEvent, { type: Const.logType.info, msg: msg });
 }
 
-function isElementInPath(event: Event, ...ids: string[]): boolean {
-    // We need to use type any because Event hasn't property path, composedPath and composedPath().
-    // Nevertheless, it's a cross browser way to get path.
-    let path = (<any>event).path || ((<any>event).composedPath && (<any>event).composedPath());
-    if (path === undefined || path.length === undefined) {
-        return false;
-    }
-
-    for (let i = 0; i < path.length; i++) {
-        for (let j = 0; j < ids.length; j++) {
-            if (path[i].id === ids[j]) {
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
 // urls are links without domain (/data/...)
-async function preloadImages(...urls: string[]) {
+export async function preloadImages(...urls: string[]) {
     for (let i = 0; i < urls.length; i++) {
         let img = new Image();
         img.src = Params.Host + "/" + urls[i];
     }
 }
-
-export { isErrorStatusCode, isElementInPath, logError, logInfo, preloadImages };
