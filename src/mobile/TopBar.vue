@@ -130,6 +130,11 @@ $height: 40px;
         }
     }
 }
+
+#expanded-window {
+    height: calc(100% - #{$height});
+    overflow-y: auto;
+}
 </style>
 
 
