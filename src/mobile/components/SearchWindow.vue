@@ -177,13 +177,18 @@ $min-flex-screen-width: 800px;
 
 #search {
     display: flex;
-    justify-content: space-around;
     flex-wrap: wrap;
     padding: 5px;
 
     @media screen and (min-width: $min-flex-screen-width) {
+        display: grid;
+        grid-template-columns: 48% auto 48%;
+
         #separator {
-            border: 0.5px solid #0000002f;
+            border-right: 1px solid #0000002f;
+            height: 100%;
+            margin: auto;
+            width: 1px;
         }
     }
 
@@ -196,11 +201,6 @@ $min-flex-screen-width: 800px;
         margin-bottom: 10px;
         max-height: 320px;
         width: 100%;
-
-        @media screen and (min-width: $min-flex-screen-width) {
-            width: 45%;
-            max-width: 45%;
-        }
 
         @mixin wrapper {
             border-bottom: 1px solid #888888;
@@ -295,9 +295,10 @@ $min-flex-screen-width: 800px;
     }
 
     #advanced-options {
-        @media screen and (min-width: $min-flex-screen-width) {
-            max-width: 45%;
-            width: 45%;
+        width: fit-content;
+
+        @media screen and (max-width: $min-flex-screen-width) {
+            margin: auto;
         }
 
         .advanced-option {
