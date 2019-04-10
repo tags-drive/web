@@ -161,8 +161,11 @@
 					</div>
 					<div class="data">
 						<span>{{file.filename}}</span>
-						<br>
-						<span v-if="file.deleted" style="color: red">(in Trash)</span>
+						<span> (<i
+							v-if="file.deleted"
+							class="material-icons noselect in-trash-mark"
+							title="In Trash"
+						>delete</i>)</span>
 					</div>
 				</div>
 
@@ -442,6 +445,10 @@ $switch-button-width: 80px;
         font-size: 14px;
         padding: 5px;
         word-wrap: break-word;
+
+        i.in-trash-mark {
+            font-size: 16px;
+        }
     }
 }
 </style>
