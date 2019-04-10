@@ -145,14 +145,14 @@
 				<div class="card">
 					<div class="header noselect">File ID</div>
 					<div class="data">
-						{{file.id}}
+						<span>{{file.id}}</span>
 					</div>
 				</div>
 
 				<!-- Filename -->
 				<div class="card">
 					<div class="header noselect">
-						Filename
+						<span>Filename</span>
 						<i
 							class="material-icons noselect"
 							title="Edit filename"
@@ -160,14 +160,16 @@
 						>edit</i>
 					</div>
 					<div class="data">
-						{{file.filename}} <span v-if="file.deleted" style="color: red">(in Trash)</span>
+						<span>{{file.filename}}</span>
+						<br>
+						<span v-if="file.deleted" style="color: red">(in Trash)</span>
 					</div>
 				</div>
 
-				<!-- Tags -->				
+				<!-- Tags -->
 				<div class="card">
 					<div class="header noselect">
-						Tags
+						<span>Tags</span>
 						<i
 							class="material-icons noselect"
 							title="Edit tags"
@@ -194,7 +196,7 @@
 				<!-- Description -->
 				<div class="card">
 					<div class="header noselect">
-						Description
+						<span>Description</span>
 						<i
 							class="material-icons noselect"
 							title="Edit description"
@@ -202,7 +204,17 @@
 						>edit</i>
 					</div>
 					<div class="data">
-						{{file.description === "" ? 'Empty' : file.description}}
+						<span>{{file.description === "" ? 'Empty' : file.description}}</span>
+					</div>
+				</div>
+
+				<!-- Size -->
+				<div class="card">
+					<div class="header noselect">
+						<span>File size</span>
+					</div>
+					<div class="data">
+						<span>{{ fileSize }}</span>
 					</div>
 				</div>
 			</div>
@@ -405,6 +417,10 @@ $switch-button-width: 80px;
     margin-bottom: 7px;
     padding: 3px;
 
+    &:last-child {
+        margin-bottom: 30px;
+    }
+
     div.header {
         border-bottom: 1px solid #00000060;
         border-radius: 3px;
@@ -446,6 +462,7 @@ import SharedState from "@app/index/state";
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
 import { logError, preloadImages } from "@app/index/utils";
+import { ConvertBytesToString } from "@app/global/utils";
 import { Const } from "@app/global/const";
 
 export default Vue.extend({
@@ -530,6 +547,10 @@ export default Vue.extend({
                 }
             }
             return res;
+        },
+        //
+        fileSize: function(): string {
+            return ConvertBytesToString(this.file!.size);
         }
     },
     //
