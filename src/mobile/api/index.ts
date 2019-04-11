@@ -143,6 +143,24 @@ function fetchTags() {
         .catch(err => logError(err));
 }
 
+function logout() {
+    fetch(Params.Host + "/logout", {
+        method: "POST",
+        credentials: "same-origin"
+    })
+        .then(resp => {
+            if (IsErrorStatusCode(resp.status)) {
+                resp.text().then(text => {
+                    logError(text);
+                });
+                return;
+            }
+
+            window.location.reload();
+        })
+        .catch(err => logError(err));
+}
+
 export const API = {
     files: {
         fetch: fetchFiles,
@@ -150,5 +168,6 @@ export const API = {
     },
     tags: {
         fetch: fetchTags
-    }
+	},
+	logout: logout
 };

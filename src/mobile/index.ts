@@ -1,7 +1,7 @@
 import Vue from "vue";
 //
 import TagsDrive from "./TagsDrive.vue";
-import SearchBar from "./SearchBar.vue";
+import SearchBar from "./TopBar.vue";
 import Files from "./Files.vue";
 import Preview from "./Preview.vue";
 
@@ -11,7 +11,7 @@ new Vue({
 });
 
 new Vue({
-    el: "#search-bar",
+    el: "#top-bar",
     render: h => h(SearchBar)
 });
 

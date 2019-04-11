@@ -1,209 +1,162 @@
 <template>
-	<div
-		id="search-bar"
-		ref="search-bar"
-	>
-		<!-- Bar -->
-		<div
-			id="bar"
-		>
-			<div id="logo" class="noselect">Tags Drive</div>
+<div>
+	<div id="search">
+		<!-- Logical expression -->
+		<div id="search-input">
+			<!-- Input -->
+			<div
+				v-show="focused || expression === ''"
+				id="input-wrapper"
+				@click="focused = true"
+			>
+				<input
+					id="expression-input"
+					type="text"
+					readonly="true"
+					placeholder="Enter logical expression"
+					ref="expression-input"
+					v-model="expression">
 
-			<div>
-				<div
-					id="search-button"
-					@click="search"
-				>
-					<i class="material-icons noselect">search</i>
+				<div id="backspace">
+					<i
+						class="material-icons noselect"
+						@click="backspace"
+					>backspace</i>
 				</div>
 			</div>
 
-			<div id="expand-button">
-				<i
-					v-if="!opened"
-					@click="expandBar"
-					class="material-icons noselect"
-				>expand_more</i>
-				<i
-					v-else
-					@click="closeBar"
-					class="material-icons noselect"
-				>expand_less</i>
+			<!-- Render -->
+			<div
+				v-show="!(focused || expression === '')"
+				id="render-wrapper"
+				@click="focusInput"
+			>
+				<render-tags-input
+					:expression="expression"
+				></render-tags-input>
+			</div>
+
+			<div
+				v-if="focused"
+				id="suggestions"
+			>
+				<!-- List of tags -->
+				<div id="tags-list">
+					<div
+						v-for="(id, index) in allTagsIDs"
+						style="display: flex; margin: 5px;"
+						:key="index"
+					>
+						<!-- @click in tag component doesn't work, so we need a wrapper -->
+						<div @click="insertTextIntoExpression(id)">
+							<tag
+							style="cursor: pointer;"
+							title="Paste tag"
+								:tag="Store.allTags.get(id)"
+							></tag>
+						</div>
+						<i style="line-height: 28px;">id: {{id}}</i>
+					</div>
+				</div>
+
+				<!-- List of operators -->
+				<div
+					v-show="focused"
+					id="operators-list"
+				>
+					<div
+						v-for="(op, index) in operators"
+						:key="index"
+						class="element"
+					>
+						<div
+							class="operator vertically"
+							@click="insertTextIntoExpression(op.operator)"
+						>{{ op.operator }}</div>
+						<div class="description">– {{ op.description }}</div>
+					</div>
+				</div>
 			</div>
 		</div>
 
-		<!-- Expanded window -->
-		<div
-			v-show="opened"
-			id="expanded-window"
-		>
-			<!-- Logical expression -->
-			<div id="search-input">
-				<!-- Input -->
-				<div
-					v-show="focused || expression === ''"
-					id="input-wrapper"
-					@click="focused = true"
-				>
-					<input
-						id="expression-input"
-						type="text"
-						readonly="true"
-						placeholder="Enter logical expression"
-						ref="expression-input"
-						v-model="expression">
+		<div id="separator"></div>
 
-					<div id="backspace">
-						<i
-							class="material-icons noselect"
-							@click="backspace"
-						>backspace</i>
-					</div>
-				</div>
+		<!-- Advanced options -->
+		<div id="advanced-options">
+			<!-- Sort options -->
+			<div class="advanced-option">
+				<div class="label">Sort options</div>
 
-				<!-- Render -->
-				<div
-					v-show="!(focused || expression === '')"
-					id="render-wrapper"
-					@click="focusInput"
-				>
-					<render-tags-input
-						:expression="expression"
-					></render-tags-input>
-				</div>
-
-				<div
-					v-if="focused"
-					id="suggestions"
-				>
-					<!-- List of tags -->
-					<div id="tags-list">
-						<div
-							v-for="(id, index) in allTagsIDs"
-							style="display: flex; margin: 5px;"
+				<div class="select-wrapper">
+					<select v-model="sortType">
+						<option
+							v-for="(option, index) in sortTypeOptions"
 							:key="index"
-						>
-							<!-- @click in tag component doesn't work, so we need a wrapper -->
-							<div @click="insertTextIntoExpression(id)">
-								<tag
-								style="cursor: pointer;"
-								title="Paste tag"
-									:tag="Store.allTags.get(id)"
-								></tag>
-							</div>
-							<i style="line-height: 28px;">id: {{id}}</i>
-						</div>
-					</div>
+							:value="option.value"
+						>{{ option.text }}</option>
+					</select>
 
-					<!-- List of operators -->
-					<div
-						v-show="focused"
-						id="operators-list"
-					>
-						<div
-							v-for="(op, index) in operators"
+					<select v-model="sortOrder">
+						<option
+							v-for="(option, index) in sortOrderOptions"
 							:key="index"
-							class="element"
-						>
-							<div
-								class="operator vertically"
-								@click="insertTextIntoExpression(op.operator)"
-							>{{ op.operator }}</div>
-							<div class="description">– {{ op.description }}</div>
-						</div>
-					</div>
+							:value="option.value"
+						>{{ option.text }}</option>
+					</select>
 				</div>
 			</div>
 
-			<div id="separator"></div>
+			<!-- Text/Regexp to search -->
+			<div class="advanced-option">
+				<div class="label">{{ isRegexp ? "Regexp" : "Text to search" }}</div>
 
-			<!-- Advanced options -->
-			<div id="advanced-options">
-				<!-- Sort options -->
-				<div class="advanced-option">
-					<div class="label">Sort options</div>
-
-					<div class="select-wrapper">
-						<select v-model="sortType">
-							<option
-								v-for="(option, index) in sortTypeOptions"
-								:key="index"
-								:value="option.value"
-							>{{ option.text }}</option>
-						</select>
-
-						<select v-model="sortOrder">
-							<option
-								v-for="(option, index) in sortOrderOptions"
-								:key="index"
-								:value="option.value"
-							>{{ option.text }}</option>
-						</select>
-					</div>
+				<div class="input-wrapper">
+					<input
+						type="text"
+						:placeholder="isRegexp ? 'Enter regexp' : 'Enter text'"
+						v-model="textToSearch"
+						@keyup.enter="search().usual()">
 				</div>
+			</div>
 
-				<!-- Text/Regexp to search -->
-				<div class="advanced-option">
-					<div class="label">{{ isRegexp ? "Regexp" : "Text to search" }}</div>
+			<!-- isRegexp checkbox -->
+			<div class="advanced-option">
+				<div class="label">Use regexp</div>
 
-					<div class="input-wrapper">
-						<input
-							type="text"
-							:placeholder="isRegexp ? 'Enter regexp' : 'Enter text'"
-							v-model="textToSearch"
-							@keyup.enter="search().usual()">
-					</div>
+				<div class="checkbox-wrapper">
+					<input
+						type="checkbox"
+						title="Use regular expression"
+						v-model="isRegexp">
 				</div>
+			</div>
 
-				<!-- isRegexp checkbox -->
-				<div class="advanced-option">
-					<div class="label">Use regexp</div>
+			<div class="advanced-option" style="margin-top: 20px;">
+				<div class="label">Reset</div>
 
-					<div class="checkbox-wrapper">
-						<input
-							type="checkbox"
-							title="Use regular expression"
-							v-model="isRegexp">
-					</div>
-				</div>
-
-				<div class="advanced-option" style="margin-top: 30px;">
-					<div class="label">Reset</div>
-
-					<div
-						class="button-wrapper"
-						@click="resetOptions"
-					>
-						<i class="material-icons noselect">clear</i>
-					</div>
+				<div
+					class="button-wrapper"
+					@click="resetOptions"
+				>
+					<i class="material-icons noselect">clear</i>
 				</div>
 			</div>
 		</div>
 	</div>
+
+	<div
+		id="search-button"
+		@click="search"
+	>
+		<i class="material-icons noselect">search</i>
+		<span>Search</span>
+	</div>
+</div>
 </template>
 
-
 <style lang="scss" scoped>
-$height: 40px;
-
-#search-bar {
-    background-color: white;
-    height: $height;
-    left: 0;
-    position: fixed;
-    text-align: left;
-    top: 0;
-    transition: height 0.15s ease-out;
-    width: 100%;
-    z-index: 2;
-}
-
-.search-bar-expand-animation {
-    height: 100% !important;
-}
-
-// Expand more/less buttons
 @mixin button {
+    $height: 40px;
     $padding: 4px;
 
     border-radius: 3px;
@@ -220,51 +173,22 @@ $height: 40px;
     }
 }
 
-#bar {
-    border: 1px solid #0000002f;
-    display: grid;
-    grid-template-columns: 120px auto 40px;
-    padding: 0 10px;
-
-    #logo {
-        cursor: default;
-        font-family: none;
-        font-size: 25px;
-        height: $height;
-        line-height: $height;
-    }
-
-    div {
-        position: relative;
-
-        #search-button {
-            @include button();
-
-            position: absolute;
-            right: 5px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-    }
-
-    #expand-button {
-        @include button();
-
-        margin: auto;
-    }
-}
-
 $min-flex-screen-width: 800px;
 
-#expanded-window {
+#search {
     display: flex;
-    justify-content: space-around;
     flex-wrap: wrap;
     padding: 5px;
 
     @media screen and (min-width: $min-flex-screen-width) {
+        display: grid;
+        grid-template-columns: 48% auto 48%;
+
         #separator {
-            border: 0.5px solid #0000002f;
+            border-right: 1px solid #0000002f;
+            height: 100%;
+            margin: auto;
+            width: 1px;
         }
     }
 
@@ -277,11 +201,6 @@ $min-flex-screen-width: 800px;
         margin-bottom: 10px;
         max-height: 320px;
         width: 100%;
-
-        @media screen and (min-width: $min-flex-screen-width) {
-            width: 45%;
-            max-width: 45%;
-        }
 
         @mixin wrapper {
             border-bottom: 1px solid #888888;
@@ -376,9 +295,10 @@ $min-flex-screen-width: 800px;
     }
 
     #advanced-options {
-        @media screen and (min-width: $min-flex-screen-width) {
-            max-width: 45%;
-            width: 45%;
+        width: fit-content;
+
+        @media screen and (max-width: $min-flex-screen-width) {
+            margin: auto;
         }
 
         .advanced-option {
@@ -443,8 +363,17 @@ $min-flex-screen-width: 800px;
         }
     }
 }
-</style>
 
+#search-button {
+    @include button();
+
+    border: 1px solid #88888880;
+    font-size: 18px;
+    margin: 20px auto 0;
+    padding: 3px 7px 3px 5px;
+    width: fit-content;
+}
+</style>
 
 <script lang="ts">
 import Vue from "vue";
@@ -455,7 +384,25 @@ import RenderTagsInput from "@app/mobile/components/RenderTagsInput.vue";
 import SharedStore from "@app/mobile/store";
 import { API } from "@app/mobile/api";
 import { EventBus, Events } from "@app/mobile/eventBus";
-import { IsElementInPath } from "@app/global/utils";
+
+function isElementInPath(event: Event, ...ids: string[]): boolean {
+    // We need to use type any because Event hasn't property path, composedPath and composedPath().
+    // Nevertheless, it's a cross browser way to get path.
+    let path = (<any>event).path || ((<any>event).composedPath && (<any>event).composedPath());
+    if (path === undefined || path.length === undefined) {
+        return false;
+    }
+
+    for (let i = 0; i < path.length; i++) {
+        for (let j = 0; j < ids.length; j++) {
+            if (path[i].id === ids[j]) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
 
 const fetchLimit = 25;
 
@@ -479,14 +426,8 @@ const availableOperators: Operator[] = [
 ];
 
 export default Vue.extend({
-    components: {
-        "render-tags-input": RenderTagsInput,
-        tag: TagComponent
-    },
-    //
     data: function() {
         return {
-            opened: false,
             focused: false,
             //
             expression: "",
@@ -513,15 +454,22 @@ export default Vue.extend({
         }
     },
     //
+    components: {
+        "render-tags-input": RenderTagsInput,
+        tag: TagComponent
+    },
+    //
     created: function() {
         document.addEventListener("click", ev => {
-            if (this.opened) {
-                if (!IsElementInPath(ev, "render-wrapper", "input-wrapper", "tags-list", "operators-list")) {
-                    this.focused = false;
-                }
+            if (
+                this.focused &&
+                !isElementInPath(ev, "render-wrapper", "input-wrapper", "tags-list", "operators-list")
+            ) {
+                this.focused = false;
             }
         });
 
+        // Fetch new files
         EventBus.$on(Events.fetchNextFiles, () => {
             API.files.fetch(
                 this.expression,
@@ -534,23 +482,23 @@ export default Vue.extend({
                 false
             );
         });
+
+        // Refresh files
+        EventBus.$on(Events.refreshFiles, () => {
+            API.files.fetch(
+                this.expression,
+                this.textToSearch,
+                this.isRegexp,
+                this.sortType,
+                this.sortOrder,
+                0,
+                fetchLimit,
+                true
+            );
+        });
     },
     //
     methods: {
-        expandBar() {
-            let bar = <HTMLAudioElement>this.$refs["search-bar"];
-            if (bar !== undefined) {
-                bar.classList.add("search-bar-expand-animation");
-            }
-            this.opened = true;
-        },
-        closeBar() {
-            let bar = <HTMLAudioElement>this.$refs["search-bar"];
-            if (bar !== undefined) {
-                bar.classList.remove("search-bar-expand-animation");
-            }
-            this.opened = false;
-        },
         focusInput() {
             this.focused = true;
 
@@ -562,9 +510,7 @@ export default Vue.extend({
         //
         search() {
             // Close window
-            if (this.opened) {
-                this.closeBar();
-            }
+            this.$parent.$emit("close-bar");
 
             EventBus.$emit(Events.resetFilesBlockScroll);
 
