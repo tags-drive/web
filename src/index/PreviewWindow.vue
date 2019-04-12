@@ -161,8 +161,7 @@
 					</div>
 					<div class="data">
 						<span>{{file.filename}}</span>
-						<span> (<i
-							v-if="file.deleted"
+						<span v-if="file.deleted"> (<i
 							class="material-icons noselect in-trash-mark"
 							title="In Trash"
 						>delete</i>)</span>
