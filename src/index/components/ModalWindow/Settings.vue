@@ -13,12 +13,6 @@
 			</div>
 		</div>
 
-		<p></p>
-
-		<span class="noselect">Tags Drive {{version}} (<a href="https://github.com/tags-drive">github.com/tags-drive</a>)</span>
-
-		<p></p>
-
 		<div>
 			<input
 				type="button"
@@ -27,11 +21,23 @@
 				value="Save"
 				@click="saveSettings">
 		</div>
+
+		<div id="info">
+			<span class="noselect">Tags Drive – <a href="https://github.com/tags-drive" target="_blank">github.com/tags-drive</a></span>
+
+			<div id="versions">
+				<span class="noselect version">Frontend version - {{ frontendVersion }}</span>
+
+				<div id="separator"></div>
+
+				<span class="noselect version">Backend version - {{ backendVersion }}</span>
+			</div>
+		</div>
 	</div>
 </template>
 
 
-<style scoped>
+<style lang="scss" scoped>
 h2 {
     margin-top: 0;
 }
@@ -45,6 +51,32 @@ h2 {
 .setting {
     font-size: 18px;
     margin-bottom: 10px;
+}
+
+#info {
+    $height: 18px;
+
+    font-size: 13px;
+    margin: 30px auto 0;
+
+    #versions {
+        display: grid;
+        grid-template-columns: 180px auto 180px;
+        margin: 5px auto 0;
+        text-align: center;
+        width: 180px + 180px + 5px;
+
+        .version {
+            line-height: $height;
+        }
+
+        #separator {
+            border-right: 1px solid #888888;
+            height: $height;
+            margin: auto;
+            width: 1px;
+        }
+    }
 }
 
 input {
@@ -65,17 +97,32 @@ import { Settings } from "@app/index/state/types";
 import SharedState from "@app/index/state";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
-import { Version } from "@app/global";
+import { Version, Params } from "@app/global";
+import { IsErrorStatusCode } from "@app/global/utils";
 
 export default Vue.extend({
     data: function() {
         return {
             settings: <Settings>{ showDeletedFiles: false },
-            version: Version
+            frontendVersion: Version,
+            backendVersion: "undefined"
         };
     },
     //
     created: function() {
+        // Fetch backend version
+        fetch(Params.Host + "/version", {
+            method: "GET",
+            credentials: "same-origin"
+        }).then(resp => {
+            if (IsErrorStatusCode(resp.status)) {
+                return;
+            }
+            resp.text().then(version => {
+                this.backendVersion = version;
+            });
+        });
+
         this.$nextTick(function() {
             // Add onchange handlers to input["checkbox"]
             let elements = document.getElementById("settings")!.getElementsByTagName("input");
