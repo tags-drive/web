@@ -121,15 +121,15 @@ input[type="checkbox"] {
 }
 
 #upload-text {
-    position: absolute;
-    border: 2px black dotted;
+    background-color: rgba(0, 0, 0, 0.15);
+    border: 1px black solid;
     border-radius: 15px;
     font-size: 50px;
-
-    /* Center */
     left: 50%;
-    transform: translate(-50%, -100%);
+    padding: 15px;
+    position: absolute;
     top: 50%;
+    transform: translate(-50%, -100%);
 }
 
 #working-area {
