@@ -78,11 +78,13 @@ export function ObjectToFile(obj: any, skipTimeParsing?: boolean): File | null {
 }
 
 export class Tag {
+    id: number;
     name: string;
     color: string;
     group: string;
 
-    constructor(n?: string, c?: string, g?: string) {
+    constructor(id?: number, n?: string, c?: string, g?: string) {
+        this.id = id || 0;
         this.name = n || "";
         this.color = c || "";
         this.group = g || "";
@@ -90,7 +92,7 @@ export class Tag {
 }
 
 export function ObjectToTag(obj: any): Tag | null {
-    if (obj === undefined || obj.name === undefined || obj.color === undefined) {
+    if (obj === undefined || obj.id === undefined || obj.name === undefined || obj.color === undefined) {
         return null;
     }
 
@@ -100,5 +102,5 @@ export function ObjectToTag(obj: any): Tag | null {
         group = <string>obj.group;
     }
 
-    return new Tag(<string>obj.name, <string>obj.color, group);
+    return new Tag(<number>obj.id, <string>obj.name, <string>obj.color, group);
 }
