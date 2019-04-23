@@ -22,6 +22,61 @@ export class File {
     timeToDelete: number = 0; // UNIX time
 }
 
+export function ObjectToFile(obj: any, skipTimeParsing?: boolean): File | null {
+    if (
+        obj === undefined ||
+        obj.id === undefined ||
+        obj.type === undefined ||
+        obj.filename === undefined ||
+        obj.origin === undefined ||
+        obj.description === undefined ||
+        obj.size === undefined ||
+        obj.tags === undefined ||
+        obj.addTime === undefined ||
+        // Preview can be omitted
+        obj.deleted === undefined ||
+        obj.timeToDelete === undefined
+    ) {
+        return null;
+    }
+
+    if (
+        obj.type.ext === undefined ||
+        obj.type.fileType === undefined ||
+        obj.type.supported === undefined ||
+        obj.type.previewType === undefined
+    ) {
+        return null;
+    }
+
+    let ext = new FileExt();
+    ext.ext = obj.type.ext;
+    ext.fileType = obj.type.fileType;
+    ext.supported = obj.type.supported;
+    ext.previewType = obj.type.previewType;
+
+    let file: File = new File();
+    file.id = <number>obj.id;
+    file.type = ext;
+    file.filename = <string>obj.filename;
+    file.origin = <string>obj.origin;
+    file.description = <string>obj.description;
+    file.size = <number>obj.size;
+    file.tags = <number[]>obj.tags;
+
+    if (!skipTimeParsing) {
+        file.addTime = new Date(obj.addTime);
+    } else {
+        file.addTime = obj.addTime || new Date();
+    }
+
+    file.preview = obj.preview ? <string>obj.preview : "";
+    file.deleted = <boolean>obj.deleted;
+    file.timeToDelete = <number>obj.timeToDelete;
+
+    return file;
+}
+
 export class Tag {
     name: string;
     color: string;
@@ -32,4 +87,18 @@ export class Tag {
         this.color = c || "";
         this.group = g || "";
     }
+}
+
+export function ObjectToTag(obj: any): Tag | null {
+    if (obj === undefined || obj.name === undefined || obj.color === undefined) {
+        return null;
+    }
+
+    // Can be empty
+    let group = "";
+    if (obj.group !== undefined) {
+        group = <string>obj.group;
+    }
+
+    return new Tag(<string>obj.name, <string>obj.color, group);
 }

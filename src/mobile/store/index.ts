@@ -2,72 +2,9 @@ import Vue from "vue";
 import Vuex, { StoreOptions } from "vuex";
 // Classes and types
 import { Store } from "./types";
-import { File, Tag, FileExt } from "@app/global/classes";
+import { File, ObjectToFile, ObjectToTag } from "@app/global/classes";
 
 Vue.use(Vuex);
-
-function objectToFile(f: any, skipTimeParsing?: boolean): File | null {
-    if (
-        f === undefined ||
-        f.id === undefined ||
-        f.type === undefined ||
-        f.filename === undefined ||
-        f.origin === undefined ||
-        f.description === undefined ||
-        f.size === undefined ||
-        f.tags === undefined ||
-        f.addTime === undefined ||
-        // Preview can be omitted
-        f.deleted === undefined ||
-        f.timeToDelete === undefined
-    ) {
-        return null;
-    }
-
-    if (
-        f.type.ext === undefined ||
-        f.type.fileType === undefined ||
-        f.type.supported === undefined ||
-        f.type.previewType === undefined
-    ) {
-        return null;
-    }
-
-    let ext = new FileExt();
-    ext.ext = f.type.ext;
-    ext.fileType = f.type.fileType;
-    ext.supported = f.type.supported;
-    ext.previewType = f.type.previewType;
-
-    let file: File = new File();
-    file.id = <number>f.id;
-    file.type = ext;
-    file.filename = <string>f.filename;
-    file.origin = <string>f.origin;
-    file.description = <string>f.description;
-    file.size = <number>f.size;
-    file.tags = <number[]>f.tags;
-
-    if (!skipTimeParsing) {
-        file.addTime = new Date(f.addTime);
-    } else {
-        file.addTime = f.addTime || new Date();
-    }
-
-    file.preview = f.preview ? <string>f.preview : "";
-    file.deleted = <boolean>f.deleted;
-    file.timeToDelete = <number>f.timeToDelete;
-
-    return file;
-}
-
-function objectToTag(f: any): Tag | null {
-    if (f === undefined || f.name === undefined || f.color === undefined) {
-        return null;
-    }
-
-    return new Tag(<string>f.name, <string>f.color);
-}
 
 const store: StoreOptions<Store> = {
     state: {
@@ -85,7 +22,7 @@ const store: StoreOptions<Store> = {
 
             for (let i = 0; i < files.length; i++) {
                 let f = files[i];
-                let file = objectToFile(f);
+                let file = ObjectToFile(f);
                 if (file === null) {
                     continue;
                 }
@@ -100,7 +37,7 @@ const store: StoreOptions<Store> = {
 
             for (let i = 0; i < files.length; i++) {
                 let f = files[i];
-                let file = objectToFile(f);
+                let file = ObjectToFile(f);
                 if (file === null) {
                     continue;
                 }
@@ -129,7 +66,7 @@ const store: StoreOptions<Store> = {
                     continue;
                 }
 
-                let t = objectToTag(tags[id]);
+                let t = ObjectToTag(tags[id]);
                 if (t !== null) {
                     state.allTags.set(Number(id), t);
                 }
