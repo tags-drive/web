@@ -25,9 +25,11 @@ export class File {
 export class Tag {
     name: string;
     color: string;
+    group: string;
 
-    constructor(n?: string, c?: string) {
+    constructor(n?: string, c?: string, g?: string) {
         this.name = n || "";
         this.color = c || "";
+        this.group = g || "";
     }
 }
