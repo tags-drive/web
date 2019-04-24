@@ -1,5 +1,5 @@
 <template>
-	<div style="width: 600px;">
+	<div style="width: 700px;">
 		<!-- Existed tags -->
 		<tag-editor
 			v-for="(id, index) in allTagsIDs"
@@ -50,21 +50,21 @@ export default Vue.extend({
     //
     created: function() {
         this.$on("add-tag", (payload: any) => {
-            this.addTag(payload.name, payload.color);
+            this.addTag(payload.name, payload.color, payload.group);
         });
         this.$on("change-tag", (payload: any) => {
-            this.changeTag(payload.tagID, payload.newName, payload.newColor);
+            this.changeTag(payload.tagID, payload.newName, payload.newColor, payload.newGroup);
         });
         this.$on("delete-tag", (payload: any) => {
             this.deleteTag(payload.tagID);
         });
     },
     methods: {
-        addTag: function(name: string, color: string) {
-            API.tags.add(name, color);
+        addTag: function(name: string, color: string, newGroup?: string) {
+            API.tags.add(name, color, newGroup);
         },
-        changeTag: function(tagID: number, newName: string, newColor: string) {
-            API.tags.change(tagID, newName, newColor);
+        changeTag: function(tagID: number, newName: string, newColor: string, newGroup?: string) {
+            API.tags.change(tagID, newName, newColor, newGroup);
         },
         deleteTag: function(tagID: number) {
             API.tags.delete(tagID);
