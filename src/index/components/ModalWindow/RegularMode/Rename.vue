@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div style="width: 500px;">
 		<div class="section">Current filename: "{{file.filename}}"</div>
 
 		<div class="section">

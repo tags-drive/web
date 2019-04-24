@@ -1,11 +1,11 @@
 <template>
-	<div>
+	<div style="width: 400px;">
 		<div style="font-size: 20px; margin-bottom: 10px;">
 			<span v-if="mode === SharedModes.addMode">Add tags</span>
 			<span v-else-if="mode === SharedModes.deleteMode">Delete tags</span>
 		</div>
 
-		<div style="margin-right: auto; margin-left: auto; width: 40%;">
+		<div style="margin-right: auto; margin-left: auto; width: 250px;">
 			<div
 				v-for="(tag, index) in tags"
 				:key="index"

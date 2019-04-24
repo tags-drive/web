@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div style="width: 500px;">
 		<div style="font-size: 20px;">Selected files:</div>
 		<br>
 		<div style="text-align: left; max-height: 160px; overflow-y: auto;">

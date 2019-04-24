@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div id="settings-window">
 		<h2>Settings</h2>
 
 		<div id="settings">
@@ -42,15 +42,19 @@ h2 {
     margin-top: 0;
 }
 
-#settings {
-    display: inline-block;
-    text-align: left;
-    width: auto;
-}
+#settings-window {
+    width: 600px;
 
-.setting {
-    font-size: 18px;
-    margin-bottom: 10px;
+    > #settings {
+        display: inline-block;
+        text-align: left;
+        width: auto;
+
+        > .setting {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+    }
 }
 
 #info {

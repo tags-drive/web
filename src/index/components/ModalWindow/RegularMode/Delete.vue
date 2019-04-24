@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div style="width: 350px;">
 		<!-- Delete -->
 		<input v-if="!file.deleted"
 			type="button"

@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div style="width: 600px;">
 		<!-- Existed tags -->
 		<tag-editor
 			v-for="(id, index) in allTagsIDs"
