@@ -1,43 +1,70 @@
 <template>
 	<div class="container">
-		<div
-			class="tag-indicator vertically"
-			:style="{'border-left-color': indicatorBorderColor}"
-		></div>
+		<!-- Tag preview -->
+		<div id="tag-preview" style="display: flex;">
+			<!-- Indicator -->
+			<div
+				id="tag-indicator"
+				class="vertically"
+				:style="{'border-left-color': indicatorBorderColor}"
+			></div>
 
-		<div style="display: flex;">
 			<tag :tag="{ name: newName, color: newColor }"></tag>
 		</div>
 
-		<!-- Tag name -->
-		<input
-			type="text"
-			style="margin-right: 10px;"
-			@input="check"
-			:disabled="isDeleted"
-			v-model="newName">
+		<!-- Fields to edit -->
+		<div id="edit-fields">
+			<!-- Tag name -->
+			<div id="name">
+				<input
+					type="text"
+					@input="check"
+					:disabled="isDeleted"
+					v-model="newName">
+			</div>
 
-		<!-- Tag color -->
-		<input
-			type="text"
-			style="margin-right: 5px;"
-			@input="check"
-			:disabled="isDeleted"
-			v-model="newColor">
+			<!-- Tag color -->
+			<div id="color">
+				<input
+					type="text"
+					style="margin-right: 5px;"
+					@input="check"
+					:disabled="isDeleted"
+					v-model="newColor">
 
-		<!-- Generate color -->
-		<i
-			class="material-icons btn noselect"
-			style="margin-right: 10px;"
-			title="Generate a new color"
-			@click="generateRandomColor"
-			:style="[isDeleted ? {'opacity': '0.3', 'background-color': 'white', 'cursor': 'default'} : {'opacity': '1'}]">cached</i>
+				<!-- Generate color -->
+				<i
+					id="generate-button"
+					class="material-icons btn noselect"
+					title="Generate a new color"
+					@click="generateRandomColor"
+					:style="[isDeleted ? {'opacity': '0.3', 'background-color': 'white', 'cursor': 'default'} : {'opacity': '1'}]">cached</i>
+			</div>
 
-		<div style="display: flex;">
+			<!-- Tag group -->
+			<div>
+				<input
+					type="text"
+					placeholder="Group"
+					:disabled="isDeleted"
+					@input="check"
+					v-model="newGroup">
+			</div>
+		</div>
+
+		<!-- Buttons -->
+		<div id="manage-buttons" style="display: flex;">
+			<!-- Reset -->
+			<i
+				class="material-icons btn noselect"
+				title="Reset"
+				@click="reset"
+				:style="resetButtonStyle"
+			>refresh</i>
+
 			<!-- Save -->
 			<i
 				class="material-icons btn noselect"
-				style="margin-right: 5px;" 
 				title="Save"
 				@click="save"
 				:style="saveButtonStyle"
@@ -64,14 +91,60 @@
 
 <style lang="scss" scoped>
 .container {
+    column-gap: 25px;
     display: grid;
-    grid-template-columns: 5px auto 35% 13% 40px 60px;
+    grid-template-columns: auto 400px 80px;
     margin-bottom: 5px;
-}
 
-.tag-indicator {
-    border-left: 2px solid white;
-    height: 100%;
+    > #tag-preview {
+        > #tag-indicator {
+            border-left: 2px solid white;
+            margin-right: 2px;
+            height: 20px;
+        }
+    }
+
+    > #edit-fields {
+        column-gap: 15px;
+        display: grid;
+        grid-template-columns: auto 100px 100px;
+
+        input {
+            height: 70%;
+            margin: auto;
+            width: 100%;
+        }
+
+        > div {
+            display: contents;
+        }
+
+        > #color {
+            column-gap: 5px;
+            display: grid;
+            grid-template-columns: auto 20px;
+
+            > #generate-button {
+                font-size: 20px;
+                height: 20px;
+                margin: auto;
+                width: 20px;
+            }
+        }
+    }
+
+    > #manage-buttons {
+        i {
+            font-size: 20px;
+            height: 20px;
+            margin: auto;
+            width: 20px;
+
+            &:last-child {
+                margin-right: 0;
+            }
+        }
+    }
 }
 </style>
 
@@ -86,6 +159,10 @@ import { Tag } from "@app/global/classes";
 const validColor = /^#[\dabcdef]{6}$/;
 
 export default Vue.extend({
+    components: {
+        tag: TagComponent
+    },
+    //
     props: {
         tag: Tag,
         tagID: Number,
@@ -95,6 +172,8 @@ export default Vue.extend({
         return {
             newName: "",
             newColor: "",
+            newGroup: "",
+            //
             isChanged: false, // isNewTag wasn't passed,
             isError: false,
             isDeleted: false
@@ -119,11 +198,13 @@ export default Vue.extend({
                 return { opacity: "0.3", "background-color": "white", cursor: "default" };
             }
             return { opacity: "1" };
+        },
+        resetButtonStyle: function() {
+            if ((!this.isChanged && !this.isDeleted) || this.isNewTag) {
+                return { opacity: "0.3", "background-color": "white", cursor: "default" };
+            }
+            return { opacity: "1" };
         }
-    },
-    //
-    components: {
-        tag: TagComponent
     },
     //
     created: function() {
@@ -132,13 +213,11 @@ export default Vue.extend({
         if (this.isNewTag && this.tag === undefined) {
             this.newName = "new tag";
             this.newColor = "#ffffff";
-
-            // We can don't init this.tag, if this.isNewTag === true
-            //
-            // this.tag = new Tag("new tag", "#ffffff");
+            this.newGroup = "";
         } else {
             this.newName = this.tag.name;
             this.newColor = this.tag.color;
+            this.newGroup = this.tag.group;
         }
     },
     destroyed: function() {
@@ -152,7 +231,12 @@ export default Vue.extend({
     //
     methods: {
         check: function() {
-            if (!this.isNewTag && this.tag.name === this.newName && this.tag.color === this.newColor) {
+            if (
+                !this.isNewTag &&
+                this.tag.name === this.newName &&
+                this.tag.color === this.newColor &&
+                this.tag.group === this.newGroup
+            ) {
                 // Can skip, if name and color weren't changed
                 this.isChanged = false;
                 this.isError = false;
@@ -189,6 +273,18 @@ export default Vue.extend({
             this.isError = false; // we can't generate an invalid color
             this.newColor = "#" + getHexRandom(256) + getHexRandom(256) + getHexRandom(256);
         },
+        reset: function() {
+            if (this.isDeleted || this.isNewTag) {
+                return;
+            }
+
+            this.newName = this.tag.name;
+            this.newColor = this.tag.color;
+            this.newGroup = this.tag.group;
+
+            this.isError = false;
+            this.isChanged = false;
+        },
         // API
         save: function() {
             if (this.isError || !this.isChanged) {
@@ -197,12 +293,17 @@ export default Vue.extend({
 
             if (this.isNewTag) {
                 // Need to create, not to change
-                this.$parent.$emit("add-tag", { name: this.newName, color: this.newColor });
+                this.$parent.$emit("add-tag", { name: this.newName, color: this.newColor, group: this.newGroup });
                 // Reset vars
                 this.newName = "new tag";
                 this.newColor = "#ffffff";
             } else {
-                this.$parent.$emit("change-tag", { tagID: this.tagID, newName: this.newName, newColor: this.newColor });
+                this.$parent.$emit("change-tag", {
+                    tagID: this.tagID,
+                    newName: this.newName,
+                    newColor: this.newColor,
+                    newGroup: this.newGroup
+                });
                 this.isChanged = false;
             }
         },
