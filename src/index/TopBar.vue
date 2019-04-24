@@ -53,19 +53,42 @@
 					id="tags-list"
 				>
 					<div
-						v-for="(id, index) in allTagsIDs"
-						style="display: flex; margin: 5px;"
-						:key="index"
+						v-for="(group, i) in groupedTags"
+						:key="i"
+						class="group"
 					>
-						<!-- @click in tag component doesn't work, so we need a wrapper -->
-						<div @click="insertTextIntoExpression(id)">
-							<tag
-							style="cursor: pointer;"
-							title="Paste tag"
-								:tag="Store.allTags.get(id)"
-							></tag>
+						<div
+							class="group-name noselect"
+							:title="group.show ? 'Hide group' : 'Show group'"
+							@click="toggleGroupVisibility(group.name)"
+						>
+							<i class="material-icons">navigate_next</i>
+							<div>
+								<span>{{ group.name }}</span>
+								<span>{{ !group.show ? ' ...' : ''}}</span>
+							</div>
 						</div>
-						<i style="line-height: 28px;">id: {{id}}</i>
+
+						<div
+							v-if="group.show"
+							class="tags-list"
+						>
+							<div
+								v-for="(tag, j) in group.tags"
+								:key="j"
+								class="tag"
+							>
+								<!-- @click in tag component doesn't work, so we need a wrapper -->
+								<div @click="insertTextIntoExpression(tag.id)">
+									<tag
+										style="cursor: pointer;"
+										title="Paste tag"
+										:tag="tag"
+									></tag>
+								</div>
+								<i style="line-height: 28px;">id: {{tag.id}}</i>
+							</div>
+						</div>
 					</div>
 				</div>
 
@@ -306,6 +329,38 @@
                 @include suggestion-blocks();
 
                 width: $tags-list-width;
+
+                .group {
+                    padding: 0 5px;
+
+                    &:last-child {
+                        margin-bottom: 10px;
+                    }
+
+                    > div.group-name {
+                        border-radius: 5px;
+                        cursor: pointer;
+                        display: inline-flex;
+                        min-height: 25px;
+                        line-height: 25px;
+                        width: 100%;
+                        word-break: break-all;
+
+                        &:hover {
+                            background-color: #88888810;
+                        }
+                    }
+
+                    > div.tags-list {
+                        // Indentation
+                        margin-left: 20px;
+
+                        > .tag {
+                            display: flex;
+                            margin: 5px;
+                        }
+                    }
+                }
             }
 
             > #operators-list {
@@ -450,6 +505,7 @@ import { Store } from "@app/index/store/types";
 import { Events, EventBus } from "@app/index/eventBus";
 import { logError, logInfo } from "@app/index/utils";
 import { IsElementInPath } from "@app/global/utils";
+import { Tag } from "@app/global/classes";
 import { Params } from "@app/global";
 import API from "@app/index/api";
 
@@ -472,7 +528,22 @@ const availableOperators: Operator[] = [
     new Operator(")", "right bracket")
 ];
 
+class Group {
+    name: string = "";
+    show: boolean = true;
+    tags: Tag[] = [];
+
+    constructor(name: string) {
+        this.name = name;
+    }
+}
+
 export default Vue.extend({
+    components: {
+        tag: TagComponent,
+        "render-tags-input": RenderTagsInput
+    },
+    //
     data: function() {
         return {
             // Const members
@@ -480,21 +551,77 @@ export default Vue.extend({
             // Expression
             expression: "",
             //
-            position: 0,
-            showTagsList: false,
             focused: false,
             showAdvancedOptions: false,
             // Text search
             text: "",
             isRegexp: false,
             //
+            hiddenGroups: new Set() as Set<string>,
+            hiddenGroupsChangesCounter: 0,
+            //
             Store: SharedStore.state
         };
     },
     computed: {
-        allTagsIDs: function() {
-            // For reactive updating (see @app/index/store/types.ts for more information)
-            return this.Store.allTagsChangesCounter && Array.from(this.Store.allTags.keys());
+        groupedTags: function(): Group[] {
+            // Name for group with ungrouped tags
+            const ungroupedTags = "Ungrouped tags";
+
+            let reactive = this.hiddenGroupsChangesCounter + this.Store.allTagsChangesCounter;
+
+            let allTags = this.Store.allTags;
+            let groups: Group[] = [];
+
+            let addTagToGroups = (tag: Tag) => {
+                // Clone tag
+                let t = JSON.parse(JSON.stringify(tag));
+
+                if (t.group == "") {
+                    t.group = ungroupedTags;
+                }
+
+                for (let i = 0; i < groups.length; i++) {
+                    if (groups[i].name == t.group) {
+                        groups[i].tags.push(t);
+                        return;
+                    }
+                }
+
+                // There's no group with such name
+                let newGroup = new Group(t.group);
+                newGroup.tags.push(t);
+
+                if (this.hiddenGroups.has(t.group)) {
+                    newGroup.show = false;
+                }
+
+                groups.push(newGroup);
+            };
+
+            allTags.forEach(tag => {
+                addTagToGroups(tag);
+            });
+
+            groups.sort((a, b) => {
+                // Ungrouped tags must be last
+                if (a.name === ungroupedTags) {
+                    return 1;
+                }
+                if (b.name === ungroupedTags) {
+                    return -1;
+                }
+
+                if (a.name < b.name) {
+                    return -1;
+                }
+                if (a.name > b.name) {
+                    return 1;
+                }
+                return 0;
+            });
+
+            return groups;
         },
         usedAdvancedOptions: function(): boolean {
             return this.text != "" || this.isRegexp != false;
@@ -502,11 +629,6 @@ export default Vue.extend({
         showResetButton: function(): boolean {
             return this.expression != "" || this.usedAdvancedOptions;
         }
-    },
-    //
-    components: {
-        tag: TagComponent,
-        "render-tags-input": RenderTagsInput
     },
     //
     created: function() {
@@ -556,6 +678,16 @@ export default Vue.extend({
                     API.management.logout();
                 }
             };
+        },
+        // Grouped tags
+        toggleGroupVisibility: function(groupName: string) {
+            if (this.hiddenGroups.has(groupName)) {
+                this.hiddenGroups.delete(groupName);
+            } else {
+                this.hiddenGroups.add(groupName);
+            }
+
+            this.hiddenGroupsChangesCounter++;
         },
         // insertTagID is used to insert tag id into expression
         insertTextIntoExpression: function(arg: any) {
