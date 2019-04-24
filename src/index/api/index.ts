@@ -349,10 +349,13 @@ function fetchTags() {
         .catch(err => logError(err));
 }
 
-function addTag(name: string, color: string) {
+function addTag(name: string, color: string, group?: string) {
     let params = new URLSearchParams();
     params.append("name", name);
     params.append("color", color);
+    if (group !== undefined) {
+        params.append("group", group);
+    }
 
     fetch(Params.Host + "/api/tags?" + params, {
         method: "POST",
@@ -374,10 +377,13 @@ function addTag(name: string, color: string) {
         });
 }
 
-function changeTag(tagID: number, newName: string, newColor: string) {
+function changeTag(tagID: number, newName: string, newColor: string, newGroup?: string) {
     let params = new URLSearchParams();
     params.append("name", newName);
     params.append("color", newColor);
+    if (newGroup !== undefined) {
+        params.append("group", newGroup);
+    }
 
     fetch(Params.Host + `/api/tag/${tagID}?` + params, {
         method: "PUT",

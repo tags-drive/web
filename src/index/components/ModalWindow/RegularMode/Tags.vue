@@ -1,9 +1,9 @@
 <template>
-	<div>
+	<div style="width: 400px;">
 		<div
 			v-for="(tag, index) in tags"
 			:key="index"
-			style="margin: 0 auto; width: 40%;"
+			style="margin: 0 auto; width: 250px"
 		>
 			<div style="display: flex; margin-bottom: 5px; position: relative;">
 				<div style="width: 200px; display: flex">

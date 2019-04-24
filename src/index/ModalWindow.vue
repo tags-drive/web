@@ -74,7 +74,7 @@
     padding: 10px;
     position: relative;
     top: 10vh;
-    width: 600px;
+    width: fit-content;
 }
 
 .modal-window__input {

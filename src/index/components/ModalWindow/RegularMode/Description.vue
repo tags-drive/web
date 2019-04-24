@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div style="width: 500px;">
 		<div>
 			<textarea
 				style="outline: none; margin-bottom: 5px;"

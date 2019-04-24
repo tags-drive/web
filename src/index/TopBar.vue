@@ -53,19 +53,42 @@
 					id="tags-list"
 				>
 					<div
-						v-for="(id, index) in allTagsIDs"
-						style="display: flex; margin: 5px;"
-						:key="index"
+						v-for="(group, i) in groupedTags"
+						:key="i"
+						class="group"
 					>
-						<!-- @click in tag component doesn't work, so we need a wrapper -->
-						<div @click="insertTextIntoExpression(id)">
-							<tag
-							style="cursor: pointer;"
-							title="Paste tag"
-								:tag="Store.allTags.get(id)"
-							></tag>
+						<div
+							class="group-name noselect"
+							:title="group.show ? 'Hide group' : 'Show group'"
+							@click="toggleGroupVisibility(group.name)"
+						>
+							<i class="material-icons">navigate_next</i>
+							<div>
+								<span>{{ group.name }}</span>
+								<span>{{ !group.show ? ' ...' : ''}}</span>
+							</div>
 						</div>
-						<i style="line-height: 28px;">id: {{id}}</i>
+
+						<div
+							v-if="group.show"
+							class="tags-list"
+						>
+							<div
+								v-for="(tag, j) in group.tags"
+								:key="j"
+								class="tag"
+							>
+								<!-- @click in tag component doesn't work, so we need a wrapper -->
+								<div @click="insertTextIntoExpression(tag.id)">
+									<tag
+										style="cursor: pointer;"
+										title="Paste tag"
+										:tag="tag"
+									></tag>
+								</div>
+								<i style="line-height: 28px;">id: {{tag.id}}</i>
+							</div>
+						</div>
 					</div>
 				</div>
 
@@ -114,10 +137,10 @@
 			v-if="showAdvancedOptions"
 		>
 			<div class="advanced-option">
-				<div class="advanced-option__label">
+				<div class="label">
 					{{ isRegexp ? "Regexp" : "Text to search" }}
 				</div>
-				<div class="advanced-option__input-wrapper">
+				<div class="input-wrapper">
 					<input
 						type="text"
 						:placeholder="isRegexp ? 'Enter regexp' : 'Enter text'"
@@ -127,8 +150,8 @@
 			</div>
 
 			<div class="advanced-option">
-				<div class="advanced-option__label">Use regexp</div>
-				<div class="advanced-option__input-wrapper">
+				<div class="label">Use regexp</div>
+				<div class="input-wrapper">
 					<div class="checkbox-wrapper">
 						<input
 							type="checkbox"
@@ -217,6 +240,8 @@
     width: 100%;
 }
 
+// Logo
+
 #logo {
     cursor: default;
     font-family: none;
@@ -227,6 +252,8 @@
     vertical-align: middle;
 }
 
+// Search
+
 #search-bar-wrapper {
     border-radius: 5px;
     box-shadow: 0px 0px 5px 0px #888888;
@@ -236,160 +263,196 @@
     margin: auto 0 auto 0;
     position: relative;
     width: 600px;
+
+    // Search input and suggestions
+
+    > #search-input-wrapper {
+        display: flex;
+        height: 40px;
+        margin: auto 0;
+        justify-content: center;
+        width: 500px;
+
+        > #search-input {
+            margin: auto 0;
+            height: 40px;
+            position: relative;
+            width: 450px;
+
+            // Inputs
+
+            #input-wrapper,
+            #render-wrapper {
+                box-sizing: border-box;
+                cursor: text;
+                height: -webkit-fill-available;
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 100%;
+            }
+
+            > #input-wrapper {
+                > #expression-input {
+                    border: none;
+                    box-sizing: border-box;
+                    font-size: 16px;
+                    height: inherit;
+                    outline: none;
+                    width: inherit;
+                }
+            }
+
+            > #reset-input-button {
+                position: absolute;
+                right: 5px;
+            }
+
+            // Suggestions
+
+            @mixin suggestion-blocks {
+                background-color: white;
+                border: 1px solid #88888880;
+                border-radius: 0px 0px 5px 5px;
+                border-top: none;
+                height: auto;
+                max-height: 500px;
+                overflow-y: auto;
+                position: absolute;
+                top: 100%;
+                z-index: 2;
+            }
+
+            $tags-list-width: 250px;
+
+            > #tags-list {
+                @include suggestion-blocks();
+
+                width: $tags-list-width;
+
+                .group {
+                    padding: 0 5px;
+
+                    &:last-child {
+                        margin-bottom: 10px;
+                    }
+
+                    > div.group-name {
+                        border-radius: 5px;
+                        cursor: pointer;
+                        display: inline-flex;
+                        min-height: 25px;
+                        line-height: 25px;
+                        width: 100%;
+                        word-break: break-all;
+
+                        &:hover {
+                            background-color: #88888810;
+                        }
+                    }
+
+                    > div.tags-list {
+                        // Indentation
+                        margin-left: 20px;
+
+                        > .tag {
+                            display: flex;
+                            margin: 5px;
+                        }
+                    }
+                }
+            }
+
+            > #operators-list {
+                @include suggestion-blocks();
+
+                border-bottom-left-radius: 0;
+                border-left-color: #88888840;
+                left: $tags-list-width + 1px;
+                width: 180px;
+
+                > div {
+                    display: flex;
+                    line-height: 28px;
+                    margin: 5px;
+
+                    .operator {
+                        border: 1px solid #42404033;
+                        border-radius: 50%;
+                        cursor: pointer;
+                        font-size: 18px;
+                        height: 23px;
+                        line-height: 23px;
+                        margin-right: 4px;
+                        text-align: center;
+                        width: 23px;
+                    }
+                }
+            }
+        }
+    }
+
+    // Advanced search options
+
+    > #advanced-options {
+        background-color: white;
+        border: 1px solid #88888880;
+        border-radius: 0px 0px 5px 5px;
+        border-top: 1px solid #88888820;
+        height: auto;
+        padding: 10px 5px 0px 5px;
+        position: absolute;
+        right: 5px;
+        top: 100%;
+        width: 400px;
+        z-index: 2;
+
+        .advanced-option {
+            font-size: 15px;
+            height: 25px;
+            line-height: 25px;
+            position: relative;
+            margin-bottom: 10px;
+
+            > .label {
+                left: 10px;
+                position: absolute;
+            }
+
+            > .input-wrapper {
+                height: 100%;
+                position: absolute;
+                right: 10px;
+                width: 250px;
+
+                > input {
+                    width: 100%;
+                }
+
+                > div.checkbox-wrapper {
+                    height: 100%;
+                    position: relative;
+
+                    > input[type="checkbox"] {
+                        margin: 0;
+                        outline: none;
+                        position: absolute;
+                        top: 50%;
+                        transform: translateY(-50%);
+                    }
+                }
+            }
+        }
+    }
 }
 
-#search-input-wrapper {
-    display: flex;
-    height: 40px;
-    margin: auto 0;
-    justify-content: center;
-    width: 500px;
-}
-
-#search-input {
-    margin: auto 0;
-    height: 40px;
-    position: relative;
-    width: 450px;
-}
-
-#search-input > #input-wrapper,
-#render-wrapper {
-    box-sizing: border-box;
-    cursor: text;
-    height: -webkit-fill-available;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 100%;
-}
-
-#search-input > #input-wrapper > #expression-input {
-    border: none;
-    box-sizing: border-box;
-    font-size: 16px;
-    height: inherit;
-    outline: none;
-    width: inherit;
-}
-
-#search-input > #reset-input-button {
-    position: absolute;
-    right: 5px;
-}
-
-@mixin suggestion-blocks {
-    background-color: white;
-    border: 1px solid #88888880;
-    border-radius: 0px 0px 5px 5px;
-    border-top: none;
-    height: auto;
-    max-height: 500px;
-    overflow-y: auto;
-    position: absolute;
-    top: 100%;
-    z-index: 2;
-}
-
-$tags-list-width: 250px;
-
-#search-input > #tags-list {
-    @include suggestion-blocks();
-
-    width: $tags-list-width;
-}
-
-#search-input > #operators-list {
-    @include suggestion-blocks();
-
-    border-bottom-left-radius: 0;
-    border-left-color: #88888840;
-    left: $tags-list-width + 1px;
-    width: 180px;
-}
-
-#search-input > #operators-list > div {
-    display: flex;
-    line-height: 28px;
-    margin: 5px;
-}
-
-#search-input > #operators-list > div > .operator {
-    border: 1px solid #42404033;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 18px;
-    height: 23px;
-    line-height: 23px;
-    margin-right: 4px;
-    text-align: center;
-    width: 23px;
-}
-
-#search-wrapper > #search-additional-buttons {
-    display: flex;
-    position: absolute;
-    right: 5px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-#search-bar-wrapper > #advanced-options {
-    background-color: white;
-    border: 1px solid #88888880;
-    border-radius: 0px 0px 5px 5px;
-    border-top: 1px solid #88888820;
-    height: auto;
-    padding: 10px 5px 0px 5px;
-    position: absolute;
-    right: 5px;
-    top: 100%;
-    width: 400px;
-    z-index: 2;
-}
-
-// Advanced search options
-
-.advanced-option {
-    font-size: 15px;
-    height: 25px;
-    line-height: 25px;
-    position: relative;
-    margin-bottom: 10px;
-}
-
-.advanced-option__label {
-    left: 10px;
-    position: absolute;
-}
-
-.advanced-option__input-wrapper {
-    height: 100%;
-    position: absolute;
-    right: 10px;
-    width: 250px;
-}
-
-.advanced-option__input-wrapper > input {
-    width: 100%;
-}
-
-.advanced-option__input-wrapper > div.checkbox-wrapper {
-    height: 100%;
-    position: relative;
-}
-
-.advanced-option__input-wrapper > div.checkbox-wrapper > input[type="checkbox"] {
-    margin: 0;
-    outline: none;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-}
+// Options
 
 #options {
     display: flex;
 }
+
+// Common
 
 .button {
     border-radius: 50%;
@@ -400,28 +463,27 @@ $tags-list-width: 250px;
     position: relative;
     text-align: center;
     width: 40px;
-}
 
-.button > div {
-    height: 30px;
-    left: 50%;
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 30px;
-}
+    &:hover {
+        background-color: #88888830;
+    }
 
-.button div > i {
-    font-size: 30px;
-    vertical-align: baseline;
-}
+    &:last-child {
+        margin-right: 0;
+    }
 
-.button:hover {
-    background-color: #88888830;
-}
-
-.button:last-child {
-    margin-right: 0;
+    > div {
+        height: 30px;
+        left: 50%;
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 30px;
+        > i {
+            font-size: 30px;
+            vertical-align: baseline;
+        }
+    }
 }
 
 .buttons__search {
@@ -443,6 +505,7 @@ import { Store } from "@app/index/store/types";
 import { Events, EventBus } from "@app/index/eventBus";
 import { logError, logInfo } from "@app/index/utils";
 import { IsElementInPath } from "@app/global/utils";
+import { Tag } from "@app/global/classes";
 import { Params } from "@app/global";
 import API from "@app/index/api";
 
@@ -465,7 +528,22 @@ const availableOperators: Operator[] = [
     new Operator(")", "right bracket")
 ];
 
+class Group {
+    name: string = "";
+    show: boolean = true;
+    tags: Tag[] = [];
+
+    constructor(name: string) {
+        this.name = name;
+    }
+}
+
 export default Vue.extend({
+    components: {
+        tag: TagComponent,
+        "render-tags-input": RenderTagsInput
+    },
+    //
     data: function() {
         return {
             // Const members
@@ -473,21 +551,77 @@ export default Vue.extend({
             // Expression
             expression: "",
             //
-            position: 0,
-            showTagsList: false,
             focused: false,
             showAdvancedOptions: false,
             // Text search
             text: "",
             isRegexp: false,
             //
+            hiddenGroups: new Set() as Set<string>,
+            hiddenGroupsChangesCounter: 0,
+            //
             Store: SharedStore.state
         };
     },
     computed: {
-        allTagsIDs: function() {
-            // For reactive updating (see @app/index/store/types.ts for more information)
-            return this.Store.allTagsChangesCounter && Array.from(this.Store.allTags.keys());
+        groupedTags: function(): Group[] {
+            // Name for group with ungrouped tags
+            const ungroupedTags = "Ungrouped tags";
+
+            let reactive = this.hiddenGroupsChangesCounter + this.Store.allTagsChangesCounter;
+
+            let allTags = this.Store.allTags;
+            let groups: Group[] = [];
+
+            let addTagToGroups = (tag: Tag) => {
+                // Clone tag
+                let t = JSON.parse(JSON.stringify(tag));
+
+                if (t.group == "") {
+                    t.group = ungroupedTags;
+                }
+
+                for (let i = 0; i < groups.length; i++) {
+                    if (groups[i].name == t.group) {
+                        groups[i].tags.push(t);
+                        return;
+                    }
+                }
+
+                // There's no group with such name
+                let newGroup = new Group(t.group);
+                newGroup.tags.push(t);
+
+                if (this.hiddenGroups.has(t.group)) {
+                    newGroup.show = false;
+                }
+
+                groups.push(newGroup);
+            };
+
+            allTags.forEach(tag => {
+                addTagToGroups(tag);
+            });
+
+            groups.sort((a, b) => {
+                // Ungrouped tags must be last
+                if (a.name === ungroupedTags) {
+                    return 1;
+                }
+                if (b.name === ungroupedTags) {
+                    return -1;
+                }
+
+                if (a.name < b.name) {
+                    return -1;
+                }
+                if (a.name > b.name) {
+                    return 1;
+                }
+                return 0;
+            });
+
+            return groups;
         },
         usedAdvancedOptions: function(): boolean {
             return this.text != "" || this.isRegexp != false;
@@ -495,11 +629,6 @@ export default Vue.extend({
         showResetButton: function(): boolean {
             return this.expression != "" || this.usedAdvancedOptions;
         }
-    },
-    //
-    components: {
-        tag: TagComponent,
-        "render-tags-input": RenderTagsInput
     },
     //
     created: function() {
@@ -549,6 +678,16 @@ export default Vue.extend({
                     API.management.logout();
                 }
             };
+        },
+        // Grouped tags
+        toggleGroupVisibility: function(groupName: string) {
+            if (this.hiddenGroups.has(groupName)) {
+                this.hiddenGroups.delete(groupName);
+            } else {
+                this.hiddenGroups.add(groupName);
+            }
+
+            this.hiddenGroupsChangesCounter++;
         },
         // insertTagID is used to insert tag id into expression
         insertTextIntoExpression: function(arg: any) {
