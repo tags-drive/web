@@ -20,7 +20,7 @@ module.exports = {
         }
     },
     configureWebpack: {
-        devtool: "source-map",
+        devtool: "inline-eval-cheap-source-map",
         resolve: {
             alias: {
                 "@app": path.resolve(__dirname, "src/"),
