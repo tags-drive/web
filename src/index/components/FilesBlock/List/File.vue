@@ -114,7 +114,7 @@ import TagComponent from "@components/Tag/Tag.vue";
 import LoaderComponent from "@app/global/components/Loader/Loader.vue";
 // Classes and types
 import { Tag } from "@app/global/classes";
-import { TableFile } from "@components/File/types";
+import { TableFile } from "@app/index/FilesBlock.vue";
 // Shared data
 import SharedStore from "@app/index/store";
 import { Store } from "@app/index/store/types";

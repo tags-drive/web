@@ -1,135 +1,38 @@
 <template>
-<div id="files-block-wrapper">
-<div style="height: 100%;">
-	<div
-		class="file-info"
-		style="font-size: 17px; border-bottom: 1px solid grey; padding-right: 10px;"
-	>
-		<!-- There are some nonexistent classes. They are reserved for readability and future using -->
-		<div class="file-info__checkbox">
-			<div>
-				<input
-					type="checkbox"
-					style="height: 15px; width: 15px;"
-					title="Select all"
-					v-model="allSelected"
-					:indeterminate.prop="
-						selectedFilesCounter > 0 &&
-						selectedFilesCounter !== allFiles.length"
-					@click="toggleAllFiles">
-			</div>
-		</div>
+	<div id="files-block-wrapper">
 
-		<div
-			class="file-info__preview"
-			style="cursor: default;"
-			title="Selected files"
-		>{{selectedFilesCounter}}</div>
+		<!-- Pass all data -->
+		<files-list
+			:allFiles="allFiles"
+			:allSelected="allSelected"
+			:selectedFilesCounter="selectedFilesCounter"
+			:sortModeByName="sortModeByName"
+			:sortModeBySize="sortModeBySize"
+			:sortModeByTime="sortModeByTime"
+			:sortOrderAsc="sortOrderAsc"
+			:sortOrderDesc="sortOrderDesc"
+		></files-list>
 
-		<div class="file-info__filename">
-			Filename
-			<i
-				id="sortByNameIcon"
-				class="material-icons noselect"
-				style="font-size: 20px; cursor: pointer;"
-				@click="sort().byName()"
-				:style="[!sortModeByName || sortOrderAsc || !sortOrderDesc ? {'transform': 'scale(1, -1)'} : {'transform': 'scale(1, 1)'}]"
-			>sort</i>
-		</div>
-
-		<div class="file-info__tags-list">Tags</div>
-
-		<div class="file-info__description">Description</div>
-
-		<div class="file-info__size">
-			File size
-			<i
-				id="sortByNameSize"
-				class="material-icons noselect"
-				style="transform: scale(1, 1); font-size: 20px; cursor: pointer;"
-				@click="sort().bySize()"
-				:style="[!sortModeBySize || sortOrderAsc || !sortOrderDesc ? {'transform': 'scale(1, -1)'} : {'transform': 'scale(1, 1)'}]"
-			>sort</i>
-		</div>
-
-		<div class="file-info__adding-time">
-			Time of adding
-			<i
-				id="sortByNameTime"
-				class="material-icons noselect"
-				style="transform: scale(1, 1); font-size: 20px; cursor: pointer;"
-				@click="sort().byTime()"
-				:style="[!sortModeByTime || sortOrderAsc || !sortOrderDesc ? {'transform': 'scale(1, -1)'} : {'transform': 'scale(1, 1)'}]"
-			>sort</i>
-		</div>
 	</div>
-
-	<RecycleScroller
-		:items="allFiles"
-		:item-height="50"
-		id="recycle-scroller"
-	>
-		<div slot-scope="{ item }">
-			<file :file="item"></file>
-		</div>
-	</RecycleScroller>
-</div>
-</div>
 </template>
 
-<style>
-/* We have to use global styles to use some classes in File component */
-
+<style lang="scss" scoped>
 #files-block-wrapper {
     height: calc(100vh - 51px);
     overflow: auto;
     overflow-x: hidden;
 }
-
-#recycle-scroller {
-    /* without header */
-    height: calc(100% - 51px);
-}
-
-/* Classes for File component */
-
-.file-info {
-    border-bottom: 1px solid #ddd;
-    display: grid;
-    grid-template-columns: 40px 60px 210px auto 20% 110px 150px;
-    grid-auto-rows: 50px;
-    text-align: left;
-}
-
-.file-info > div {
-    height: 40px;
-    line-height: 40px;
-    padding: 4px;
-}
-
-.file-info__checkbox {
-    text-align: center;
-}
-
-.file-info__checkbox > div {
-    line-height: normal;
-    transform: translateY(50%);
-}
 </style>
 
 
 <script lang="ts">
+// This component just keeps state for render components (List.vue and Cards.vue)
+
 import Vue from "vue";
 // Components
-import FileComponent from "@components/File/File.vue";
-// There's no a declaration file for module 'vue-virtual-scroller'.
-// So we have to use require() instead of import to escape error
-const VirtualScroller = require("vue-virtual-scroller");
-const { RecycleScroller } = VirtualScroller;
-import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
+import FilesListComponent from "@components/FilesBlock/List/List.vue";
 // Classes and types
-import { File, Tag } from "@app/global/classes";
-import { TableFile } from "@components/File/types";
+import { File } from "@app/global/classes";
 // Shared data
 import SharedStore from "@app/index/store";
 import SharedState from "@app/index/state";
@@ -137,9 +40,63 @@ import { State } from "@app/index/state/types";
 // Other
 import { Const } from "@app/global/const";
 import { Events, EventBus } from "@app/index/eventBus";
-import { preloadImages } from "@app/index/utils";
+
+export class TableFile extends File {
+    selected: boolean;
+
+    constructor(f: File) {
+        super();
+
+        this.id = f.id;
+        this.type = f.type;
+        this.filename = f.filename;
+        this.description = f.description;
+        this.size = f.size;
+        this.tags = f.tags;
+        this.origin = f.origin;
+        this.preview = f.preview;
+        this.addTime = f.addTime;
+        this.deleted = f.deleted;
+        this.timeToDelete = f.timeToDelete;
+        //
+        this.selected = false;
+    }
+}
+
+export const InternalEvents = {
+    Sort: {
+        /**
+         * Payload: -
+         */
+        ByName: "files-block-sort-by-name",
+        /**
+         * Payload: -
+         */
+        BySize: "files-block-sort-by-size",
+        /**
+         * Payload: -
+         */
+        ByTime: "files-block-sort-by-time",
+        /**
+         * Payload: -
+         */
+        RestoreDefault: "files-block-sort-restore-default"
+    },
+    /**
+     * Payload: -
+     */
+    ToggleAllFiles: "files-block-toggle-all-files",
+    /**
+     * Payload: -
+     */
+    UnselectAllFiles: "files-block-unselect-all-files"
+};
 
 export default Vue.extend({
+    components: {
+        "files-list": FilesListComponent
+    },
+    //
     data: function() {
         return {
             // For select mode
@@ -175,33 +132,51 @@ export default Vue.extend({
         }
     },
     //
-    components: {
-        file: FileComponent,
-        RecycleScroller: RecycleScroller
-    },
-    //
     created: function() {
-        EventBus.$on(Events.FilesBlock.UnselectAllFiles, () => {
-            this.unselectAllFiles();
-        });
+        // Global events
+
         EventBus.$on(Events.UpdateSelectedFiles, () => {
             this.updateSelectedFiles();
         });
-        //
+
+        EventBus.$on(Events.FilesBlock.UnselectAllFiles, () => {
+            this.unselectAllFiles();
+        });
+
         EventBus.$on(Events.FilesBlock.SelectFile, (payload: any) => {
             if (payload.id === undefined) {
                 return;
             }
             this.selectFile(<number>payload.id);
         });
+
         EventBus.$on(Events.FilesBlock.UnselectFile, (payload: any) => {
             if (payload.id === undefined) {
                 return;
             }
             this.unselectFile(<number>payload.id);
         });
-        //
-        EventBus.$on(Events.FilesBlock.RestoreSortParams, () => {
+
+        // Internal events (for children)
+
+        this.$on(InternalEvents.ToggleAllFiles, () => {
+            this.toggleAllFiles();
+        });
+
+        // Sorts
+        this.$on(InternalEvents.Sort.ByName, () => {
+            this.sort().byName();
+        });
+
+        this.$on(InternalEvents.Sort.BySize, () => {
+            this.sort().bySize();
+        });
+
+        this.$on(InternalEvents.Sort.ByTime, () => {
+            this.sort().byTime();
+        });
+
+        this.$on(InternalEvents.Sort.RestoreDefault, () => {
             this.sort().restoreDefault();
         });
     },
@@ -278,6 +253,7 @@ export default Vue.extend({
                 }
             };
         },
+
         // Select mode
         toggleAllFiles: function() {
             if (!this.allSelected) {
@@ -301,7 +277,8 @@ export default Vue.extend({
             this.allSelected = false;
             SharedState.commit("unsetSelectMode");
         },
-        // updateSelectedFiles updates list of selectedFiles
+
+        // updateSelectedFiles updates list of selectedFiles in Store
         updateSelectedFiles: function() {
             let selectedFiles: File[] = [];
 
@@ -313,6 +290,7 @@ export default Vue.extend({
 
             SharedStore.commit("setSelectedFiles", selectedFiles);
         },
+
         // For children
         selectFile: function(id: number) {
             this.selectedFilesCounter++;
