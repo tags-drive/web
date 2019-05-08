@@ -6,12 +6,11 @@
 		@click.ctrl.prevent="toggleSelect"
 	>
 		<!-- Preview -->
-		<div
-			id="preview"
-			title="Show preview"
-			@click.left.exact="showPreview"
-		>
-			<div class="image-wrapper noselect">
+		<div id="preview" title="Show preview">
+			<div 
+				class="image-wrapper noselect"
+				@click.left.exact="showPreview"
+			>
 				<span class="helper"></span>
 				<loader :src="previewLink"></loader>
 			</div>
@@ -37,12 +36,12 @@
 
 <style lang="scss" scoped>
 #card {
+    border: 1px solid #88888860;
+    border-radius: 5px;
+    box-sizing: border-box;
+    margin: 20px 0;
     padding: 5px;
     padding-bottom: 0px; // tags in #tags-list have "margin-bottom: 5px"
-    box-sizing: border-box;
-    border-radius: 5px;
-    border: 1px solid #88888860;
-    margin: 20px 0;
     width: 100%;
 
     &:first-child {
@@ -54,14 +53,14 @@
     }
 
     > #preview {
-        cursor: pointer;
         margin-bottom: 10px;
 
         > .image-wrapper {
-            width: 80%;
+            cursor: pointer;
             max-width: 80%;
             margin: auto;
             text-align: center;
+            width: 80%;
 
             /* Help to center an image vertically */
             > span.helper {
