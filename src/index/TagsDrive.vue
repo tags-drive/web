@@ -2,9 +2,9 @@
 	<div style="min-width: 900px;">
 		<div id="top-bar"></div>
 
-		<div id="files-block"></div>
+		<div id="all-files"></div>
 
-		<div id="upload-block"></div>
+		<div id="upload-window"></div>
 
 		<div id="context-menu"></div>
 

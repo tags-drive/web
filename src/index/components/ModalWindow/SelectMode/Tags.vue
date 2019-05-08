@@ -1,42 +1,102 @@
 <template>
-	<div style="width: 400px;">
-		<div style="font-size: 20px; margin-bottom: 10px;">
+	<div id="tags-list">
+		<!-- Mode -->
+		<div id="mode">
 			<span v-if="mode === SharedModes.addMode">Add tags</span>
 			<span v-else-if="mode === SharedModes.deleteMode">Delete tags</span>
 		</div>
 
-		<div style="margin-right: auto; margin-left: auto; width: 250px;">
+		<!-- Tags -->
+		<div
+			v-for="(group, i) in groups"
+			:key="i"
+			class="group"
+		>
 			<div
-				v-for="(tag, index) in tags"
-				:key="index"
+				class="group-name noselect"
 			>
-				<div style="display: flex; margin-right: auto; margin-left: auto; margin-bottom: 5px; position: relative;">
-					<div style="width: 200px; display: flex">
-						<tag :tag="tag" style="margin: 0;"></tag>
-					</div>
-					<div style="position: absolute; right: 0;">
-						<input
-							type="checkbox"
-							style="width: 20px; height: 20px; right: 0;"
-							v-model="tag.selected"
-						>
-					</div>
-				</div>
+				<i class="material-icons">navigate_next</i>
+				<div><span>{{ group.name }}</span></div>
 			</div>
 
-			<div style="margin-top: 15px;">
-				<input class="btn" type="button" value="Submit" @click="processSelectedFiles">
+			<div
+				v-for="(tag, j) in group.tags"
+				:key="j"
+				class="tag-wrapper"
+			>
+					<div class="tag">
+						<tag :tag="tag" style="margin: 0;"></tag>
+					</div>
+					<div class="checkbox">
+						<input
+							type="checkbox"
+							v-model="tag.selected">
+					</div>
 			</div>
+		</div>
+
+		<div id="update-button">
+			<input class="btn" type="button" value="Submit" @click="processSelectedFiles">
 		</div>
 	</div>
 </template>
 
 
-<style scoped>
-.btn {
-    height: 25px;
-    font-size: 15px;
-    width: 100px;
+<style lang="scss" scoped>
+#tags-list {
+    width: 400px;
+
+    > #mode {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    > .group {
+        width: 280px;
+        margin: 0 auto 10px;
+
+        > .group-name {
+            display: flex;
+            height: 24px;
+            line-height: 24px;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        > .tag-wrapper {
+            display: flex;
+            margin: 0 auto 5px;
+            position: relative;
+            width: 250px;
+
+            > .tag {
+                width: 200px;
+                display: flex;
+            }
+
+            > .checkbox {
+                position: absolute;
+                right: 0;
+
+                > input[type="checkbox"] {
+                    width: 20px;
+                    height: 20px;
+                    right: 0;
+                }
+            }
+        }
+    }
+
+    > #update-button {
+        margin-top: 15px;
+
+        // Extend global class
+        > .btn {
+            height: 25px;
+            font-size: 15px;
+            width: 100px;
+        }
+    }
 }
 </style>
 
@@ -46,31 +106,42 @@ import Vue from "vue";
 // Components
 import TagComponent from "@components/Tag/Tag.vue";
 // Classes and types
-import { File, Tag } from "@app/global/classes";
+import { File, Tag, Group, TagsToGroups } from "@app/global/classes";
 // Shared data
 import SharedStore from "@app/index/store";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
-import { Params } from "@app/global";
 import { Const } from "@app/global/const";
-import { logError } from "@app/index/utils";
 import API from "@app/index/api";
 
 class CustomTag extends Tag {
-    id: number;
     selected: boolean;
 
-    constructor(id: number, t: Tag) {
-        super();
+    constructor(t: Tag) {
+        super(t.id, t.name, t.color);
 
-        this.id = id;
-        this.name = t.name;
-        this.color = t.color;
         this.selected = false;
     }
 }
 
+class CustomGroup extends Group {
+    tags: CustomTag[];
+
+    constructor(group: Group) {
+        super(group.name);
+
+        this.tags = Array(group.tags.length);
+        for (let i = 0; i < group.tags.length; i++) {
+            this.tags[i] = new CustomTag(group.tags[i]);
+        }
+    }
+}
+
 export default Vue.extend({
+    components: {
+        tag: TagComponent
+    },
+    //
     props: {
         selectedFiles: Array as () => Array<File>,
         mode: String
@@ -78,24 +149,28 @@ export default Vue.extend({
     data: function() {
         return {
             SharedModes: Const.tagsChanging,
-            tags: <CustomTag[]>[]
+            groups: <CustomGroup[]>[]
         };
     },
     //
-    components: {
-        tag: TagComponent
-    },
-    //
     created: function() {
-        for (let [id, tag] of SharedStore.state.allTags) {
-            let t = new CustomTag(id, tag);
-            this.tags.push(t);
+        const allTags = SharedStore.state.allTags;
+        let groups = TagsToGroups(allTags);
+
+        this.groups = Array(groups.length);
+        for (let i = 0; i < groups.length; i++) {
+            this.groups[i] = new CustomGroup(groups[i]);
         }
     },
+    //
     methods: {
         processSelectedFiles: function() {
             let tagIDs: number[] = [];
-            this.tags.filter(tag => tag.selected).forEach(tag => tagIDs.push(tag.id));
+
+            this.groups.forEach(gr => {
+                gr.tags.filter(tag => tag.selected).forEach(tag => tagIDs.push(tag.id));
+            });
+
             let fileIDs: number[] = [];
             this.selectedFiles.forEach(file => fileIDs.push(file.id));
 

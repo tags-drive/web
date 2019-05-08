@@ -633,6 +633,15 @@ export default Vue.extend({
             }, intervalTime);
         });
     },
+    watch: {
+        file: {
+            immediate: true,
+            handler: function() {
+                // Reset on file change
+                this.showAsText = false;
+            }
+        }
+    },
     //
     methods: {
         window: function() {
@@ -667,8 +676,6 @@ export default Vue.extend({
         },
         nextPreview: function() {
             if (this.fileIndex < this.Store.allFiles.length - 1) {
-                this.showAsText = false;
-
                 this.file = this.Store.allFiles[++this.fileIndex];
                 if (this.fileIndex < this.Store.allFiles.length - 1) {
                     let nextFile = this.Store.allFiles[this.fileIndex + 1];
@@ -684,8 +691,6 @@ export default Vue.extend({
         },
         previousPreview: function() {
             if (this.fileIndex > 0) {
-                this.showAsText = false;
-
                 this.file = this.Store.allFiles[--this.fileIndex];
                 if (this.fileIndex > 0) {
                     let nextFile = this.Store.allFiles[this.fileIndex - 1];

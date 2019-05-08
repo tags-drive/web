@@ -495,9 +495,10 @@
 
 <script lang="ts">
 import Vue from "vue";
-// Components
+// Components and classes
 import TagComponent from "@components/Tag/Tag.vue";
 import RenderTagsInput from "@components/RenderTagsInput/RenderTagsInput.vue";
+import { Tag, Group, TagsToGroups } from "@app/global/classes";
 // Shared data
 import SharedStore from "@app/index/store";
 import { Store } from "@app/index/store/types";
@@ -505,7 +506,6 @@ import { Store } from "@app/index/store/types";
 import { Events, EventBus } from "@app/index/eventBus";
 import { logError, logInfo } from "@app/index/utils";
 import { IsElementInPath } from "@app/global/utils";
-import { Tag } from "@app/global/classes";
 import { Params } from "@app/global";
 import API from "@app/index/api";
 
@@ -528,13 +528,13 @@ const availableOperators: Operator[] = [
     new Operator(")", "right bracket")
 ];
 
-class Group {
-    name: string = "";
-    show: boolean = true;
-    tags: Tag[] = [];
+class TopBarGroup extends Group {
+    show: boolean;
 
-    constructor(name: string) {
-        this.name = name;
+    constructor(group: Group) {
+        super(group.name, group.tags);
+
+        this.show = true;
     }
 }
 
@@ -564,64 +564,26 @@ export default Vue.extend({
         };
     },
     computed: {
-        groupedTags: function(): Group[] {
+        groupedTags: function(): TopBarGroup[] {
             // Name for group with ungrouped tags
             const ungroupedTags = "Ungrouped tags";
 
             let reactive = this.hiddenGroupsChangesCounter + this.Store.allTagsChangesCounter;
 
             let allTags = this.Store.allTags;
-            let groups: Group[] = [];
+            let groups = TagsToGroups(allTags);
 
-            let addTagToGroups = (tag: Tag) => {
-                // Clone tag
-                let t = JSON.parse(JSON.stringify(tag));
+            let res: TopBarGroup[] = Array(groups.length);
 
-                if (t.group == "") {
-                    t.group = ungroupedTags;
+            // Hide groups
+            for (let i = 0; i < groups.length; i++) {
+                res[i] = new TopBarGroup(groups[i]);
+                if (this.hiddenGroups.has(groups[i].name)) {
+                    res[i].show = false;
                 }
+            }
 
-                for (let i = 0; i < groups.length; i++) {
-                    if (groups[i].name == t.group) {
-                        groups[i].tags.push(t);
-                        return;
-                    }
-                }
-
-                // There's no group with such name
-                let newGroup = new Group(t.group);
-                newGroup.tags.push(t);
-
-                if (this.hiddenGroups.has(t.group)) {
-                    newGroup.show = false;
-                }
-
-                groups.push(newGroup);
-            };
-
-            allTags.forEach(tag => {
-                addTagToGroups(tag);
-            });
-
-            groups.sort((a, b) => {
-                // Ungrouped tags must be last
-                if (a.name === ungroupedTags) {
-                    return 1;
-                }
-                if (b.name === ungroupedTags) {
-                    return -1;
-                }
-
-                if (a.name < b.name) {
-                    return -1;
-                }
-                if (a.name > b.name) {
-                    return 1;
-                }
-                return 0;
-            });
-
-            return groups;
+            return res;
         },
         usedAdvancedOptions: function(): boolean {
             return this.text != "" || this.isRegexp != false;
