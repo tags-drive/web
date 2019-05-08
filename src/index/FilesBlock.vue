@@ -3,6 +3,8 @@
 
 		<!-- Pass all data -->
 		<files-list
+			v-if="State.settings.viewMode === viewModes.list"
+
 			:allFiles="allFiles"
 			:allSelected="allSelected"
 			:selectedFilesCounter="selectedFilesCounter"
@@ -12,6 +14,19 @@
 			:sortOrderAsc="sortOrderAsc"
 			:sortOrderDesc="sortOrderDesc"
 		></files-list>
+
+		<cards
+			v-else-if="State.settings.viewMode === viewModes.cards"
+
+			:allFiles="allFiles"
+			:allSelected="allSelected"
+			:selectedFilesCounter="selectedFilesCounter"
+			:sortModeByName="sortModeByName"
+			:sortModeBySize="sortModeBySize"
+			:sortModeByTime="sortModeByTime"
+			:sortOrderAsc="sortOrderAsc"
+			:sortOrderDesc="sortOrderDesc"
+		></cards>
 
 	</div>
 </template>
@@ -31,12 +46,13 @@
 import Vue from "vue";
 // Components
 import FilesListComponent from "@components/FilesBlock/List/List.vue";
+import CardsComponent from "@components/FilesBlock/Cards/Cards.vue";
 // Classes and types
 import { File } from "@app/global/classes";
 // Shared data
 import SharedStore from "@app/index/store";
 import SharedState from "@app/index/state";
-import { State } from "@app/index/state/types";
+import { State, ViewModes } from "@app/index/state/types";
 // Other
 import { Const } from "@app/global/const";
 import { Events, EventBus } from "@app/index/eventBus";
@@ -100,7 +116,8 @@ export const InternalEvents = {
 
 export default Vue.extend({
     components: {
-        "files-list": FilesListComponent
+        "files-list": FilesListComponent,
+        cards: CardsComponent
     },
     //
     data: function() {
@@ -119,7 +136,12 @@ export default Vue.extend({
             //
             lastSortType: Const.sortType.name,
             //
-            Store: SharedStore.state
+            Store: SharedStore.state,
+            State: SharedState.state,
+            viewModes: {
+                cards: ViewModes.cards.value,
+                list: ViewModes.list.value
+            }
         };
     },
     computed: {
@@ -129,7 +151,7 @@ export default Vue.extend({
 
             let allFiles: TableFile[] = [];
             this.Store.allFiles.forEach((f, i) => {
-                if (!f.deleted || SharedState.state.settings.showDeletedFiles) {
+                if (!f.deleted || this.State.settings.showDeletedFiles) {
                     allFiles.push(new TableFile(f));
                 }
             });
