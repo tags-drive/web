@@ -5,6 +5,12 @@ export interface State {
     settings: Settings;
 }
 
+export const ViewModes = {
+    list: { text: "List", value: "list" },
+    cards: { text: "Cards", value: "cards" }
+};
+
 export interface Settings {
     showDeletedFiles: boolean;
+    viewMode: string;
 }

@@ -5,15 +5,36 @@
 		<div id="settings">
 			<!-- Show deleted files -->
 			<div class="setting">
-				<span>Show deleted files:</span>
+				<span class="title">Show deleted files:</span>
 				<input
 					type="checkbox"
 					class="vertically"
-					v-model="settings.showDeletedFiles">
+					v-model="settings.showDeletedFiles"
+					@change="apply">
+			</div>
+
+			<!-- View mode -->
+			<div class="setting">
+				<span class="title">View mode:</span>
+
+				<select
+					class="vertically"
+					v-model="settings.viewMode"
+					@change="apply"
+				>
+					<option
+						v-for="(opt, i) in viewModesOptions"
+						:key=i
+						:value="opt.value"
+					>
+						{{opt.text}}
+					</option>
+				</select>
 			</div>
 		</div>
 
-		<div>
+		<!-- Save button -->
+		<div id="save-button">
 			<input
 				type="button"
 				class="btn"
@@ -22,6 +43,7 @@
 				@click="saveSettings">
 		</div>
 
+		<!-- Info -->
 		<div id="info">
 			<span class="noselect">Tags Drive – <a href="https://github.com/tags-drive" target="_blank">github.com/tags-drive</a></span>
 
@@ -38,12 +60,12 @@
 
 
 <style lang="scss" scoped>
-h2 {
-    margin-top: 0;
-}
-
 #settings-window {
     width: 600px;
+
+    h2 {
+        margin-top: 0;
+    }
 
     > #settings {
         display: inline-block;
@@ -53,42 +75,50 @@ h2 {
         > .setting {
             font-size: 18px;
             margin-bottom: 10px;
+
+            > span.title {
+                margin-right: 5px;
+            }
+
+            select {
+                outline: none;
+            }
+
+            input {
+                vertical-align: middle;
+            }
+
+            input[type="checkbox"] {
+                transform: scale(1.4);
+            }
         }
     }
-}
 
-#info {
-    $height: 18px;
+    > #info {
+        $height: 18px;
 
-    font-size: 13px;
-    margin: 30px auto 0;
+        font-size: 13px;
+        margin: 30px auto 0;
 
-    #versions {
-        display: grid;
-        grid-template-columns: 180px auto 180px;
-        margin: 5px auto 0;
-        text-align: center;
-        width: 180px + 180px + 5px;
+        #versions {
+            display: grid;
+            grid-template-columns: 180px auto 180px;
+            margin: 5px auto 0;
+            text-align: center;
+            width: 180px + 180px + 5px;
 
-        .version {
-            line-height: $height;
-        }
+            .version {
+                line-height: $height;
+            }
 
-        #separator {
-            border-right: 1px solid #888888;
-            height: $height;
-            margin: auto;
-            width: 1px;
+            #separator {
+                border-right: 1px solid #888888;
+                height: $height;
+                margin: auto;
+                width: 1px;
+            }
         }
     }
-}
-
-input {
-    vertical-align: middle;
-}
-
-input[type="checkbox"] {
-    transform: scale(1.4);
 }
 </style>
 
@@ -100,6 +130,7 @@ import { Settings } from "@app/index/state/types";
 // Shared data
 import SharedState from "@app/index/state";
 // Other
+import { ViewModes } from "@app/index/state/types.ts";
 import { Events, EventBus } from "@app/index/eventBus";
 import { Version, Params } from "@app/global";
 import { IsErrorStatusCode } from "@app/global/utils";
@@ -107,7 +138,8 @@ import { IsErrorStatusCode } from "@app/global/utils";
 export default Vue.extend({
     data: function() {
         return {
-            settings: <Settings>{ showDeletedFiles: false },
+            viewModesOptions: ViewModes,
+            settings: <Settings>{ showDeletedFiles: false, viewMode: ViewModes.cards.value },
             frontendVersion: Version,
             backendVersion: "undefined"
         };
@@ -125,14 +157,6 @@ export default Vue.extend({
             resp.text().then(version => {
                 this.backendVersion = version;
             });
-        });
-
-        this.$nextTick(function() {
-            // Add onchange handlers to input["checkbox"]
-            let elements = document.getElementById("settings")!.getElementsByTagName("input");
-            for (let i = 0; i < elements.length; i++) {
-                elements[i].onchange = () => this.apply();
-            }
         });
 
         // Copy global settings to local ones
