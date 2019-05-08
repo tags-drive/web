@@ -2,8 +2,8 @@ import Vue from "vue";
 // Main components
 import TagsDrive from "@app/index/TagsDrive.vue";
 import TopBar from "@app/index/TopBar.vue";
-import FilesBlock from "@app/index/FilesBlock.vue";
-import UploadBlock from "@app/index/UploadBlock.vue";
+import Files from "@app/index/Files.vue";
+import UploadWindow from "@app/index/UploadWindow.vue";
 import ContextMenu from "@app/index/ContextMenu.vue";
 import ModalWindow from "@app/index/ModalWindow.vue";
 import LogWindow from "@app/index/LogWindow.vue";
@@ -27,16 +27,16 @@ new Vue({
     render: h => h(TopBar)
 });
 
-// Files Block
+// Files
 new Vue({
-    el: "#files-block",
-    render: h => h(FilesBlock)
+    el: "#all-files",
+    render: h => h(Files)
 });
 
 // Upload Block
 new Vue({
-    el: "#upload-block",
-    render: h => h(UploadBlock)
+    el: "#upload-window",
+    render: h => h(UploadWindow)
 });
 
 // Context menu
