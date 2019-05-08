@@ -159,6 +159,9 @@ export default Vue.extend({
         }
     },
     //
+    created: function() {
+        this.selected = this.file.selected;
+    },
     updated: function() {
         this.selected = this.file.selected;
     },

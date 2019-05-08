@@ -234,6 +234,20 @@ export default Vue.extend({
     },
     //
     created: function() {
+        if (this.sortModeByName) {
+            this.sortType = Const.sortType.name;
+        } else if (this.sortModeBySize) {
+            this.sortType = Const.sortType.size;
+        } else if (this.sortModeByTime) {
+            this.sortType = Const.sortType.time;
+        }
+
+        if (this.sortOrderAsc) {
+            this.sortOrder = Const.sortOrder.asc;
+        } else if (this.sortOrderDesc) {
+            this.sortOrder = Const.sortOrder.desc;
+        }
+
         window.addEventListener("resize", () => {
             this.windowWidth = window.innerWidth;
         });
