@@ -66,6 +66,12 @@ export class TableFile extends File {
 export const InternalEvents = {
     Sort: {
         /**
+         * Payload:
+         * - type - sort type
+         * - order - sort order
+         */
+        Manually: "files-block-sort-manually",
+        /**
          * Payload: -
          */
         ByName: "files-block-sort-by-name",
@@ -164,6 +170,13 @@ export default Vue.extend({
         });
 
         // Sorts
+        this.$on(InternalEvents.Sort.Manually, (payload: any) => {
+            if (payload.type === undefined || payload.order === undefined) {
+                return;
+            }
+
+            this.sort().manually(String(payload.type), String(payload.order));
+        });
         this.$on(InternalEvents.Sort.ByName, () => {
             this.sort().byName();
         });
@@ -185,6 +198,41 @@ export default Vue.extend({
         // Sorts
         sort: function() {
             return {
+                manually: (type: string, order: string) => {
+                    // Reset
+                    this.sortModeByName = false;
+                    this.sortModeBySize = false;
+                    this.sortModeByTime = false;
+                    this.sortOrderAsc = false;
+                    this.sortOrderDesc = false;
+
+                    switch (type) {
+                        case Const.sortType.name:
+                            this.sortModeByName = true;
+                            break;
+                        case Const.sortType.size:
+                            this.sortModeBySize = true;
+                            break;
+                        case Const.sortType.time:
+                            this.sortModeByTime = true;
+                            break;
+                        default:
+                            this.sortModeByName = true;
+                    }
+
+                    switch (order) {
+                        case Const.sortOrder.asc:
+                            this.sortOrderAsc = true;
+                            break;
+                        case Const.sortOrder.desc:
+                            this.sortOrderDesc = true;
+                            break;
+                        default:
+                            this.sortOrderAsc = true;
+                    }
+
+                    EventBus.$emit(Events.Search.Advanced, { type: type, order: order });
+                },
                 byName: () => {
                     if (this.lastSortType === Const.sortType.name) {
                         // Just invert order
