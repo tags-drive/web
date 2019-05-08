@@ -118,6 +118,7 @@
                 }
 
                 select {
+                    border: 1px solid #888888;
                     border-radius: 3px;
                     height: 20px;
                     margin-top: auto;
