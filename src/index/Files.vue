@@ -45,8 +45,8 @@
 
 import Vue from "vue";
 // Components
-import FilesListComponent from "@components/FilesBlock/List/List.vue";
-import CardsComponent from "@components/FilesBlock/Cards/Cards.vue";
+import FilesListComponent from "@components/Files/List/List.vue";
+import CardsComponent from "@components/Files/Cards/Cards.vue";
 // Classes and types
 import { File } from "@app/global/classes";
 // Shared data

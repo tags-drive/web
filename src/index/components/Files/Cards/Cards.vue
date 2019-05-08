@@ -147,7 +147,7 @@ import Vue from "vue";
 import FileComponent from "./File.vue";
 //Other
 import { Const } from "@app/global/const.ts";
-import { InternalEvents as ParentEvents } from "@app/index/FilesBlock.vue";
+import { InternalEvents as ParentEvents } from "@app/index/Files.vue";
 
 // deltaDisplayedFiles defines how many files should be added after scroll to bottom
 const deltaDisplayedFiles = 50;

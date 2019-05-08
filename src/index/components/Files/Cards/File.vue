@@ -107,7 +107,7 @@ import Vue from "vue";
 import TagComponent from "@components/Tag/Tag.vue";
 import LoaderComponent from "@app/global/components/Loader/Loader.vue";
 import { File } from "@app/global/classes";
-import { TableFile } from "@app/index/FilesBlock.vue";
+import { TableFile } from "@app/index/Files.vue";
 // Shared data
 import SharedStore from "@app/index/store";
 import { Store } from "@app/index/store/types";

@@ -120,7 +120,7 @@ const VirtualScroller = require("vue-virtual-scroller");
 const { RecycleScroller } = VirtualScroller;
 import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 // Other
-import { InternalEvents as ParentEvents } from "@app/index/FilesBlock.vue";
+import { InternalEvents as ParentEvents } from "@app/index/Files.vue";
 import { Const } from "@app/global/const";
 import SharedStore from "@app/index/store";
 
