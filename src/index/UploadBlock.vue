@@ -35,34 +35,46 @@
 				<div
 					v-for="(file, index) in files"
 					:key="index"
+					class="file-preview"
 				>
-					<div class="file-preview">
-						<img :id="'preview-for-file-' + file.name">
-						<br>
-						<!-- Just trigger preview loading -->
-						{{ addFileSource(file) }}
-						<span>{{ file.name }}</span>
-					</div>
+					<img :id="'preview-for-file-' + file.name">
+					<br>
+					<!-- Just trigger preview loading -->
+					{{ addFileSource(file) }}
+					<span>{{ file.name }}</span>
 				</div>
 			</div>
 
-			<!-- Tags -->
-			<div id="tags-list">
+			<!-- Tag groups -->
+			<div id="groups-list">
 				<div
-					v-for="(id, index) in allTagsIDs"
-					:key="index"
-					style="display: flex; margin-bottom: 5px;"
+					v-for="(group, i) in groups"
+					:key="i"
+					class="group"
 				>
-					<div style="width: 200px; display: flex; ">
-						<tag :tag="Store.allTags.get(id)"></tag>
+					<!-- Group name -->
+					<div
+						class="group-name noselect"
+					>
+						<i class="material-icons">navigate_next</i>
+						<div><span>{{ group.name }}</span></div>
 					</div>
-					<div style="font-size: 20px;">
-						<input
-							type="checkbox"
-							style="transform: scale(1.4);"
-							@click="updateTags(id)">
+
+					<!-- Tags -->
+					<div
+						v-for="(tag, j) in group.tags"
+						:key="j"
+						class="tag-wrapper"
+					>
+						<div class="tag">
+							<tag :tag="tag"></tag>
+						</div>
+						<div class="checkbox">
+							<input
+								type="checkbox"
+								@click="updateTags(tag.id)">
+						</div>
 					</div>
-					
 				</div>
 			</div>
 
@@ -80,11 +92,11 @@
 		<!-- Upload progress bar -->
 		<div
 			v-if="uploading"
-			id="upload-progress-bar"
+			id="progress-bar"
 		>
 			<div id="bar">
 				<div
-					id="bar__inner"
+					id="progress"
 					:style="{'width': uploadPercentage + '%'}">
 				</div>
 				<p></p>
@@ -95,11 +107,7 @@
 </template>
 
 
-<style scoped>
-input[type="checkbox"] {
-    vertical-align: middle;
-}
-
+<style lang="scss" scoped>
 #background {
     background-color: rgba(0, 0, 0, 0.3);
     height: 100vh;
@@ -118,18 +126,18 @@ input[type="checkbox"] {
     position: absolute;
     top: 0;
     width: 100%;
-}
 
-#upload-text {
-    background-color: rgba(0, 0, 0, 0.15);
-    border: 1px black solid;
-    border-radius: 15px;
-    font-size: 50px;
-    left: 50%;
-    padding: 15px;
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -100%);
+    #upload-text {
+        background-color: rgba(0, 0, 0, 0.15);
+        border: 1px black solid;
+        border-radius: 15px;
+        font-size: 50px;
+        left: 50%;
+        padding: 15px;
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -100%);
+    }
 }
 
 #working-area {
@@ -143,34 +151,65 @@ input[type="checkbox"] {
     top: 10%;
     transform: translateX(-50%);
     width: 700px;
+
+    > #files-list {
+        height: auto;
+        overflow-x: auto;
+        display: flex;
+
+        > .file-preview {
+            margin: 0 10px;
+            overflow-wrap: break-word;
+            text-align: center;
+
+            > img {
+                display: inline-block;
+                height: auto;
+                max-height: 100px;
+                max-width: 100px;
+                width: auto;
+            }
+        }
+    }
+
+    > #groups-list {
+        display: inline-block;
+        margin: 10px auto 0;
+        width: 280px;
+
+        > .group {
+            > .group-name {
+                display: flex;
+                height: 24px;
+                line-height: 24px;
+                margin-bottom: 5px;
+                text-align: left;
+            }
+
+            > .tag-wrapper {
+                display: flex;
+                margin: 0 auto 5px;
+                width: fit-content;
+
+                > .tag {
+                    display: flex;
+                    width: 200px;
+                }
+
+                > .checkbox {
+                    font-size: 20px;
+
+                    > input[type="checkbox"] {
+                        transform: scale(1.2);
+                        vertical-align: middle;
+                    }
+                }
+            }
+        }
+    }
 }
 
-#files-list {
-    height: auto;
-    overflow-x: auto;
-    display: flex;
-}
-
-.file-preview {
-    margin: 0 10px;
-    overflow-wrap: break-word;
-    text-align: center;
-}
-
-.file-preview > img {
-    display: inline-block;
-    height: auto;
-    max-height: 100px;
-    max-width: 100px;
-    width: auto;
-}
-
-#tags-list {
-    display: inline-block;
-    margin-top: 10px;
-}
-
-#upload-progress-bar {
+#progress-bar {
     background-color: white;
     border-radius: 5px;
     height: 150px;
@@ -181,22 +220,22 @@ input[type="checkbox"] {
     top: 10%;
     transform: translateX(-50%);
     width: 700px;
-}
 
-#bar {
-    border: 1px solid black;
-    box-sizing: border-box;
-    height: 20px;
-    left: 50%;
-    position: absolute;
-    top: 30%;
-    transform: translateX(-50%);
-    width: 400px;
-}
+    > #bar {
+        border: 1px solid black;
+        box-sizing: border-box;
+        height: 20px;
+        left: 50%;
+        position: absolute;
+        top: 30%;
+        transform: translateX(-50%);
+        width: 400px;
 
-#bar__inner {
-    background-color: red;
-    height: 100%;
+        > #progress {
+            background-color: red;
+            height: 100%;
+        }
+    }
 }
 </style>
 
@@ -206,7 +245,7 @@ import Vue from "vue";
 // Components
 import TagComponent from "@components/Tag/Tag.vue";
 // Classes and types
-import { Tag } from "@app/global/classes";
+import { Tag, Group, TagsToGroups } from "@app/global/classes";
 // Shared data
 import SharedStore from "@app/index/store";
 import { Store } from "@app/index/store/types";
@@ -219,6 +258,10 @@ import { logError, logInfo } from "@app/index/utils";
 import { IsErrorStatusCode } from "@app/global/utils";
 
 export default Vue.extend({
+    components: {
+        tag: TagComponent
+    },
+    //
     data: function() {
         return {
             counter: 0, // for definition did user drag file into div. If counter > 0, user dragged file.
@@ -228,20 +271,18 @@ export default Vue.extend({
             uploadPercentage: 0,
             //
             files: [] as Array<File>,
-            tags: new Map() as Map<number, Tag>,
+            selectedTags: new Set() as Set<Number>,
             //
             Store: SharedStore.state
         };
     },
     computed: {
-        allTagsIDs: function() {
-            // For reactive updating (see @app/index/store/types.ts for more information)
-            return this.Store.allTagsChangesCounter && Array.from(this.Store.allTags.keys());
+        groups: function(): Array<Group> {
+            let reactive = this.Store.allTagsChangesCounter;
+            const allTags = this.Store.allTags;
+
+            return TagsToGroups(allTags);
         }
-    },
-    //
-    components: {
-        tag: TagComponent
     },
     //
     created: function() {
@@ -286,9 +327,9 @@ export default Vue.extend({
                 formData.append("files", this.files[i], this.files[i].name);
             }
 
-            let tags = Array.from(this.tags.keys()).join(",");
+            let tags = Array.from(this.selectedTags.values()).join(",");
             // Reset vars
-            this.tags.clear();
+            this.selectedTags.clear();
             this.files = [];
             this.showChosenFiles = false;
 
@@ -378,13 +419,10 @@ export default Vue.extend({
             }
         },
         updateTags: function(id: number) {
-            if (!this.tags.has(id)) {
-                let t = this.Store.allTags.get(id);
-                if (t !== undefined) {
-                    this.tags.set(id, t);
-                }
+            if (!this.selectedTags.has(id)) {
+                this.selectedTags.add(id);
             } else {
-                this.tags.delete(id);
+                this.selectedTags.delete(id);
             }
         },
         hideWindow: function() {

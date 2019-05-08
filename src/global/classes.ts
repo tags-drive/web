@@ -104,3 +104,70 @@ export function ObjectToTag(obj: any): Tag | null {
 
     return new Tag(<number>obj.id, <string>obj.name, <string>obj.color, group);
 }
+
+export class Group {
+    name: string = "";
+    tags: Tag[] = [];
+
+    constructor(name: string, tags?: Tag[]) {
+        this.name = name;
+
+        if (tags !== undefined) {
+            this.tags = tags;
+        }
+    }
+}
+
+// Name for group with ungrouped tags
+const ungroupedTags = "Ungrouped tags";
+
+export function TagsToGroups(tags: Map<number, Tag>): Group[] {
+    let groups: Group[] = [];
+
+    let addTagToGroups = (tag: Tag) => {
+        // Clone tag
+        let t = JSON.parse(JSON.stringify(tag));
+
+        if (t.group == "") {
+            t.group = ungroupedTags;
+        }
+
+        for (let i = 0; i < groups.length; i++) {
+            if (groups[i].name == t.group) {
+                groups[i].tags.push(t);
+                return;
+            }
+        }
+
+        // There's no group with such name
+        let newGroup = new Group(t.group);
+        newGroup.tags.push(t);
+        groups.push(newGroup);
+    };
+
+    // Add tags
+    tags.forEach(tag => {
+        addTagToGroups(tag);
+    });
+
+    // Sort groups
+    groups.sort((a, b) => {
+        // Ungrouped tags must be last
+        if (a.name === ungroupedTags) {
+            return 1;
+        }
+        if (b.name === ungroupedTags) {
+            return -1;
+        }
+
+        if (a.name < b.name) {
+            return -1;
+        }
+        if (a.name > b.name) {
+            return 1;
+        }
+        return 0;
+    });
+
+    return groups;
+}
