@@ -233,36 +233,36 @@
 #top-bar {
     background-color: white;
     border-bottom: 1px solid #0000002f;
-    display: flex;
-    justify-content: space-around;
+    column-gap: 20px;
+    display: grid;
+    grid-template-columns: 150px minmax(600px, 1000px) 150px;
+    justify-content: space-evenly;
     height: 50px;
     top: 0;
     width: 100%;
 }
 
 // Logo
-
 #logo {
     cursor: default;
     font-family: none;
     font-size: 25px;
     height: 50px;
     line-height: 50px;
-    margin: 0 10px 0 10px;
+    margin: auto;
     vertical-align: middle;
 }
 
 // Search
-
 #search-bar-wrapper {
     border-radius: 5px;
     box-shadow: 0px 0px 5px 0px #888888;
-    display: flex;
+    column-gap: 5px;
+    display: grid;
+    grid-template-columns: 50px auto 50px;
     height: 40px;
-    justify-content: space-around;
     margin: auto 0 auto 0;
     position: relative;
-    width: 600px;
 
     // Search input and suggestions
 
@@ -271,13 +271,12 @@
         height: 40px;
         margin: auto 0;
         justify-content: center;
-        width: 500px;
 
         > #search-input {
             margin: auto 0;
             height: 40px;
             position: relative;
-            width: 450px;
+            width: 100%;
 
             // Inputs
 
@@ -285,7 +284,8 @@
             #render-wrapper {
                 box-sizing: border-box;
                 cursor: text;
-                height: -webkit-fill-available;
+                height: 100%;
+                overflow-y: auto;
                 position: absolute;
                 top: 50%;
                 transform: translateY(-50%);
@@ -447,9 +447,9 @@
 }
 
 // Options
-
 #options {
     display: flex;
+    justify-content: center;
 }
 
 // Common
