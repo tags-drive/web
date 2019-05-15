@@ -160,6 +160,12 @@ export default Vue.extend({
     //
     created: function() {
         this.selected = this.file.selected;
+
+        // Dirty hack. There's a bug when Events.FilesBlock.UnselectAllFiles is emitted and
+        // selected files are reset, but card is still highlight
+        EventBus.$on(Events.FilesBlock.UnselectAllFiles, () => {
+            this.selected = false;
+        });
     },
     updated: function() {
         this.selected = this.file.selected;
