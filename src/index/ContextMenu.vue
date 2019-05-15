@@ -95,6 +95,7 @@ import { State } from "@app/index/state/types";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
 import { IsElementInPath } from "@app/global/utils";
+import { logInfo } from "./utils";
 import API from "@app/index/api";
 
 interface Payload {
@@ -210,23 +211,33 @@ export default Vue.extend({
                 },
                 deleteTags: () => {
                     this.hideMenu();
+
                     getSelectedFiles().then(files =>
                         EventBus.$emit(Events.ModalWindow.SelectMode.ShowTagsDeletingWindow, { files: files })
                     );
                 },
                 downloadSingleFile: () => {
+                    this.hideMenu();
+
                     API.files.downloadFile(this.file!.id, this.file!.filename);
                 },
                 downloadFiles: () => {
+                    this.hideMenu();
+
                     getSelectedFiles().then(files => {
                         let ids: number[] = [];
                         files.forEach(elem => ids.push(elem.id));
-                        API.files.downloadFiles(ids);
+
+                        // Unselect files before downloading because this process can take a long time
                         EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
+
+                        logInfo("Please, wait. Creating of an archive can take some time.");
+                        API.files.downloadFiles(ids);
                     });
                 },
                 deleteFiles: () => {
                     this.hideMenu();
+
                     getSelectedFiles().then(files =>
                         EventBus.$emit(Events.ModalWindow.SelectMode.ShowFilesDeletingWindow, { files: files })
                     );
