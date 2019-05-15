@@ -281,25 +281,21 @@ export default Vue.extend({
         });
     },
     watch: {
-        allFiles: {
-            immediate: true,
-            handler: function() {
-                // Scroll to top
-                let container = <HTMLElement>this.$refs["container"];
-                if (container === undefined) {
-                    return;
-                }
-
-                let wrapper = container.parentElement;
-                if (wrapper === null) {
-                    return;
-                }
-
-                wrapper.scrollTop = 0;
-
-                // Reset maxDisplayedFiles
-                this.maxDisplayedFiles = deltaDisplayedFiles;
-            }
+        // Reset scroll only when order of files is changed
+        sortModeByName: function() {
+            this.resetScroll();
+        },
+        sortModeBySize: function() {
+            this.resetScroll();
+        },
+        sortModeByTime: function() {
+            this.resetScroll();
+        },
+        sortOrderAsc: function() {
+            this.resetScroll();
+        },
+        sortOrderDesc: function() {
+            this.resetScroll();
         }
     },
     //
@@ -342,6 +338,23 @@ export default Vue.extend({
         applySortOptions: function() {
             this.$parent.$emit(ParentEvents.Sort.Manually, { type: this.sortType, order: this.sortOrder });
             this.isSortOptionsChanged = false;
+        },
+        resetScroll: function() {
+            // Scroll to top
+            let container = <HTMLElement>this.$refs["container"];
+            if (container === undefined) {
+                return;
+            }
+
+            let wrapper = container.parentElement;
+            if (wrapper === null) {
+                return;
+            }
+
+            wrapper.scrollTop = 0;
+
+            // Reset maxDisplayedFiles
+            this.maxDisplayedFiles = deltaDisplayedFiles;
         }
     }
 });
