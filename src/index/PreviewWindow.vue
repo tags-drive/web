@@ -219,6 +219,16 @@
 						<span>{{ fileSize }}</span>
 					</div>
 				</div>
+
+				<!-- Time of adding -->
+				<div class="card">
+					<div class="header noselect">
+						<span>Time of adding</span>
+					</div>
+					<div class="data">
+						<span>{{ fileAddTime }}</span>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -469,7 +479,8 @@ import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
 import { logError, preloadImages } from "@app/index/utils";
 import { ConvertBytesToString } from "@app/global/utils";
-import { Const } from "@app/global/const";
+import { Const, DateformatMask } from "@app/global/const";
+import dateformat from "dateformat";
 
 export default Vue.extend({
     data: function() {
@@ -557,6 +568,9 @@ export default Vue.extend({
         //
         fileSize: function(): string {
             return ConvertBytesToString(this.file!.size);
+        },
+        fileAddTime(): string {
+            return dateformat(this.file!.addTime, DateformatMask);
         }
     },
     //

@@ -123,7 +123,7 @@ import { State } from "@app/index/state/types";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
-import { Const } from "@app/global/const";
+import { Const, DateformatMask } from "@app/global/const";
 import { ConvertBytesToString } from "@app/global/utils";
 import dateformat from "dateformat";
 
@@ -246,8 +246,7 @@ export default Vue.extend({
             return ConvertBytesToString(this.file.size);
         },
         fileAddTime(): string {
-            // Example: "Mar 6, 2019 14:50"
-            return dateformat(this.file.addTime, "mmm d, yyyy HH:MM");
+            return dateformat(this.file.addTime, DateformatMask);
         }
     },
     //

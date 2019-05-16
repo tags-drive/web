@@ -1,3 +1,8 @@
+/**
+ * Example: "Mar 6, 2019 14:50"
+ */
+export const DateformatMask = "mmm d, yyyy HH:MM"
+
 export const Const = {
     sortType: {
         name: "name",
