@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex, { StoreOptions } from "vuex";
-import { State } from "./types";
+import { State, ViewModes } from "./types";
 
 Vue.use(Vuex);
 
@@ -13,7 +13,8 @@ const state: StoreOptions<State> = {
         showModalWindow: false,
         // settings
         settings: {
-            showDeletedFiles: false
+            showDeletedFiles: false,
+            viewMode: ViewModes.cards.value
         }
     },
     mutations: {
