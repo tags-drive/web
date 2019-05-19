@@ -1,9 +1,15 @@
 <template>
 	<div id="files-block-wrapper">
 
+		<div
+			v-if="allFiles.length === 0"
+			id="nothing-found"
+			class="noselect"
+		>No files to display</div>
+
 		<!-- Pass all data -->
 		<files-list
-			v-if="State.settings.viewMode === viewModes.list"
+			v-else-if="State.settings.viewMode === viewModes.list"
 
 			:allFiles="allFiles"
 			:allSelected="allSelected"
@@ -27,7 +33,6 @@
 			:sortOrderAsc="sortOrderAsc"
 			:sortOrderDesc="sortOrderDesc"
 		></cards>
-
 	</div>
 </template>
 
@@ -36,6 +41,16 @@
     height: calc(100vh - 51px);
     overflow: auto;
     overflow-x: hidden;
+
+    > #nothing-found {
+        border: 1px solid #88888840;
+        border-radius: 10px;
+        font-size: 30px;
+        margin: 100px auto 0;
+        padding: 10px;
+        text-align: center;
+        width: fit-content;
+    }
 }
 </style>
 
