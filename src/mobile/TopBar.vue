@@ -7,7 +7,9 @@
 		<div
 			id="bar"
 		>
-			<div id="logo" class="noselect">Tags Drive</div>
+			<div id="logo">
+				<img src="/static/icons/logo.svg">
+			</div>
 
 			<div id="buttons">
 				<div
@@ -111,11 +113,12 @@ $height: 40px;
     padding: 0 10px;
 
     #logo {
-        cursor: default;
-        font-family: none;
-        font-size: 25px;
-        height: $height;
-        line-height: $height;
+        height: 35px;
+        margin: auto 0;
+
+        img {
+            height: 100%;
+        }
     }
 
     #buttons {

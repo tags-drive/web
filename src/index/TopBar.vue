@@ -1,7 +1,9 @@
 <template>
 <div id="top-bar">
 	<!-- Logo -->
-	<div id="logo"><span class="noselect">Tags Drive</span></div>
+	<div id="logo" class="noselect">
+		<img src="/static/icons/logo.svg" alt="Tags Drive" draggable="false">
+	</div>
 
 	<div id="search-bar-wrapper">
 		<!-- Search button -->
@@ -197,7 +199,7 @@
 			@click="management().globalTags()"
 		>
 			<div>
-				<i class="material-icons">local_offer</i>
+				<i class="material-icons" style="transform: scaleX(-1);">local_offer</i>
 			</div>
 		</div>
 
@@ -235,7 +237,7 @@
     border-bottom: 1px solid #0000002f;
     column-gap: 20px;
     display: grid;
-    grid-template-columns: 150px minmax(600px, 1000px) 150px;
+    grid-template-columns: 170px minmax(600px, 1000px) 150px;
     justify-content: space-evenly;
     height: 50px;
     top: 0;
@@ -244,13 +246,13 @@
 
 // Logo
 #logo {
-    cursor: default;
-    font-family: none;
-    font-size: 25px;
-    height: 50px;
-    line-height: 50px;
-    margin: auto;
-    vertical-align: middle;
+    text-align: center;
+
+    > img {
+        height: 100%;
+        pointer-events: none;
+        width: 90%;
+    }
 }
 
 // Search
