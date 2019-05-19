@@ -1,5 +1,6 @@
 <template>
 	<div id="login-form">
+		<!-- Error -->
 		<div
 			v-if="isError"
 			id="error-msg"
@@ -74,7 +75,6 @@
     padding: 20px;
     position: fixed;
     text-align: center;
-    top: 30px;
     transform: translateX(-50%);
     width: 80%;
 
