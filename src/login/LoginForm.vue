@@ -193,7 +193,7 @@ export default Vue.extend({
             params.append("login", this.login);
             params.append("password", hash);
 
-            fetch(Params.Host + "/login?" + params, {
+            fetch(Params.Host + "/api/login?" + params, {
                 method: "POST",
                 credentials: "same-origin"
             })

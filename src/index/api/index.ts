@@ -438,7 +438,7 @@ function logout() {
         return;
     }
 
-    fetch(Params.Host + "/logout", {
+    fetch(Params.Host + "/api/logout", {
         method: "POST",
         credentials: "same-origin"
     })

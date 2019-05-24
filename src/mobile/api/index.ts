@@ -144,7 +144,7 @@ function fetchTags() {
 }
 
 function logout() {
-    fetch(Params.Host + "/logout", {
+    fetch(Params.Host + "/api/logout", {
         method: "POST",
         credentials: "same-origin"
     })
