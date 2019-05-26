@@ -12,11 +12,12 @@
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
-      "webpack-env"
+      "webpack-env",
+      "node"
     ],
     "paths": {
       "@app/*": ["src/*"],
-	  "@components/*": ["src/index/components/*"]
+      "@components/*": ["src/index/components/*"]
     },
     "lib": [
       "esnext",
