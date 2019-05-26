@@ -141,7 +141,7 @@ export default Vue.extend({
             // It is became false after hiding Context Menu (when Events.ContextMenu.Hide emitted)
             rightClicked: false,
             // setInterval id
-            overflowChecker: -1,
+            overflowChecker: new NodeJS.Timeout(),
             //
             Store: SharedStore.state,
             State: SharedState.state
