@@ -141,7 +141,7 @@ export default Vue.extend({
             // It is became false after hiding Context Menu (when Events.ContextMenu.Hide emitted)
             rightClicked: false,
             // setInterval id
-            overflowChecker: new NodeJS.Timeout(),
+            overflowChecker: 0,
             //
             Store: SharedStore.state,
             State: SharedState.state
@@ -256,7 +256,7 @@ export default Vue.extend({
     },
     //
     created: function() {
-        this.overflowChecker = setInterval(() => {
+        this.overflowChecker = window.setInterval(() => {
             let list = <HTMLElement>this.$refs["tags-list"];
             if (list === undefined) {
                 this.overflow = false;
