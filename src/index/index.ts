@@ -9,12 +9,6 @@ import ModalWindow from "@app/index/ModalWindow.vue";
 import LogWindow from "@app/index/LogWindow.vue";
 import PreviewWindow from "@app/index/PreviewWindow.vue";
 
-// Check User Agent before page loading
-if (/(Android|iPhone)/.test(navigator.userAgent)) {
-    // Redirect to mobile version
-    window.location.replace("/mobile");
-}
-
 // Tags Drive (main instance)
 new Vue({
     el: "#tags-drive",
