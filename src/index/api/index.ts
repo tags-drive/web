@@ -6,6 +6,31 @@ import { IsErrorStatusCode } from "@app/global/utils";
 import SharedStore from "@app/index/store";
 import SharedState from "@app/index/state";
 
+// User
+
+async function isUserAuthorized(): Promise<boolean> {
+    let auth = false;
+
+    await fetch(Params.Host + "/api/user", {
+        method: "GET",
+        credentials: "same-origin"
+    })
+        .then(resp => {
+            if (IsErrorStatusCode(resp.status)) {
+                auth = false;
+                return;
+            }
+            return resp.json();
+        })
+        .then(user => {
+            if (user !== undefined && user.authorized) {
+                auth = true;
+            }
+        });
+
+    return auth;
+}
+
 // Files
 
 /**
@@ -458,6 +483,7 @@ function logout() {
 }
 
 const API = {
+    isUserAuthorized: isUserAuthorized,
     files: {
         fetch: fetchFiles,
         downloadFile: downloadFile,
