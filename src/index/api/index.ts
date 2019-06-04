@@ -6,6 +6,17 @@ import { IsErrorStatusCode } from "@app/global/utils";
 import SharedStore from "@app/index/store";
 import SharedState from "@app/index/state";
 
+/**
+ * returns share token if needed. Response is `"shareToken={token}"` or an empty string
+ */
+function getShareTokenIfNeeded(): string {
+    if (!SharedState.state.shareMode) {
+        return "";
+    }
+
+    return `shareToken=${SharedState.state.shareToken}`;
+}
+
 // User
 
 async function isUserAuthorized(): Promise<boolean> {
@@ -39,7 +50,7 @@ async function isUserAuthorized(): Promise<boolean> {
  * @param id id of a file
  */
 function fetchFile(id: number) {
-    fetch(Params.Host + `/api/file/${id}`, {
+    fetch(Params.Host + `/api/file/${id}?` + getShareTokenIfNeeded(), {
         method: "GET",
         credentials: "same-origin"
     })
@@ -90,7 +101,7 @@ function fetchFiles(expression: string, text: string, isRegexp: boolean, sType: 
         params.append("order", sOrder);
     }
 
-    fetch(Params.Host + "/api/files?" + params, {
+    fetch(Params.Host + "/api/files?" + params + "&" + getShareTokenIfNeeded(), {
         method: "GET",
         credentials: "same-origin"
     })
@@ -114,7 +125,7 @@ function fetchFiles(expression: string, text: string, isRegexp: boolean, sType: 
 }
 
 function downloadFile(id: number, filename: string) {
-    fetch(Params.Host + "/data/" + id, {
+    fetch(Params.Host + "/data/" + id + "?" + getShareTokenIfNeeded(), {
         method: "GET",
         credentials: "same-origin"
     })
@@ -146,7 +157,7 @@ function downloadFiles(ids: number[]) {
     let params = new URLSearchParams();
     params.append("ids", ids.join(","));
 
-    fetch(Params.Host + "/api/files/download?" + params, {
+    fetch(Params.Host + "/api/files/download?" + params + "&" + getShareTokenIfNeeded(), {
         method: "GET",
         credentials: "same-origin"
     }).then(resp => {
@@ -351,7 +362,7 @@ function deleteFiles(ids: number[], force: boolean) {
 
 // Tags
 function fetchTags() {
-    fetch(Params.Host + "/api/tags", {
+    fetch(Params.Host + "/api/tags?" + getShareTokenIfNeeded(), {
         method: "GET",
         credentials: "same-origin"
     })
