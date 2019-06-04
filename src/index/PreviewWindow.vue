@@ -503,7 +503,12 @@ export default Vue.extend({
             return this.Store.allFilesChangesCounter && this.Store.allFiles;
         },
         originLink: function(): string {
-            return Params.Host + "/" + this.file!.origin;
+            let params = "";
+            if (SharedState.state.shareMode) {
+                params = "?shareToken=" + SharedState.state.shareToken;
+            }
+
+            return Params.Host + "/" + this.file!.origin + params;
         },
         previewWindowStyle: function() {
             if (!this.fullscreenMode) {

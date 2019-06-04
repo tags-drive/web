@@ -151,7 +151,12 @@ export default Vue.extend({
         },
         previewLink: function(): string {
             if (this.file.type.previewType === Const.previewTypes.image) {
-                return Params.Host + "/" + this.file.preview;
+                let params = "";
+                if (SharedState.state.shareMode) {
+                    params = "?shareToken=" + SharedState.state.shareToken;
+                }
+
+                return Params.Host + "/" + this.file.preview + params;
             }
 
             return Params.Host + "/ext/" + this.file.filename.split(".").pop();
