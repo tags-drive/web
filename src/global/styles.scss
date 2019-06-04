@@ -43,6 +43,12 @@ input[type="text"] {
     background-color: #ebebeb;
 }
 
+/* Use this class when user isn't authorized */
+.auth-only-element {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
 /* Scrollbar (Chrome)*/
 ::-webkit-scrollbar {
     width: 10px;
