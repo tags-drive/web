@@ -156,6 +156,7 @@
 						<i
 							class="material-icons noselect"
 							title="Edit filename"
+							:class="{ 'auth-only-element': !showAuthOnlyElement }"
 							@click="edit().filename()"
 						>edit</i>
 					</div>
@@ -175,6 +176,7 @@
 						<i
 							class="material-icons noselect"
 							title="Edit tags"
+							:class="{ 'auth-only-element': !showAuthOnlyElement }"
 							@click="edit().tags()"
 						>edit</i>
 					</div>
@@ -202,6 +204,7 @@
 						<i
 							class="material-icons noselect"
 							title="Edit description"
+							:class="{ 'auth-only-element': !showAuthOnlyElement }"
 							@click="edit().description()"
 						>edit</i>
 					</div>
@@ -471,9 +474,8 @@ import LoaderComponent from "@app/global/components/Loader/Loader.vue";
 // Classes and types
 import { File } from "@app/global/classes";
 // Shared data
-import SharedStore from "@app/index/store";
-import { Store } from "@app/index/store/types";
 import SharedState from "@app/index/state";
+import SharedStore from "@app/index/store";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
@@ -494,7 +496,8 @@ export default Vue.extend({
             // Data
             textFileContent: "",
             //
-            Store: SharedStore.state
+            Store: SharedStore.state,
+            State: SharedState.state
         };
     },
     computed: {
@@ -504,8 +507,8 @@ export default Vue.extend({
         },
         originLink: function(): string {
             let params = "";
-            if (SharedState.state.shareMode) {
-                params = "?shareToken=" + SharedState.state.shareToken;
+            if (this.State.shareMode) {
+                params = "?shareToken=" + this.State.shareToken;
             }
 
             return Params.Host + "/" + this.file!.origin + params;
@@ -536,6 +539,9 @@ export default Vue.extend({
                 "margin-top": "30px",
                 width: "96%"
             };
+        },
+        showAuthOnlyElement: function(): boolean {
+            return this.State.user.authorized;
         },
         // Types
         isTextFile: function(): boolean {
@@ -755,7 +761,7 @@ export default Vue.extend({
             }
         },
         onkeydownListener: function(event: KeyboardEvent) {
-            if (SharedState.state.showModalWindow) {
+            if (this.State.showModalWindow) {
                 return;
             }
 

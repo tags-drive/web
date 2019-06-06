@@ -4,43 +4,71 @@
 		v-if="show"
 		:style="{'top': top + 'px', 'left': left + 'px'}"
 	>
-		<div>
-			<!-- Rename -->
-			<div v-if="!State.selectMode">
-				<input type="button" class="btn" @click="regularMode().changeName()" value="Rename">
-			</div>
-			<!-- Tags -->
-			<div v-if="!State.selectMode">
-				<input type="button" class="btn" @click="regularMode().changeTags()" value="Update tags">
-			</div>
-			<div v-else>
-				<input type="button" class="btn" @click="selectMode().addTags()" value="Add tags">
-				<input type="button" class="btn" @click="selectMode().deleteTags()" value="Delete tags">
-			</div>
-			<!-- Description -->
-			<div v-if="!State.selectMode">
-				<input type="button" class="btn" @click="regularMode().changeDescription()" value="Update description">
-			</div>
-			<!-- Download -->
-			<div v-if="!State.selectMode">
-				<input type="button" class="btn" @click="selectMode().downloadSingleFile()" value="Download">
-			</div>
-			<div v-else>
-				<input type="button" class="btn" @click="selectMode().downloadFiles()" value="Download selected files">
-			</div>
-			<!-- Delete -->
-			<div v-if="!State.selectMode">
-				<input type="button" class="btn" @click="regularMode().deleteFile()" value="Delete menu" style="margin-bottom: 0px;">
-			</div>
-			<div v-else>
-				<input type="button" class="btn" @click="selectMode().deleteFiles()" value="Delete menu" style="margin-bottom: 0px;">
-			</div>
+		<!-- Rename -->
+		<div
+			v-if="!State.selectMode"
+			class="menu-button"
+			:class="{ 'auth-only-element': !showAuthOnlyElement }"
+		>
+			<input type="button" class="btn" @click="regularMode().changeName()" value="Rename">
+		</div>
+		<!-- Tags -->
+		<div
+			v-if="!State.selectMode"
+			class="menu-button"
+			:class="{ 'auth-only-element': !showAuthOnlyElement }"
+		>
+			<input type="button" class="btn" @click="regularMode().changeTags()" value="Update tags">
+		</div>
+		<div
+			v-else
+			class="menu-button"
+			:class="{ 'auth-only-element': !showAuthOnlyElement }"
+		>
+			<input type="button" class="btn" @click="selectMode().addTags()" value="Add tags">
+			<input type="button" class="btn" @click="selectMode().deleteTags()" value="Delete tags">
+		</div>
+		<!-- Description -->
+		<div
+			v-if="!State.selectMode"
+			class="menu-button"
+			:class="{ 'auth-only-element': !showAuthOnlyElement }"
+		>
+			<input type="button" class="btn" @click="regularMode().changeDescription()" value="Update description">
+		</div>
+		<!-- Download -->
+		<div
+			v-if="!State.selectMode"
+			class="menu-button"
+		>
+			<input type="button" class="btn" @click="selectMode().downloadSingleFile()" value="Download">
+		</div>
+		<div
+			v-else
+			class="menu-button"
+		>
+			<input type="button" class="btn" @click="selectMode().downloadFiles()" value="Download selected files">
+		</div>
+		<!-- Delete -->
+		<div
+			v-if="!State.selectMode"
+			class="menu-button"
+			:class="{ 'auth-only-element': !showAuthOnlyElement }"
+		>
+			<input type="button" class="btn" @click="regularMode().deleteFile()" value="Delete menu" style="margin-bottom: 0px;">
+		</div>
+		<div
+			v-else
+			class="menu-button"
+			:class="{ 'auth-only-element': !showAuthOnlyElement }"
+		>
+			<input type="button" class="btn" @click="selectMode().deleteFiles()" value="Delete menu" style="margin-bottom: 0px;">
 		</div>
 	</div>
 </template>
 
 
-<style scoped>
+<style lang="scss" scoped>
 #context-menu {
     background-color: #ffffff;
     border: 1px solid #b2b2b2;
@@ -49,37 +77,27 @@
     position: fixed;
     text-align: center;
     z-index: 4;
-}
 
-.btn {
-    background-color: white;
-    border: 1px solid #b2b2b2;
-    border-radius: 2px;
-    cursor: pointer;
-    margin-bottom: 3px;
-    outline: none;
-    width: 100%;
-}
+    > div.menu-button {
+        background-color: white;
+        margin-bottom: 3px;
 
-.btn:hover {
-    background-color: #e5e5e5;
-}
+        &:last-child {
+            margin-bottom: 0;
+        }
 
-.btn--href {
-    /* Same as input */
-    color: black;
-    display: block;
-    font-family: Arial;
-    font-size: 13.3333px;
-    font-stretch: normal;
-    font-style: normal;
-    font-variant-caps: normal;
-    font-variant-east-asian: normal;
-    font-variant-ligatures: normal;
-    font-variant-numeric: normal;
-    font-weight: 400;
-    line-height: normal;
-    text-decoration: none;
+        > input.btn {
+            border: 1px solid #b2b2b2;
+            border-radius: 2px;
+            cursor: pointer;
+            outline: none;
+            width: 100%;
+
+            &:hover {
+                background-color: #e5e5e5;
+            }
+        }
+    }
 }
 </style>
 
@@ -134,6 +152,11 @@ export default Vue.extend({
             //
             State: SharedState.state
         };
+    },
+    computed: {
+        showAuthOnlyElement: function(): boolean {
+            return this.State.user.authorized;
+        }
     },
     //
     created() {
