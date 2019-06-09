@@ -63,6 +63,24 @@
 				@click="selectMode().downloadFiles()"
 				value="Download selected files">
 		</div>
+		<!-- Share -->
+		<div
+			class="menu-button"
+			:class="{ 'auth-only-element': !showAuthOnlyElement }"
+		>
+			<input
+				v-if="!State.selectMode"
+				type="button"
+				class="btn"
+				@click="regularMode().shareFile()"
+				value="Share file">
+			<input
+				v-else
+				type="button"
+				class="btn"
+				@click="selectMode().shareFiles()"
+				value="Share selected files">
+		</div>
 		<!-- Delete -->
 		<div
 			class="menu-button"
@@ -249,6 +267,11 @@ export default Vue.extend({
 
                     API.files.downloadFile(this.file!.id, this.file!.filename);
                 },
+                shareFile: () => {
+                    this.hideMenu();
+
+                    alert("ShareFile");
+                },
                 deleteFile: () => {
                     this.hideMenu();
 
@@ -286,6 +309,11 @@ export default Vue.extend({
                         logInfo("Please, wait. Creating of an archive can take some time.");
                         API.files.downloadFiles(ids);
                     });
+                },
+                shareFiles: () => {
+                    this.hideMenu();
+
+                    alert("ShareFiles");
                 },
                 deleteFiles: () => {
                     this.hideMenu();
