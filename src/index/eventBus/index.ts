@@ -114,6 +114,7 @@ export const Events = {
      * Payload:
      * - type - type of event (from Const.logType)
      * - msg - message to log
+     * - escape - should msg be escaped
      */
     LogEvent: "log-event"
 };
