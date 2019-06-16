@@ -360,7 +360,38 @@ function deleteFiles(ids: number[], force: boolean) {
         .catch(err => logError(err));
 }
 
+function shareFiles(...ids: number[]) {
+    let params = new URLSearchParams();
+    params.append("ids", ids.join(","));
+
+    fetch(Params.Host + "/api/share/token?" + params, {
+        method: "POST",
+        credentials: "same-origin"
+    })
+        .then(resp => {
+            if (IsErrorStatusCode(resp.status)) {
+                resp.text().then(text => {
+                    logError(text);
+                });
+                return;
+            }
+
+            return resp.json();
+        })
+        .then(jsonResp => {
+            if (jsonResp === undefined || jsonResp.token === undefined) {
+                logError("Can't share files (invalid response)");
+                return;
+            }
+
+            let link = location.origin + "/share?shareToken=" + jsonResp.token;
+
+            logInfo(`Use <a href="${link}">this link</a> to share files`, false);
+        });
+}
+
 // Tags
+
 function fetchTags() {
     fetch(Params.Host + "/api/tags?" + getShareTokenIfNeeded(), {
         method: "GET",
@@ -506,7 +537,9 @@ const API = {
         changeFilesTags: changeFilesTags,
         //
         recover: recoverFiles,
-        delete: deleteFiles
+        delete: deleteFiles,
+        //
+        share: shareFiles
     },
     tags: {
         fetch: fetchTags,

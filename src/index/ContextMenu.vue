@@ -270,7 +270,7 @@ export default Vue.extend({
                 shareFile: () => {
                     this.hideMenu();
 
-                    alert("ShareFile");
+                    API.files.share(this.file!.id);
                 },
                 deleteFile: () => {
                     this.hideMenu();
@@ -313,7 +313,16 @@ export default Vue.extend({
                 shareFiles: () => {
                     this.hideMenu();
 
-                    alert("ShareFiles");
+                    getSelectedFiles().then(files => {
+                        EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
+
+                        let ids = Array<number>(files.length);
+                        for (let i = 0; i < files.length; i++) {
+                            ids[i] = files[i].id;
+                        }
+
+                        API.files.share(...ids);
+                    });
                 },
                 deleteFiles: () => {
                     this.hideMenu();
