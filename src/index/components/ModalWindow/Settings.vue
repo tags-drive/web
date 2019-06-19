@@ -82,6 +82,8 @@
 
         > #content {
             border: 1px solid #88888840;
+            overflow-y: auto;
+            padding: 0 20px;
         }
     }
 

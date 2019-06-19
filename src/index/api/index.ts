@@ -386,7 +386,7 @@ function shareFiles(...ids: number[]) {
 
             let link = location.origin + "/share?shareToken=" + jsonResp.token;
 
-            logInfo(`Use <a href="${link}">this link</a> to share files`, false);
+            logInfo(`Use <a href="${link}" target="_blank">this link</a> to view shared files`, false);
         });
 }
 
