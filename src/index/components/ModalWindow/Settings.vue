@@ -16,7 +16,8 @@
 			</div>
 
 			<div id="content">
-				<general-settings v-if="currentSection === 'general'"></general-settings>
+				<general-settings v-show="currentSection === 'general'"></general-settings>
+				<share-settings v-show="currentSection === 'share'"></share-settings>
 			</div>
 		</div>
 
@@ -120,18 +121,20 @@
 import Vue from "vue";
 // Components
 import GeneralSettings from "./Settings/General.vue";
+import ShareSettings from "./Settings/Share.vue";
 // Other
 import { Version, Params } from "@app/global";
 import { IsErrorStatusCode } from "@app/global/utils";
 
 export default Vue.extend({
     components: {
-        "general-settings": GeneralSettings
+        "general-settings": GeneralSettings,
+        "share-settings": ShareSettings
     },
     //
     data: function() {
         return {
-            sections: [{ name: "General", key: "general" }, { name: "Share Access", key: "share" }],
+            sections: [{ name: "General", key: "general" }, { name: "Share Tokens", key: "share" }],
             currentSection: "general",
             //
             frontendVersion: Version,

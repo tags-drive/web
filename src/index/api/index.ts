@@ -498,6 +498,64 @@ function deleteTag(tagID: number) {
         });
 }
 
+// Share
+
+async function getShareTokens(): Promise<Map<string, Array<number>>> {
+    return new Promise<Map<string, Array<number>>>((resolve, reject) => {
+        fetch(Params.Host + "/api/share/tokens", {
+            credentials: "same-origin"
+        })
+            .then(resp => {
+                if (IsErrorStatusCode(resp.status)) {
+                    resp.text().then(text => reject(text));
+                    return;
+                }
+
+                return resp.json();
+            })
+            .then(json => {
+                if (json === undefined) {
+                    reject("invalid response");
+                    return;
+                }
+
+                let res: Map<string, Array<number>> = new Map();
+
+                for (let token in json) {
+                    let arr = json[token] as Array<number>;
+                    if (arr.length === undefined) {
+                        continue;
+                    }
+
+                    res.set(token, arr);
+                }
+
+                resolve(res);
+            })
+            .catch(err => reject(err));
+    });
+}
+
+function removeShareToken(token: string) {
+    fetch(Params.Host + "/api/share/token/" + token, {
+        method: "DELETE",
+        credentials: "same-origin"
+    })
+        .then(resp => {
+            if (IsErrorStatusCode(resp.status)) {
+                resp.text().then(text => {
+                    logError(text);
+                });
+                return;
+            }
+
+            logInfo(`Share token "${token}" was deleted`);
+        })
+        .catch(err => {
+            logError(err);
+        });
+}
+
 // Other
 
 function logout() {
@@ -546,6 +604,10 @@ const API = {
         add: addTag,
         change: changeTag,
         delete: deleteTag
+    },
+    share: {
+        getTokens: getShareTokens,
+        removeToken: removeShareToken
     },
     management: {
         logout: logout
