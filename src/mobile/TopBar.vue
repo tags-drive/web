@@ -14,6 +14,7 @@
 			<div id="buttons">
 				<div
 					class="button"
+					:class="{ 'auth-only-element': !userAuthorized }"
 					@click="logout"
 				>
 					<i class="material-icons noselect">exit_to_app</i>
@@ -23,6 +24,7 @@
 				<div
 					v-if="!shouldShowCloseButton"
 					class="button"
+					:class="{ 'auth-only-element': !userAuthorized }"
 					@click="showUploadWindow"
 				>
 					<svg viewBox="0 0 24 24">
@@ -149,6 +151,9 @@ import UploadWindow from "@app/mobile/components/UploadWindow.vue";
 // Other
 import { API } from "@app/mobile/api";
 
+let userAuthorized = false;
+API.isUserAuthorized().then(res => (userAuthorized = res));
+
 export default Vue.extend({
     data: function() {
         return {
@@ -161,6 +166,9 @@ export default Vue.extend({
     computed: {
         shouldShowCloseButton: function() {
             return this.searchMode || this.uploadMode;
+        },
+        userAuthorized: function() {
+            return userAuthorized;
         }
     },
     //

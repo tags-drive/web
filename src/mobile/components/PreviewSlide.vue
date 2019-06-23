@@ -230,6 +230,7 @@ import LoaderComponent from "@app/global/components/Loader/Loader.vue";
 import { Params } from "@app/global";
 import { Const } from "@app/global/const";
 import SharedStore from "@app/mobile/store";
+import { getShareTokenIfNeeded } from "@app/mobile/api";
 
 const sizeSuffixes: string[] = ["B", "KB", "MB", "GB", "TB"];
 
@@ -247,7 +248,7 @@ export default Vue.extend({
     },
     computed: {
         originLink(): string {
-            return Params.Host + "/" + this.file!.origin;
+            return Params.Host + "/" + this.file!.origin + "?" + getShareTokenIfNeeded();
         },
         fileSize(): string {
             let suffixIndex = 0;

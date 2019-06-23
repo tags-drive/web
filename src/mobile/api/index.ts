@@ -9,6 +9,29 @@ function logError(msg: string | TypeError) {
 }
 
 /**
+ * returns share token if needed. Response is `"shareToken={token}"` or an empty string
+ */
+export const getShareTokenIfNeeded = (() => {
+    let shareMode = false;
+    let shareToken = "";
+
+    // Detect share mode
+    const res = /shareToken=([\w\d]+)/g.exec(location.search);
+    if (res !== null && res[1] !== undefined) {
+        shareMode = true;
+        shareToken = res[1];
+    }
+
+    return (): string => {
+        if (!shareMode) {
+            return "";
+        }
+
+        return `shareToken=${shareToken}`;
+    };
+})();
+
+/**
  * fetches all files and update Store
  *
  * @param expression logical expression
@@ -58,7 +81,7 @@ function fetchFiles(
         SharedStore.commit("unsetAllFilesFetched");
     }
 
-    fetch(Params.Host + "/api/files?" + params, {
+    fetch(Params.Host + "/api/files?" + params + "&" + getShareTokenIfNeeded(), {
         method: "GET",
         credentials: "same-origin"
     })
@@ -91,7 +114,7 @@ function fetchFiles(
 }
 
 function downloadFile(id: number, filename: string) {
-    fetch(Params.Host + "/data/" + id, {
+    fetch(Params.Host + "/data/" + id + "?" + getShareTokenIfNeeded(), {
         method: "GET",
         credentials: "same-origin"
     })
@@ -120,7 +143,7 @@ function downloadFile(id: number, filename: string) {
 }
 
 function fetchTags() {
-    fetch(Params.Host + "/api/tags", {
+    fetch(Params.Host + "/api/tags?" + getShareTokenIfNeeded(), {
         method: "GET",
         credentials: "same-origin"
     })
@@ -143,6 +166,29 @@ function fetchTags() {
         .catch(err => logError(err));
 }
 
+async function isUserAuthorized(): Promise<boolean> {
+    let auth = false;
+
+    await fetch(Params.Host + "/api/user", {
+        method: "GET",
+        credentials: "same-origin"
+    })
+        .then(resp => {
+            if (IsErrorStatusCode(resp.status)) {
+                auth = false;
+                return;
+            }
+            return resp.json();
+        })
+        .then(user => {
+            if (user !== undefined && user.authorized) {
+                auth = true;
+            }
+        });
+
+    return auth;
+}
+
 function logout() {
     fetch(Params.Host + "/api/logout", {
         method: "POST",
@@ -162,12 +208,13 @@ function logout() {
 }
 
 export const API = {
+    isUserAuthorized: isUserAuthorized,
     files: {
         fetch: fetchFiles,
         downloadSingleFile: downloadFile
     },
     tags: {
         fetch: fetchTags
-	},
-	logout: logout
+    },
+    logout: logout
 };
