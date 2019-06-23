@@ -221,6 +221,7 @@
 			id="logout"
 			class="vertically noselect button"
 			title="Log out"
+			:class="{ 'auth-only-element': !showAuthOnlyElement }"
 			@click="management().logout()"
 		>
 			<div>
