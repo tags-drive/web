@@ -73,6 +73,7 @@ import SharedStore from "@app/mobile/store";
 import { Params } from "@app/global";
 import { Const } from "@app/global/const";
 import { Events, EventBus } from "@app/mobile/eventBus";
+import { getShareTokenIfNeeded } from "@app/mobile/api";
 
 export default Vue.extend({
     props: {
@@ -86,7 +87,7 @@ export default Vue.extend({
     computed: {
         previewLink(): string {
             if (this.file.type.previewType === Const.previewTypes.image) {
-                return Params.Host + "/" + this.file.preview;
+                return Params.Host + "/" + this.file.preview + "?" + getShareTokenIfNeeded();
             }
 
             return Params.Host + "/ext/" + this.file.filename.split(".").pop();
