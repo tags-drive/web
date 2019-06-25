@@ -151,30 +151,30 @@ import UploadWindow from "@app/mobile/components/UploadWindow.vue";
 // Other
 import { API } from "@app/mobile/api";
 
-let userAuthorized = false;
-API.isUserAuthorized().then(res => (userAuthorized = res));
-
 export default Vue.extend({
     data: function() {
         return {
             opened: false,
             //
             searchMode: false,
-            uploadMode: false
+            uploadMode: false,
+            //
+            userAuthorized: false
         };
     },
     computed: {
         shouldShowCloseButton: function() {
             return this.searchMode || this.uploadMode;
-        },
-        userAuthorized: function() {
-            return userAuthorized;
         }
     },
     //
     created: function() {
         this.$on("close-bar", () => {
             this.closeWindow();
+        });
+
+        API.isUserAuthorized().then(res => {
+            this.userAuthorized = res;
         });
     },
     //
