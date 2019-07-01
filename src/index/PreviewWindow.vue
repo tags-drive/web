@@ -483,6 +483,7 @@ import { logError, preloadImages } from "@app/index/utils";
 import { ConvertBytesToString } from "@app/global/utils";
 import { Const, DateformatMask } from "@app/global/const";
 import dateformat from "dateformat";
+import API from "@app/index/api";
 
 export default Vue.extend({
     data: function() {
@@ -734,7 +735,12 @@ export default Vue.extend({
 
             this.textFileContent = "";
 
-            fetch(Params.Host + "/" + this.file.origin, {
+            let shareToken = "";
+            if (SharedState.state.shareMode) {
+                shareToken = "shareToken=" + SharedState.state.shareToken;
+            }
+
+            fetch(Params.Host + "/" + this.file.origin + "?" + shareToken, {
                 method: "GET",
                 credentials: "same-origin"
             })
