@@ -9,7 +9,10 @@
 					:key="i"
 					class="section"
 					@click="switchSection(section.key)"
-					:class="{ 'chosen-section': section.key === currentSection }"
+					:class="{
+						'chosen-section': section.key === currentSection,
+						'auth-only-element': section.needAuth && !State.user.authorized
+					}"
 				>
 					<div class="name">{{ section.name }}</div>
 				</div>
@@ -122,6 +125,8 @@ import Vue from "vue";
 // Components
 import GeneralSettings from "./Settings/General.vue";
 import ShareSettings from "./Settings/Share.vue";
+// Share data
+import SharedState from "@app/index/state";
 // Other
 import { Version, Params } from "@app/global";
 import { IsErrorStatusCode } from "@app/global/utils";
@@ -134,11 +139,16 @@ export default Vue.extend({
     //
     data: function() {
         return {
-            sections: [{ name: "General", key: "general" }, { name: "Share Tokens", key: "share" }],
+            sections: [
+                { name: "General", key: "general", needAuth: false },
+                { name: "Share Tokens", key: "share", needAuth: true }
+            ],
             currentSection: "general",
             //
             frontendVersion: Version,
-            backendVersion: "undefined"
+            backendVersion: "undefined",
+            //
+            State: SharedState.state
         };
     },
     //
