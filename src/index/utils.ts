@@ -15,14 +15,15 @@ export function logError(msg: string | TypeError) {
         msg = "Can't load data. Check network connection or server status.";
     }
 
-    EventBus.$emit(Events.LogEvent, { type: Const.logType.error, msg: msg });
+    EventBus.$emit(Events.LogEvent, { type: Const.logType.error, msg: msg, escape: true });
 }
 
-export function logInfo(msg: string) {
+export function logInfo(msg: string, escape: boolean = true) {
     /* eslint-disable no-console */
     console.info(msg);
     /* eslint-enable no-console */
-    EventBus.$emit(Events.LogEvent, { type: Const.logType.info, msg: msg });
+
+    EventBus.$emit(Events.LogEvent, { type: Const.logType.info, msg: msg, escape: escape });
 }
 
 // urls are links without domain (/data/...)

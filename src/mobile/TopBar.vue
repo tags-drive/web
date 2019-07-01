@@ -14,6 +14,7 @@
 			<div id="buttons">
 				<div
 					class="button"
+					:class="{ 'auth-only-element': !userAuthorized }"
 					@click="logout"
 				>
 					<i class="material-icons noselect">exit_to_app</i>
@@ -23,6 +24,7 @@
 				<div
 					v-if="!shouldShowCloseButton"
 					class="button"
+					:class="{ 'auth-only-element': !userAuthorized }"
 					@click="showUploadWindow"
 				>
 					<svg viewBox="0 0 24 24">
@@ -155,7 +157,9 @@ export default Vue.extend({
             opened: false,
             //
             searchMode: false,
-            uploadMode: false
+            uploadMode: false,
+            //
+            userAuthorized: false
         };
     },
     computed: {
@@ -167,6 +171,10 @@ export default Vue.extend({
     created: function() {
         this.$on("close-bar", () => {
             this.closeWindow();
+        });
+
+        API.isUserAuthorized().then(res => {
+            this.userAuthorized = res;
         });
     },
     //

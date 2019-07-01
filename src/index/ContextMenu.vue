@@ -4,43 +4,106 @@
 		v-if="show"
 		:style="{'top': top + 'px', 'left': left + 'px'}"
 	>
-		<div>
-			<!-- Rename -->
-			<div v-if="!State.selectMode">
-				<input type="button" class="btn" @click="regularMode().changeName()" value="Rename">
-			</div>
-			<!-- Tags -->
-			<div v-if="!State.selectMode">
-				<input type="button" class="btn" @click="regularMode().changeTags()" value="Update tags">
-			</div>
-			<div v-else>
-				<input type="button" class="btn" @click="selectMode().addTags()" value="Add tags">
-				<input type="button" class="btn" @click="selectMode().deleteTags()" value="Delete tags">
-			</div>
-			<!-- Description -->
-			<div v-if="!State.selectMode">
-				<input type="button" class="btn" @click="regularMode().changeDescription()" value="Update description">
-			</div>
-			<!-- Download -->
-			<div v-if="!State.selectMode">
-				<input type="button" class="btn" @click="selectMode().downloadSingleFile()" value="Download">
-			</div>
-			<div v-else>
-				<input type="button" class="btn" @click="selectMode().downloadFiles()" value="Download selected files">
-			</div>
-			<!-- Delete -->
-			<div v-if="!State.selectMode">
-				<input type="button" class="btn" @click="regularMode().deleteFile()" value="Delete menu" style="margin-bottom: 0px;">
-			</div>
-			<div v-else>
-				<input type="button" class="btn" @click="selectMode().deleteFiles()" value="Delete menu" style="margin-bottom: 0px;">
-			</div>
+		<!-- Rename -->
+		<div
+			v-if="!State.selectMode"
+			class="menu-button"
+			:class="{ 'auth-only-element': !showAuthOnlyElement }"
+		>
+			<input type="button" class="btn" @click="regularMode().changeName()" value="Rename">
+		</div>
+		<!-- Tags -->
+		<div
+			class="menu-button"
+			:class="{ 'auth-only-element': !showAuthOnlyElement }"
+		>
+			<!-- Usual mode -->
+			<input
+				v-if="!State.selectMode"
+				type="button"
+				class="btn"
+				@click="regularMode().changeTags()"
+				value="Update tags">
+
+			<!-- Select mode -->
+			<input
+				v-if="State.selectMode"
+				type="button"
+				class="btn"
+				@click="selectMode().addTags()"
+				value="Add tags">
+
+			<input
+				v-if="State.selectMode"
+				type="button"
+				class="btn"
+				@click="selectMode().deleteTags()"
+				value="Delete tags">
+		</div>
+		<!-- Description -->
+		<div
+			v-if="!State.selectMode"
+			class="menu-button"
+			:class="{ 'auth-only-element': !showAuthOnlyElement }"
+		>
+			<input type="button" class="btn" @click="regularMode().changeDescription()" value="Update description">
+		</div>
+		<!-- Download -->
+		<div class="menu-button">
+			<input
+				v-if="!State.selectMode"
+				type="button"
+				class="btn"
+				@click="regularMode().downloadFile()"
+				value="Download">
+			<input
+				v-else
+				type="button"
+				class="btn"
+				@click="selectMode().downloadFiles()"
+				value="Download selected files">
+		</div>
+		<!-- Share -->
+		<div
+			class="menu-button"
+			:class="{ 'auth-only-element': !showAuthOnlyElement }"
+		>
+			<input
+				v-if="!State.selectMode"
+				type="button"
+				class="btn"
+				@click="regularMode().shareFile()"
+				value="Share file">
+			<input
+				v-else
+				type="button"
+				class="btn"
+				@click="selectMode().shareFiles()"
+				value="Share selected files">
+		</div>
+		<!-- Delete -->
+		<div
+			class="menu-button"
+			:class="{ 'auth-only-element': !showAuthOnlyElement }"
+		>
+			<input
+				v-if="!State.selectMode"
+				type="button"
+				class="btn"
+				@click="regularMode().deleteFile()"
+				value="Delete menu">
+			<input
+				v-else
+				type="button"
+				class="btn"
+				@click="selectMode().deleteFiles()"
+				value="Delete menu">
 		</div>
 	</div>
 </template>
 
 
-<style scoped>
+<style lang="scss" scoped>
 #context-menu {
     background-color: #ffffff;
     border: 1px solid #b2b2b2;
@@ -49,37 +112,34 @@
     position: fixed;
     text-align: center;
     z-index: 4;
-}
 
-.btn {
-    background-color: white;
-    border: 1px solid #b2b2b2;
-    border-radius: 2px;
-    cursor: pointer;
-    margin-bottom: 3px;
-    outline: none;
-    width: 100%;
-}
+    > div.menu-button {
+        $margin: 3px;
 
-.btn:hover {
-    background-color: #e5e5e5;
-}
+        background-color: white;
+        margin-bottom: $margin;
 
-.btn--href {
-    /* Same as input */
-    color: black;
-    display: block;
-    font-family: Arial;
-    font-size: 13.3333px;
-    font-stretch: normal;
-    font-style: normal;
-    font-variant-caps: normal;
-    font-variant-east-asian: normal;
-    font-variant-ligatures: normal;
-    font-variant-numeric: normal;
-    font-weight: 400;
-    line-height: normal;
-    text-decoration: none;
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        > input.btn {
+            border: 1px solid #b2b2b2;
+            border-radius: 2px;
+            cursor: pointer;
+            margin-bottom: $margin;
+            outline: none;
+            width: 100%;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+
+            &:hover {
+                background-color: #e5e5e5;
+            }
+        }
+    }
 }
 </style>
 
@@ -135,6 +195,11 @@ export default Vue.extend({
             State: SharedState.state
         };
     },
+    computed: {
+        showAuthOnlyElement: function(): boolean {
+            return this.State.user.authorized;
+        }
+    },
     //
     created() {
         EventBus.$on(Events.ShowContextMenu, (payload: Payload) => {
@@ -182,20 +247,34 @@ export default Vue.extend({
             return {
                 changeName: () => {
                     this.hideMenu();
+
                     EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileRenamingWindow, { file: this.file });
                 },
                 changeTags: () => {
                     this.hideMenu();
+
                     EventBus.$emit(Events.ModalWindow.RegularMode.ShowTagsChangingWindow, { file: this.file });
                 },
                 changeDescription: () => {
                     this.hideMenu();
+
                     EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileDescriptionChangingWindow, {
                         file: this.file
                     });
                 },
+                downloadFile: () => {
+                    this.hideMenu();
+
+                    API.files.downloadFile(this.file!.id, this.file!.filename);
+                },
+                shareFile: () => {
+                    this.hideMenu();
+
+                    API.files.share(this.file!.id);
+                },
                 deleteFile: () => {
                     this.hideMenu();
+
                     EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileDeletingWindow, { file: this.file });
                 }
             };
@@ -205,6 +284,7 @@ export default Vue.extend({
             return {
                 addTags: () => {
                     this.hideMenu();
+
                     getSelectedFiles().then(files =>
                         EventBus.$emit(Events.ModalWindow.SelectMode.ShowTagsAddingWindow, { files: files })
                     );
@@ -215,11 +295,6 @@ export default Vue.extend({
                     getSelectedFiles().then(files =>
                         EventBus.$emit(Events.ModalWindow.SelectMode.ShowTagsDeletingWindow, { files: files })
                     );
-                },
-                downloadSingleFile: () => {
-                    this.hideMenu();
-
-                    API.files.downloadFile(this.file!.id, this.file!.filename);
                 },
                 downloadFiles: () => {
                     this.hideMenu();
@@ -233,6 +308,20 @@ export default Vue.extend({
 
                         logInfo("Please, wait. Creating of an archive can take some time.");
                         API.files.downloadFiles(ids);
+                    });
+                },
+                shareFiles: () => {
+                    this.hideMenu();
+
+                    getSelectedFiles().then(files => {
+                        EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
+
+                        let ids = Array<number>(files.length);
+                        for (let i = 0; i < files.length; i++) {
+                            ids[i] = files[i].id;
+                        }
+
+                        API.files.share(...ids);
                     });
                 },
                 deleteFiles: () => {

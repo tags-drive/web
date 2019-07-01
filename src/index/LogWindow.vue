@@ -40,11 +40,9 @@
 				<div class="message-block">
 					<div style="font-size: 16px;">{{event.time}}</div>
 
-					<div class="message">
-						{{event.msg}}
-					</div>	
+					<div v-if="event.escape" class="message">{{ event.msg }}</div>
+					<div v-else class="message" v-html="event.msg"></div>
 				</div>
-
 			</div>
 		</div>
 	</div>
@@ -64,7 +62,7 @@
     position: fixed;
     right: 25px;
     width: 30%;
-    z-index: 3;
+    z-index: 6;
 }
 
 #open-button {
@@ -169,6 +167,7 @@ interface logEvent {
     type: string;
     msg: string;
     time: string;
+    escape: boolean;
 }
 
 const hideTimeout = 5 * 1000; // 5s
@@ -211,14 +210,21 @@ export default Vue.extend({
     //
     created: function() {
         EventBus.$on(Events.LogEvent, (payload: any) => {
-            if (payload.type === undefined || payload.msg === undefined) {
+            if (payload.type === undefined || payload.msg === undefined || payload.escape === undefined) {
                 /* eslint-disable no-console */
                 console.error("Payload hasn't type or msg fields:", payload);
                 /* eslint-enable no-console */
                 return;
             }
 
-            this.add(payload.type, payload.msg);
+            let event: logEvent = {
+                type: payload.type,
+                msg: payload.msg,
+                time: dateformat(new Date(), "HH:MM:ss"),
+                escape: payload.escape
+            };
+
+            this.add(event);
         });
 
         setInterval(() => {
@@ -270,10 +276,8 @@ export default Vue.extend({
             };
         },
         // Data
-        add: function(type: string, msg: string) {
-            let time = dateformat(new Date(), "HH:MM:ss");
-            let obj: logEvent = { type: type, msg: msg, time: time };
-            this.events.push(obj);
+        add: function(ev: logEvent) {
+            this.events.push(ev);
 
             // Remove old events
             while (this.events.length > maxEventsNumber) {

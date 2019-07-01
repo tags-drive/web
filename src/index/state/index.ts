@@ -8,16 +8,35 @@ const settingsKey = "settings";
 
 const state: StoreOptions<State> = {
     state: {
-        showDropLayer: true, // when we show modal-window with tags showDropLayer is false
-        selectMode: false,
-        showModalWindow: false,
+        user: {
+            authorized: false
+        },
+        shareMode: false,
+        shareToken: "",
         // settings
         settings: {
             showDeletedFiles: false,
             viewMode: ViewModes.cards.value
-        }
+        },
+        //
+        showDropLayer: true, // when we show modal-window with tags showDropLayer is false
+        selectMode: false,
+        showModalWindow: false
     },
     mutations: {
+        setAuthorized(state) {
+            state.user.authorized = true;
+        },
+        enableShareMode(state) {
+            state.shareMode = true;
+        },
+        setShareToken(state, payload) {
+            if (payload.token === undefined) {
+                return;
+            }
+            state.shareToken = <string>payload.token;
+        },
+        //
         showDropLayer(state) {
             state.showDropLayer = true;
         },

@@ -196,6 +196,7 @@
 			id="tag-editing-button"
 			class="vertically noselect button"
 			title="Change tags"
+			:class="{ 'auth-only-element': !showAuthOnlyElement }"
 			@click="management().globalTags()"
 		>
 			<div>
@@ -220,6 +221,7 @@
 			id="logout"
 			class="vertically noselect button"
 			title="Log out"
+			:class="{ 'auth-only-element': !showAuthOnlyElement }"
 			@click="management().logout()"
 		>
 			<div>
@@ -502,8 +504,8 @@ import TagComponent from "@components/Tag/Tag.vue";
 import RenderTagsInput from "@components/RenderTagsInput/RenderTagsInput.vue";
 import { Tag, Group, TagsToGroups } from "@app/global/classes";
 // Shared data
+import SharedState from "@app/index/state";
 import SharedStore from "@app/index/store";
-import { Store } from "@app/index/store/types";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
 import { logError, logInfo } from "@app/index/utils";
@@ -562,7 +564,8 @@ export default Vue.extend({
             hiddenGroups: new Set() as Set<string>,
             hiddenGroupsChangesCounter: 0,
             //
-            Store: SharedStore.state
+            Store: SharedStore.state,
+            State: SharedState.state
         };
     },
     computed: {
@@ -592,6 +595,9 @@ export default Vue.extend({
         },
         showResetButton: function(): boolean {
             return this.expression != "" || this.usedAdvancedOptions;
+        },
+        showAuthOnlyElement: function(): boolean {
+            return this.State.user.authorized;
         }
     },
     //

@@ -6,6 +6,42 @@ import { IsErrorStatusCode } from "@app/global/utils";
 import SharedStore from "@app/index/store";
 import SharedState from "@app/index/state";
 
+/**
+ * returns share token if needed. Response is `"shareToken={token}"` or an empty string
+ */
+function getShareTokenIfNeeded(): string {
+    if (!SharedState.state.shareMode) {
+        return "";
+    }
+
+    return `shareToken=${SharedState.state.shareToken}`;
+}
+
+// User
+
+async function isUserAuthorized(): Promise<boolean> {
+    let auth = false;
+
+    await fetch(Params.Host + "/api/user", {
+        method: "GET",
+        credentials: "same-origin"
+    })
+        .then(resp => {
+            if (IsErrorStatusCode(resp.status)) {
+                auth = false;
+                return;
+            }
+            return resp.json();
+        })
+        .then(user => {
+            if (user !== undefined && user.authorized) {
+                auth = true;
+            }
+        });
+
+    return auth;
+}
+
 // Files
 
 /**
@@ -14,7 +50,7 @@ import SharedState from "@app/index/state";
  * @param id id of a file
  */
 function fetchFile(id: number) {
-    fetch(Params.Host + `/api/file/${id}`, {
+    fetch(Params.Host + `/api/file/${id}?` + getShareTokenIfNeeded(), {
         method: "GET",
         credentials: "same-origin"
     })
@@ -65,7 +101,7 @@ function fetchFiles(expression: string, text: string, isRegexp: boolean, sType: 
         params.append("order", sOrder);
     }
 
-    fetch(Params.Host + "/api/files?" + params, {
+    fetch(Params.Host + "/api/files?" + params + "&" + getShareTokenIfNeeded(), {
         method: "GET",
         credentials: "same-origin"
     })
@@ -89,7 +125,7 @@ function fetchFiles(expression: string, text: string, isRegexp: boolean, sType: 
 }
 
 function downloadFile(id: number, filename: string) {
-    fetch(Params.Host + "/data/" + id, {
+    fetch(Params.Host + "/data/" + id + "?" + getShareTokenIfNeeded(), {
         method: "GET",
         credentials: "same-origin"
     })
@@ -121,7 +157,7 @@ function downloadFiles(ids: number[]) {
     let params = new URLSearchParams();
     params.append("ids", ids.join(","));
 
-    fetch(Params.Host + "/api/files/download?" + params, {
+    fetch(Params.Host + "/api/files/download?" + params + "&" + getShareTokenIfNeeded(), {
         method: "GET",
         credentials: "same-origin"
     }).then(resp => {
@@ -324,9 +360,40 @@ function deleteFiles(ids: number[], force: boolean) {
         .catch(err => logError(err));
 }
 
+function shareFiles(...ids: number[]) {
+    let params = new URLSearchParams();
+    params.append("ids", ids.join(","));
+
+    fetch(Params.Host + "/api/share/token?" + params, {
+        method: "POST",
+        credentials: "same-origin"
+    })
+        .then(resp => {
+            if (IsErrorStatusCode(resp.status)) {
+                resp.text().then(text => {
+                    logError(text);
+                });
+                return;
+            }
+
+            return resp.json();
+        })
+        .then(jsonResp => {
+            if (jsonResp === undefined || jsonResp.token === undefined) {
+                logError("Can't share files (invalid response)");
+                return;
+            }
+
+            let link = location.origin + "/share?shareToken=" + jsonResp.token;
+
+            logInfo(`Use <a href="${link}" target="_blank">this link</a> to view shared files`, false);
+        });
+}
+
 // Tags
+
 function fetchTags() {
-    fetch(Params.Host + "/api/tags", {
+    fetch(Params.Host + "/api/tags?" + getShareTokenIfNeeded(), {
         method: "GET",
         credentials: "same-origin"
     })
@@ -431,6 +498,64 @@ function deleteTag(tagID: number) {
         });
 }
 
+// Share
+
+async function getShareTokens(): Promise<Map<string, Array<number>>> {
+    return new Promise<Map<string, Array<number>>>((resolve, reject) => {
+        fetch(Params.Host + "/api/share/tokens", {
+            credentials: "same-origin"
+        })
+            .then(resp => {
+                if (IsErrorStatusCode(resp.status)) {
+                    resp.text().then(text => reject(text));
+                    return;
+                }
+
+                return resp.json();
+            })
+            .then(json => {
+                if (json === undefined) {
+                    reject("invalid response");
+                    return;
+                }
+
+                let res: Map<string, Array<number>> = new Map();
+
+                for (let token in json) {
+                    let arr = json[token] as Array<number>;
+                    if (arr.length === undefined) {
+                        continue;
+                    }
+
+                    res.set(token, arr);
+                }
+
+                resolve(res);
+            })
+            .catch(err => reject(err));
+    });
+}
+
+function removeShareToken(token: string) {
+    fetch(Params.Host + "/api/share/token/" + token, {
+        method: "DELETE",
+        credentials: "same-origin"
+    })
+        .then(resp => {
+            if (IsErrorStatusCode(resp.status)) {
+                resp.text().then(text => {
+                    logError(text);
+                });
+                return;
+            }
+
+            logInfo(`Share token "${token}" was deleted`);
+        })
+        .catch(err => {
+            logError(err);
+        });
+}
+
 // Other
 
 function logout() {
@@ -458,6 +583,7 @@ function logout() {
 }
 
 const API = {
+    isUserAuthorized: isUserAuthorized,
     files: {
         fetch: fetchFiles,
         downloadFile: downloadFile,
@@ -469,13 +595,19 @@ const API = {
         changeFilesTags: changeFilesTags,
         //
         recover: recoverFiles,
-        delete: deleteFiles
+        delete: deleteFiles,
+        //
+        share: shareFiles
     },
     tags: {
         fetch: fetchTags,
         add: addTag,
         change: changeTag,
         delete: deleteTag
+    },
+    share: {
+        getTokens: getShareTokens,
+        removeToken: removeShareToken
     },
     management: {
         logout: logout

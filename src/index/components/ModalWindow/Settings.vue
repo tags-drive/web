@@ -2,45 +2,26 @@
 	<div id="settings-window">
 		<h2>Settings</h2>
 
-		<div id="settings">
-			<!-- Show deleted files -->
-			<div class="setting">
-				<span class="title">Show deleted files:</span>
-				<input
-					type="checkbox"
-					class="vertically"
-					v-model="settings.showDeletedFiles"
-					@change="apply">
-			</div>
-
-			<!-- View mode -->
-			<div class="setting">
-				<span class="title">View mode:</span>
-
-				<select
-					class="vertically"
-					v-model="settings.viewMode"
-					@change="apply"
+		<div id="sections-wrapper">
+			<div id="sections">
+				<div
+					v-for="(section, i) in sections"
+					:key="i"
+					class="section"
+					@click="switchSection(section.key)"
+					:class="{
+						'chosen-section': section.key === currentSection,
+						'auth-only-element': section.needAuth && !State.user.authorized
+					}"
 				>
-					<option
-						v-for="(opt, i) in viewModesOptions"
-						:key=i
-						:value="opt.value"
-					>
-						{{opt.text}}
-					</option>
-				</select>
+					<div class="name">{{ section.name }}</div>
+				</div>
 			</div>
-		</div>
 
-		<!-- Save button -->
-		<div id="save-button">
-			<input
-				type="button"
-				class="btn"
-				style="width: 100px; height: 25px;"
-				value="Save"
-				@click="saveSettings">
+			<div id="content">
+				<general-settings v-show="currentSection === 'general'"></general-settings>
+				<share-settings v-show="currentSection === 'share'"></share-settings>
+			</div>
 		</div>
 
 		<!-- Info -->
@@ -64,33 +45,49 @@
     width: 600px;
 
     h2 {
-        margin-top: 0;
+        margin: 0;
+        margin-bottom: 15px;
     }
 
-    > #settings {
-        display: inline-block;
-        text-align: left;
-        width: auto;
+    > #sections-wrapper {
+        $section-width: 150px;
 
-        > .setting {
-            font-size: 18px;
-            margin-bottom: 10px;
+        display: grid;
+        grid-gap: 5px;
+        grid-template-columns: $section-width auto;
+        height: 250px;
 
-            > span.title {
-                margin-right: 5px;
+        > #sections {
+            z-index: 1;
+
+            > .section {
+                background-color: #88888810;
+                border: 1px solid #88888840;
+                cursor: pointer;
+                height: 22px;
+                line-height: 22px;
+                margin-bottom: 5px;
+
+                &:hover {
+                    background-color: white;
+                }
+
+                > .name {
+                    width: $section-width;
+                }
             }
 
-            select {
-                outline: none;
+            > .chosen-section {
+                background-color: white !important;
+                border-right: none;
+                width: $section-width + 5px;
             }
+        }
 
-            input {
-                vertical-align: middle;
-            }
-
-            input[type="checkbox"] {
-                transform: scale(1.4);
-            }
+        > #content {
+            border: 1px solid #88888840;
+            overflow-y: auto;
+            padding: 0 20px;
         }
     }
 
@@ -125,23 +122,33 @@
 
 <script lang="ts">
 import Vue from "vue";
-// Classes and types
-import { Settings } from "@app/index/state/types";
-// Shared data
+// Components
+import GeneralSettings from "./Settings/General.vue";
+import ShareSettings from "./Settings/Share.vue";
+// Share data
 import SharedState from "@app/index/state";
 // Other
-import { ViewModes } from "@app/index/state/types.ts";
-import { Events, EventBus } from "@app/index/eventBus";
 import { Version, Params } from "@app/global";
 import { IsErrorStatusCode } from "@app/global/utils";
 
 export default Vue.extend({
+    components: {
+        "general-settings": GeneralSettings,
+        "share-settings": ShareSettings
+    },
+    //
     data: function() {
         return {
-            viewModesOptions: ViewModes,
-            settings: <Settings>{ showDeletedFiles: false, viewMode: ViewModes.cards.value },
+            sections: [
+                { name: "General", key: "general", needAuth: false },
+                { name: "Share Tokens", key: "share", needAuth: true }
+            ],
+            currentSection: "general",
+            //
             frontendVersion: Version,
-            backendVersion: "undefined"
+            backendVersion: "undefined",
+            //
+            State: SharedState.state
         };
     },
     //
@@ -158,27 +165,10 @@ export default Vue.extend({
                 this.backendVersion = version;
             });
         });
-
-        // Copy global settings to local ones
-        this.settings = JSON.parse(JSON.stringify(SharedState.state.settings));
     },
-    destroyed: function() {
-        // If user pressed Save button, readSettings will read same settings,
-        // else readSettings will recover saved settings
-        SharedState.commit("readSettings");
-    },
-    //
     methods: {
-        apply: function() {
-            SharedState.commit("applySettings", this.settings);
-        },
-        saveSettings: function() {
-            // Update global settings from local ones
-            // We will save current settings because we call apply() on every change
-            SharedState.commit("saveSettings");
-
-            // Close window
-            EventBus.$emit(Events.ModalWindow.HideWindow);
+        switchSection: function(section: string) {
+            this.currentSection = section;
         }
     }
 });
