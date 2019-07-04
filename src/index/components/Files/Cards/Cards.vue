@@ -148,7 +148,7 @@ import Vue from "vue";
 import FileComponent from "./File.vue";
 //Other
 import { Const } from "@app/global/const.ts";
-import { InternalEvents as ParentEvents } from "@app/index/Files.vue";
+import { InternalEvents as ParentEvents, SelectedFilesIDs } from "@app/index/Files.vue";
 
 // deltaDisplayedFiles defines how many files should be added after scroll to bottom
 const deltaDisplayedFiles = 50;
@@ -161,11 +161,6 @@ export default Vue.extend({
     props: {
         allFiles: {
             type: Array as () => Array<File>,
-            required: true
-        },
-        //
-        selectedFilesCounter: {
-            type: Number,
             required: true
         },
         //
@@ -210,10 +205,17 @@ export default Vue.extend({
             infoBlockHovered: false,
             //
             windowWidth: window.innerWidth,
-            maxDisplayedFiles: deltaDisplayedFiles
+            maxDisplayedFiles: deltaDisplayedFiles,
+            //
+            selectedFilesIDs: SelectedFilesIDs // for reactivitiy
         };
     },
     computed: {
+        selectedFilesCounter: function(): number {
+            const reactive = this.selectedFilesIDs.changeCounter;
+
+            return this.selectedFilesIDs.size;
+        },
         columnsNumber: function(): number {
             let width = this.windowWidth;
 

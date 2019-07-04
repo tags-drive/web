@@ -107,7 +107,7 @@ import Vue from "vue";
 import TagComponent from "@components/Tag/Tag.vue";
 import LoaderComponent from "@app/global/components/Loader/Loader.vue";
 import { File } from "@app/global/classes";
-import { TableFile } from "@app/index/Files.vue";
+import { InternalEvents as ParentEvents, SelectedFilesIDs } from "@app/index/Files.vue";
 // Shared data
 import SharedStore from "@app/index/store";
 import { Store } from "@app/index/store/types";
@@ -126,22 +126,27 @@ export default Vue.extend({
     //
     props: {
         file: {
-            type: TableFile,
+            type: File,
             required: true
         }
     },
     data: function() {
         return {
-            selected: false,
             rightClicked: false,
             //
             State: SharedState.state,
-            Store: SharedStore.state
+            Store: SharedStore.state,
+            selectedFilesIDs: SelectedFilesIDs // for reactivity
         };
     },
     computed: {
+        fileSelected: function() {
+            const reactive = this.selectedFilesIDs.changeCounter;
+
+            return this.selectedFilesIDs.check(this.file.id);
+        },
         cardStyles: function() {
-            if (this.selected || this.rightClicked) {
+            if (this.fileSelected || this.rightClicked) {
                 return {
                     "background-color": "#dcdcdcc0"
                 };
@@ -163,23 +168,10 @@ export default Vue.extend({
         }
     },
     //
-    created: function() {
-        this.selected = this.file.selected;
-
-        // Dirty hack. There's a bug when Events.FilesBlock.UnselectAllFiles is emitted and
-        // selected files are reset, but card is still highlight
-        EventBus.$on(Events.FilesBlock.UnselectAllFiles, () => {
-            this.selected = false;
-        });
-    },
-    updated: function() {
-        this.selected = this.file.selected;
-    },
-    //
     methods: {
         showContextMenu(event: MouseEvent) {
             // Don't show Context Menu when file isn't selected
-            if (this.State.selectMode && !this.file.selected) {
+            if (this.State.selectMode && !this.fileSelected) {
                 return;
             }
 
@@ -203,12 +195,10 @@ export default Vue.extend({
             EventBus.$emit(Events.ShowPreview, { file: this.file });
         },
         toggleSelect() {
-            this.selected = !this.selected;
-
-            if (this.selected) {
-                EventBus.$emit(Events.FilesBlock.SelectFile, { id: this.file.id });
+            if (this.fileSelected) {
+                EventBus.$emit(ParentEvents.UnselectFile, { id: this.file.id });
             } else {
-                EventBus.$emit(Events.FilesBlock.UnselectFile, { id: this.file.id });
+                EventBus.$emit(ParentEvents.SelectFile, { id: this.file.id });
             }
         }
     }
