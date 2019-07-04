@@ -5,7 +5,7 @@
 		:style="stylesObject"
 		:title="titleMessage"
 		@click.right.prevent.exact="showContextMenu($event, file);"
-		@click.ctrl="() => { file.selected = !file.selected; toggleSelect(); }"
+		@click.ctrl="toggleSelect()"
 	>
 		<!-- There are some nonexistent classes. They are reserved for readability and future using -->
 		<div class="file-info__checkbox">
@@ -13,7 +13,7 @@
 				<input
 					type="checkbox"
 					style="height: 15px; width: 15px;"
-					v-model="file.selected"
+					:checked="fileSelected"
 					@change="toggleSelect">
 			</div>
 		</div>
@@ -67,6 +67,7 @@
 	</div>
 </template>
 
+
 <style lang="scss" scoped>
 .hover-class:hover {
     background-color: #dcdcdc70;
@@ -107,14 +108,19 @@
 }
 </style>
 
+
 <script lang="ts">
 import Vue from "vue";
 // Components
 import TagComponent from "@components/Tag/Tag.vue";
 import LoaderComponent from "@app/global/components/Loader/Loader.vue";
 // Classes and types
-import { Tag } from "@app/global/classes";
-import { TableFile } from "@app/index/Files.vue";
+import { Tag, File } from "@app/global/classes";
+import {
+    InternalEvents as ParentEvents,
+    InternalEventBus as ParentEventBus,
+    SelectedFilesIDs
+} from "@app/index/Files.vue";
 // Shared data
 import SharedStore from "@app/index/store";
 import { Store } from "@app/index/store/types";
@@ -131,7 +137,7 @@ const tagsListPadding = 4;
 
 export default Vue.extend({
     props: {
-        file: TableFile
+        file: File
     },
     data: function() {
         return {
@@ -144,16 +150,22 @@ export default Vue.extend({
             overflowChecker: 0,
             //
             Store: SharedStore.state,
-            State: SharedState.state
+            State: SharedState.state,
+            selectedFilesIDs: SelectedFilesIDs // for reactivity
         };
     },
     computed: {
+        fileSelected: function(): boolean {
+            const reactive = this.selectedFilesIDs.changeCounter;
+
+            return this.selectedFilesIDs.check(this.file.id);
+        },
         stylesObject: function() {
             let style = <any>{
-                opacity: this.file.deleted && !this.file.selected ? 0.4 : 1
+                opacity: this.file.deleted && !this.fileSelected ? 0.4 : 1
             };
 
-            if (this.file.selected || this.rightClicked) {
+            if (this.fileSelected || this.rightClicked) {
                 style["background-color"] = "#dcdcdcc0";
             }
 
@@ -278,7 +290,7 @@ export default Vue.extend({
     methods: {
         showContextMenu(event: MouseEvent) {
             // Don't show Context Menu when file isn't selected
-            if (this.State.selectMode && !this.file.selected) {
+            if (this.State.selectMode && !this.fileSelected) {
                 return;
             }
 
@@ -302,13 +314,10 @@ export default Vue.extend({
             EventBus.$emit(Events.ShowPreview, { file: this.file });
         },
         toggleSelect() {
-            // We can skip changing this.selected, because a checkbox is bound to this.selected
-
-            // The function is called after changing this.selected
-            if (this.file.selected) {
-                EventBus.$emit(Events.FilesBlock.SelectFile, { id: this.file.id });
+            if (!this.fileSelected) {
+                ParentEventBus.$emit(ParentEvents.SelectFile, { id: this.file.id });
             } else {
-                EventBus.$emit(Events.FilesBlock.UnselectFile, { id: this.file.id });
+                ParentEventBus.$emit(ParentEvents.UnselectFile, { id: this.file.id });
             }
         }
     }

@@ -12,8 +12,6 @@
 			v-else-if="State.settings.viewMode === viewModes.list"
 
 			:allFiles="allFiles"
-			:allSelected="allSelected"
-			:selectedFilesCounter="selectedFilesCounter"
 			:sortModeByName="sortModeByName"
 			:sortModeBySize="sortModeBySize"
 			:sortModeByTime="sortModeByTime"
@@ -25,8 +23,6 @@
 			v-else-if="State.settings.viewMode === viewModes.cards"
 
 			:allFiles="allFiles"
-			:allSelected="allSelected"
-			:selectedFilesCounter="selectedFilesCounter"
 			:sortModeByName="sortModeByName"
 			:sortModeBySize="sortModeBySize"
 			:sortModeByTime="sortModeByTime"
@@ -35,6 +31,7 @@
 		></cards>
 	</div>
 </template>
+
 
 <style lang="scss" scoped>
 #files-block-wrapper {
@@ -72,28 +69,7 @@ import { State, ViewModes } from "@app/index/state/types";
 import { Const } from "@app/global/const";
 import { Events, EventBus } from "@app/index/eventBus";
 
-export class TableFile extends File {
-    selected: boolean;
-
-    constructor(f: File) {
-        super();
-
-        this.id = f.id;
-        this.type = f.type;
-        this.filename = f.filename;
-        this.description = f.description;
-        this.size = f.size;
-        this.tags = f.tags;
-        this.origin = f.origin;
-        this.preview = f.preview;
-        this.addTime = f.addTime;
-        this.deleted = f.deleted;
-        this.timeToDelete = f.timeToDelete;
-        //
-        this.selected = false;
-    }
-}
-
+export const InternalEventBus = new Vue({});
 export const InternalEvents = {
     Sort: {
         /**
@@ -120,6 +96,16 @@ export const InternalEvents = {
         RestoreDefault: "files-block-sort-restore-default"
     },
     /**
+     * Payload:
+     * - id - file id
+     */
+    SelectFile: "files-block-select-file",
+    /**
+     * Payload:
+     * - id - file id
+     */
+    UnselectFile: "files-block-unselect-file",
+    /**
      * Payload: -
      */
     ToggleAllFiles: "files-block-toggle-all-files",
@@ -129,6 +115,44 @@ export const InternalEvents = {
     UnselectAllFiles: "files-block-unselect-all-files"
 };
 
+// Internal class. Only singleton must be exported
+class _selectedFilesIDs {
+    // Properties
+    private ids: Set<number> = new Set();
+    private _changeCounter: number = 0;
+    //
+    public get size(): number {
+        return this.ids.size;
+    }
+    public get changeCounter(): number {
+        return this._changeCounter;
+    }
+
+    // Methods
+    private registerChange() {
+        this._changeCounter++;
+    }
+    //
+    check(id: number): boolean {
+        // console.log(this.ids);
+        return this.ids.has(id);
+    }
+    add(id: number) {
+        this.ids.add(id);
+        this.registerChange();
+    }
+    delete(id: number) {
+        this.ids.delete(id);
+        this.registerChange();
+    }
+    clear() {
+        this.ids.clear();
+        this.registerChange();
+    }
+}
+
+export const SelectedFilesIDs = new _selectedFilesIDs();
+
 export default Vue.extend({
     components: {
         "files-list": FilesListComponent,
@@ -137,10 +161,6 @@ export default Vue.extend({
     //
     data: function() {
         return {
-            // For select mode
-            allSelected: false,
-            selectedFilesCounter: 0,
-            //
             // Sort modes
             sortModeByName: true,
             sortModeBySize: false,
@@ -160,22 +180,35 @@ export default Vue.extend({
         };
     },
     computed: {
-        allFiles: function(): TableFile[] {
+        allFiles: function(): File[] {
             // For reactive updating (see @app/index/store/types.ts for more information)
             let reactive = this.Store.allFilesChangesCounter;
 
-            let allFiles: TableFile[] = [];
-            this.Store.allFiles.forEach((f, i) => {
-                if (!f.deleted || this.State.settings.showDeletedFiles) {
-                    allFiles.push(new TableFile(f));
-                }
-            });
-
-            return allFiles;
+            return this.Store.allFiles;
         }
     },
     //
     created: function() {
+        // Ctrl+A or Esc
+        window.addEventListener("keydown", ev => {
+            if (
+                // Disable when Modal Window is displaying
+                !this.State.showModalWindow &&
+                // Disable when target is input and etc.
+                ev.target === document.body
+            ) {
+                // Ctrl + A
+                if (ev.code == "KeyA" && ev.ctrlKey) {
+                    ev.preventDefault();
+                    this.selectAllFiles();
+                }
+                // Esc
+                else if (ev.code === "Escape" && SelectedFilesIDs.size > 0) {
+                    this.unselectAllFiles();
+                }
+            }
+        });
+
         // Global events
 
         EventBus.$on(Events.UpdateSelectedFiles, () => {
@@ -186,47 +219,41 @@ export default Vue.extend({
             this.unselectAllFiles();
         });
 
-        EventBus.$on(Events.FilesBlock.SelectFile, (payload: any) => {
+        // Internal events (for children)
+
+        InternalEventBus.$on(InternalEvents.ToggleAllFiles, () => {
+            this.toggleAllFiles();
+        });
+        InternalEventBus.$on(InternalEvents.SelectFile, (payload: any) => {
             if (payload.id === undefined) {
                 return;
             }
             this.selectFile(<number>payload.id);
         });
-
-        EventBus.$on(Events.FilesBlock.UnselectFile, (payload: any) => {
+        InternalEventBus.$on(InternalEvents.UnselectFile, (payload: any) => {
             if (payload.id === undefined) {
                 return;
             }
             this.unselectFile(<number>payload.id);
         });
-
-        // Internal events (for children)
-
-        this.$on(InternalEvents.ToggleAllFiles, () => {
-            this.toggleAllFiles();
-        });
-
         // Sorts
-        this.$on(InternalEvents.Sort.Manually, (payload: any) => {
+        InternalEventBus.$on(InternalEvents.Sort.Manually, (payload: any) => {
             if (payload.type === undefined || payload.order === undefined) {
                 return;
             }
 
             this.sort().manually(String(payload.type), String(payload.order));
         });
-        this.$on(InternalEvents.Sort.ByName, () => {
+        InternalEventBus.$on(InternalEvents.Sort.ByName, () => {
             this.sort().byName();
         });
-
-        this.$on(InternalEvents.Sort.BySize, () => {
+        InternalEventBus.$on(InternalEvents.Sort.BySize, () => {
             this.sort().bySize();
         });
-
-        this.$on(InternalEvents.Sort.ByTime, () => {
+        InternalEventBus.$on(InternalEvents.Sort.ByTime, () => {
             this.sort().byTime();
         });
-
-        this.$on(InternalEvents.Sort.RestoreDefault, () => {
+        InternalEventBus.$on(InternalEvents.Sort.RestoreDefault, () => {
             this.sort().restoreDefault();
         });
     },
@@ -341,36 +368,34 @@ export default Vue.extend({
 
         // Select mode
         toggleAllFiles: function() {
-            if (!this.allSelected) {
-                this.selectedFilesCounter = this.allFiles.length;
-                this.allSelected = true;
-                SharedState.commit("setSelectMode");
-
-                this.allFiles.forEach((f, i) => {
-                    this.allFiles[i].selected = true;
-                });
-            } else {
+            if (this.allFiles.length === SelectedFilesIDs.size) {
+                // All files are selected
                 this.unselectAllFiles();
+            } else {
+                this.selectAllFiles();
             }
         },
-        unselectAllFiles: function() {
-            this.selectedFilesCounter = 0;
-            this.allFiles.forEach((f, i) => {
-                this.allFiles[i].selected = false;
-            });
+        selectAllFiles: function() {
+            if (this.allFiles.length === SelectedFilesIDs.size) {
+                return;
+            }
 
-            this.allSelected = false;
+            const allFiles = this.allFiles;
+            for (let i = 0; i < allFiles.length; i++) {
+                SelectedFilesIDs.add(allFiles[i].id);
+            }
+
+            SharedState.commit("setSelectMode");
+        },
+        unselectAllFiles: function() {
+            SelectedFilesIDs.clear();
             SharedState.commit("unsetSelectMode");
         },
 
         // updateSelectedFiles updates list of selectedFiles in Store
         updateSelectedFiles: function() {
-            let selectedFiles: File[] = [];
-
-            this.allFiles.forEach((f, i) => {
-                if (this.allFiles[i].selected) {
-                    selectedFiles.push(f);
-                }
+            let selectedFiles = this.allFiles.filter(f => {
+                return SelectedFilesIDs.check(f.id);
             });
 
             SharedStore.commit("setSelectedFiles", selectedFiles);
@@ -378,29 +403,12 @@ export default Vue.extend({
 
         // For children
         selectFile: function(id: number) {
-            this.selectedFilesCounter++;
+            SelectedFilesIDs.add(id);
             SharedState.commit("setSelectMode");
-
-            for (let i = 0; i < this.allFiles.length; i++) {
-                if (this.allFiles[i].id === id) {
-                    this.allFiles[i].selected = true;
-                }
-            }
-
-            if (this.selectedFilesCounter === this.allFiles.length) {
-                this.allSelected = true;
-            }
         },
         unselectFile: function(id: number) {
-            this.selectedFilesCounter--;
-            this.allSelected = false;
-            for (let i = 0; i < this.allFiles.length; i++) {
-                if (this.allFiles[i].id === id) {
-                    this.allFiles[i].selected = false;
-                }
-            }
-
-            if (this.selectedFilesCounter === 0) {
+            SelectedFilesIDs.delete(id);
+            if (SelectedFilesIDs.size === 0) {
                 SharedState.commit("unsetSelectMode");
             }
         }
