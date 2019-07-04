@@ -39,10 +39,10 @@ export default Vue.extend({
         let t = setInterval(() => {
             if (SharedStore.state.tagsReady) {
                 // fetch all files
-                API.files.fetch("", "", false, "", "");
+                API.files.fetch("", "", false);
                 clearInterval(t);
             }
         }, 10);
     }
-})
+});
 </script>

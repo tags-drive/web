@@ -79,10 +79,10 @@ function fetchFile(id: number) {
  * @param expression logical expression
  * @param text test to search
  * @param isRegexp is text a regular expression
- * @param sType sort type (use "" to search with default value)
- * @param sOrder sort order (use "" to search with default value)
+ * @param sType sort type
+ * @param sOrder sort order
  */
-function fetchFiles(expression: string, text: string, isRegexp: boolean, sType: string, sOrder: string) {
+function fetchFiles(expression: string, text: string, isRegexp: boolean, sType?: string, sOrder?: string) {
     let params = new URLSearchParams();
     // Expression
     if (expression !== "") {
@@ -94,10 +94,10 @@ function fetchFiles(expression: string, text: string, isRegexp: boolean, sType: 
     if (isRegexp) {
         params.append("regexp", "true");
     }
-    if (sType !== "") {
+    if (sType !== undefined) {
         params.append("sort", sType);
     }
-    if (sOrder !== "") {
+    if (sOrder !== undefined) {
         params.append("order", sOrder);
     }
 

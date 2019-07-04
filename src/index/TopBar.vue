@@ -627,7 +627,7 @@ export default Vue.extend({
             return {
                 usual: () => {
                     EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
-                    API.files.fetch(this.expression, this.text, this.isRegexp, "", "");
+                    API.files.fetch(this.expression, this.text, this.isRegexp);
                     EventBus.$emit(Events.FilesBlock.RestoreSortParams);
                 },
                 advanced: (sType: string, sOrder: string) => {
