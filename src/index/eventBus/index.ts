@@ -68,16 +68,6 @@ export const Events = {
     },
     FilesBlock: {
         /**
-         * Payload:
-         * - id - file id
-         */
-        SelectFile: "files-block-select-file",
-        /**
-         * Payload:
-         * - id - file id
-         */
-        UnselectFile: "files-block-unselect-file",
-        /**
          * Use this event to unfocus file after click by right button
          *
          * Payload: -

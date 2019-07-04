@@ -120,6 +120,16 @@ export const InternalEvents = {
         RestoreDefault: "files-block-sort-restore-default"
     },
     /**
+     * Payload:
+     * - id - file id
+     */
+    SelectFile: "files-block-select-file",
+    /**
+     * Payload:
+     * - id - file id
+     */
+    UnselectFile: "files-block-unselect-file",
+    /**
      * Payload: -
      */
     ToggleAllFiles: "files-block-toggle-all-files",
@@ -186,14 +196,14 @@ export default Vue.extend({
             this.unselectAllFiles();
         });
 
-        EventBus.$on(Events.FilesBlock.SelectFile, (payload: any) => {
+        EventBus.$on(InternalEvents.SelectFile, (payload: any) => {
             if (payload.id === undefined) {
                 return;
             }
             this.selectFile(<number>payload.id);
         });
 
-        EventBus.$on(Events.FilesBlock.UnselectFile, (payload: any) => {
+        EventBus.$on(InternalEvents.UnselectFile, (payload: any) => {
             if (payload.id === undefined) {
                 return;
             }
