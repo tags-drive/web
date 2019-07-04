@@ -11,7 +11,7 @@
 						type="checkbox"
 						style="height: 15px; width: 15px;"
 						title="Select all"
-						:checked="allSelected"
+						:checked="selectedFilesCounter === allFiles.length"
 						:indeterminate.prop="
 							selectedFilesCounter > 0 &&
 							selectedFilesCounter !== allFiles.length"
@@ -120,7 +120,7 @@ const VirtualScroller = require("vue-virtual-scroller");
 const { RecycleScroller } = VirtualScroller;
 import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 // Other
-import { InternalEvents as ParentEvents } from "@app/index/Files.vue";
+import { InternalEvents as ParentEvents, SelectedFilesIDs } from "@app/index/Files.vue";
 import { Const } from "@app/global/const";
 import SharedStore from "@app/index/store";
 
@@ -133,15 +133,6 @@ export default Vue.extend({
     props: {
         allFiles: {
             type: Array as () => Array<File>,
-            required: true
-        },
-        //
-        allSelected: {
-            type: Boolean,
-            required: true
-        },
-        selectedFilesCounter: {
-            type: Number,
             required: true
         },
         //
@@ -169,8 +160,16 @@ export default Vue.extend({
     },
     data: function() {
         return {
-            Store: SharedStore.state
+            Store: SharedStore.state,
+            selectedFilesIDs: SelectedFilesIDs // for reactivity
         };
+    },
+    computed: {
+        selectedFilesCounter: function(): number {
+            const reactive = this.selectedFilesIDs.changeCounter;
+
+            return this.selectedFilesIDs.size;
+        }
     },
     //
     methods: {
