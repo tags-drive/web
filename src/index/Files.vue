@@ -187,6 +187,26 @@ export default Vue.extend({
     },
     //
     created: function() {
+        // Ctrl+A or Esc
+        window.addEventListener("keydown", ev => {
+            if (
+                // Disable when Modal Window is displaying
+                !this.State.showModalWindow &&
+                // Disable when target is input and etc.
+                ev.target === document.body
+            ) {
+                // Ctrl + A
+                if (ev.code == "KeyA" && ev.ctrlKey) {
+                    ev.preventDefault();
+                    this.selectAllFiles();
+                }
+                // Esc
+                else if (ev.code === "Escape" && SelectedFilesIDs.size > 0) {
+                    this.unselectAllFiles();
+                }
+            }
+        });
+
         // Global events
 
         EventBus.$on(Events.UpdateSelectedFiles, () => {
@@ -360,6 +380,10 @@ export default Vue.extend({
             }
         },
         selectAllFiles: function() {
+            if (this.allFiles.length === SelectedFilesIDs.size) {
+                return;
+            }
+
             const allFiles = this.allFiles;
             for (let i = 0; i < allFiles.length; i++) {
                 SelectedFilesIDs.add(allFiles[i].id);
