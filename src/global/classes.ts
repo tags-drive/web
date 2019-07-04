@@ -121,12 +121,23 @@ export class Group {
 // Name for group with ungrouped tags
 const ungroupedTags = "Ungrouped tags";
 
+function cloneTag(tag: Tag): Tag {
+    let copy = new Tag();
+
+    copy.id = tag.id;
+    copy.name = tag.name;
+    copy.color = tag.color;
+    copy.group = tag.group;
+
+    return copy;
+}
+
 export function TagsToGroups(tags: Map<number, Tag>): Group[] {
     let groups: Group[] = [];
 
     let addTagToGroups = (tag: Tag) => {
-        // Clone tag
-        let t = JSON.parse(JSON.stringify(tag));
+        // Clone the tag
+        let t = cloneTag(tag);
 
         if (t.group == "") {
             t.group = ungroupedTags;
