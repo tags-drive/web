@@ -32,6 +32,7 @@
 	</div>
 </template>
 
+
 <style lang="scss" scoped>
 #files-block-wrapper {
     height: calc(100vh - 51px);
@@ -68,6 +69,7 @@ import { State, ViewModes } from "@app/index/state/types";
 import { Const } from "@app/global/const";
 import { Events, EventBus } from "@app/index/eventBus";
 
+export const InternalEventBus = new Vue({});
 export const InternalEvents = {
     Sort: {
         /**
@@ -217,47 +219,41 @@ export default Vue.extend({
             this.unselectAllFiles();
         });
 
-        EventBus.$on(InternalEvents.SelectFile, (payload: any) => {
+        // Internal events (for children)
+
+        InternalEventBus.$on(InternalEvents.ToggleAllFiles, () => {
+            this.toggleAllFiles();
+        });
+        InternalEventBus.$on(InternalEvents.SelectFile, (payload: any) => {
             if (payload.id === undefined) {
                 return;
             }
             this.selectFile(<number>payload.id);
         });
-
-        EventBus.$on(InternalEvents.UnselectFile, (payload: any) => {
+        InternalEventBus.$on(InternalEvents.UnselectFile, (payload: any) => {
             if (payload.id === undefined) {
                 return;
             }
             this.unselectFile(<number>payload.id);
         });
-
-        // Internal events (for children)
-
-        this.$on(InternalEvents.ToggleAllFiles, () => {
-            this.toggleAllFiles();
-        });
-
         // Sorts
-        this.$on(InternalEvents.Sort.Manually, (payload: any) => {
+        InternalEventBus.$on(InternalEvents.Sort.Manually, (payload: any) => {
             if (payload.type === undefined || payload.order === undefined) {
                 return;
             }
 
             this.sort().manually(String(payload.type), String(payload.order));
         });
-        this.$on(InternalEvents.Sort.ByName, () => {
+        InternalEventBus.$on(InternalEvents.Sort.ByName, () => {
             this.sort().byName();
         });
-
-        this.$on(InternalEvents.Sort.BySize, () => {
+        InternalEventBus.$on(InternalEvents.Sort.BySize, () => {
             this.sort().bySize();
         });
-
-        this.$on(InternalEvents.Sort.ByTime, () => {
+        InternalEventBus.$on(InternalEvents.Sort.ByTime, () => {
             this.sort().byTime();
         });
-
-        this.$on(InternalEvents.Sort.RestoreDefault, () => {
+        InternalEventBus.$on(InternalEvents.Sort.RestoreDefault, () => {
             this.sort().restoreDefault();
         });
     },

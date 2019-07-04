@@ -67,6 +67,7 @@
 	</div>
 </template>
 
+
 <style lang="scss" scoped>
 .hover-class:hover {
     background-color: #dcdcdc70;
@@ -107,6 +108,7 @@
 }
 </style>
 
+
 <script lang="ts">
 import Vue from "vue";
 // Components
@@ -114,7 +116,11 @@ import TagComponent from "@components/Tag/Tag.vue";
 import LoaderComponent from "@app/global/components/Loader/Loader.vue";
 // Classes and types
 import { Tag, File } from "@app/global/classes";
-import { SelectedFilesIDs, InternalEvents as ParentEvents } from "@app/index/Files.vue";
+import {
+    InternalEvents as ParentEvents,
+    InternalEventBus as ParentEventBus,
+    SelectedFilesIDs
+} from "@app/index/Files.vue";
 // Shared data
 import SharedStore from "@app/index/store";
 import { Store } from "@app/index/store/types";
@@ -309,9 +315,9 @@ export default Vue.extend({
         },
         toggleSelect() {
             if (!this.fileSelected) {
-                EventBus.$emit(ParentEvents.SelectFile, { id: this.file.id });
+                ParentEventBus.$emit(ParentEvents.SelectFile, { id: this.file.id });
             } else {
-                EventBus.$emit(ParentEvents.UnselectFile, { id: this.file.id });
+                ParentEventBus.$emit(ParentEvents.UnselectFile, { id: this.file.id });
             }
         }
     }

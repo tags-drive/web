@@ -75,6 +75,7 @@
 	</div>
 </template>
 
+
 <style lang="scss">
 #recycle-scroller {
     // without header
@@ -109,6 +110,7 @@
 }
 </style>
 
+
 <script lang="ts">
 import Vue from "vue";
 // Components and classes
@@ -120,7 +122,11 @@ const VirtualScroller = require("vue-virtual-scroller");
 const { RecycleScroller } = VirtualScroller;
 import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 // Other
-import { InternalEvents as ParentEvents, SelectedFilesIDs } from "@app/index/Files.vue";
+import {
+    InternalEvents as ParentEvents,
+    InternalEventBus as ParentEventBus,
+    SelectedFilesIDs
+} from "@app/index/Files.vue";
 import { Const } from "@app/global/const";
 import SharedStore from "@app/index/store";
 
@@ -174,19 +180,19 @@ export default Vue.extend({
     //
     methods: {
         toggleAllFiles: function() {
-            this.$parent.$emit(ParentEvents.ToggleAllFiles);
+            ParentEventBus.$emit(ParentEvents.ToggleAllFiles);
         },
 
         sort: function() {
             return {
                 byName: () => {
-                    this.$parent.$emit(ParentEvents.Sort.ByName);
+                    ParentEventBus.$emit(ParentEvents.Sort.ByName);
                 },
                 bySize: () => {
-                    this.$parent.$emit(ParentEvents.Sort.BySize);
+                    ParentEventBus.$emit(ParentEvents.Sort.BySize);
                 },
                 byTime: () => {
-                    this.$parent.$emit(ParentEvents.Sort.ByTime);
+                    ParentEventBus.$emit(ParentEvents.Sort.ByTime);
                 }
             };
         }

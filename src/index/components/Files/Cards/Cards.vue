@@ -148,7 +148,11 @@ import Vue from "vue";
 import FileComponent from "./File.vue";
 //Other
 import { Const } from "@app/global/const.ts";
-import { InternalEvents as ParentEvents, SelectedFilesIDs } from "@app/index/Files.vue";
+import {
+    InternalEvents as ParentEvents,
+    InternalEventBus as ParentEventBus,
+    SelectedFilesIDs
+} from "@app/index/Files.vue";
 
 // deltaDisplayedFiles defines how many files should be added after scroll to bottom
 const deltaDisplayedFiles = 50;
@@ -338,7 +342,7 @@ export default Vue.extend({
             this.isSortOptionsChanged = changed;
         },
         applySortOptions: function() {
-            this.$parent.$emit(ParentEvents.Sort.Manually, { type: this.sortType, order: this.sortOrder });
+            ParentEventBus.$emit(ParentEvents.Sort.Manually, { type: this.sortType, order: this.sortOrder });
             this.isSortOptionsChanged = false;
         },
         resetScroll: function() {
