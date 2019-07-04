@@ -208,6 +208,10 @@ export default Vue.extend({
             this.unselectAllFiles();
         });
 
+        EventBus.$on(Events.FilesBlock.RestoreSortParams, () => {
+            this.sort().restoreDefault();
+        });
+
         // Internal events (for children)
 
         InternalEventBus.$on(InternalEvents.ToggleAllFiles, () => {
