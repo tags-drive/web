@@ -12,22 +12,16 @@
 			v-else-if="State.settings.viewMode === viewModes.list"
 
 			:allFiles="allFiles"
-			:sortModeByName="sortModeByName"
-			:sortModeBySize="sortModeBySize"
-			:sortModeByTime="sortModeByTime"
-			:sortOrderAsc="sortOrderAsc"
-			:sortOrderDesc="sortOrderDesc"
+			:sortType="sortType"
+			:sortOrder="sortOrder"
 		></files-list>
 
 		<cards
 			v-else-if="State.settings.viewMode === viewModes.cards"
 
 			:allFiles="allFiles"
-			:sortModeByName="sortModeByName"
-			:sortModeBySize="sortModeBySize"
-			:sortModeByTime="sortModeByTime"
-			:sortOrderAsc="sortOrderAsc"
-			:sortOrderDesc="sortOrderDesc"
+			:sortType="sortType"
+			:sortOrder="sortOrder"
 		></cards>
 	</div>
 </template>
@@ -161,13 +155,8 @@ export default Vue.extend({
     //
     data: function() {
         return {
-            // Sort modes
-            sortModeByName: true,
-            sortModeBySize: false,
-            sortModeByTime: false,
-            //
-            sortOrderAsc: true,
-            sortOrderDesc: false,
+            sortType: Const.sortType.name,
+            sortOrder: Const.sortOrder.asc,
             //
             lastSortType: Const.sortType.name,
             //
@@ -261,107 +250,75 @@ export default Vue.extend({
     methods: {
         // Sorts
         sort: function() {
+            let checkSortType = (type: string): boolean => {
+                return type === Const.sortType.name || type === Const.sortType.size || type === Const.sortType.time;
+            };
+
+            let checkSortOrder = (order: string): boolean => {
+                return order === Const.sortOrder.asc || order === Const.sortOrder.desc;
+            };
+
             return {
                 manually: (type: string, order: string) => {
-                    // Reset
-                    this.sortModeByName = false;
-                    this.sortModeBySize = false;
-                    this.sortModeByTime = false;
-                    this.sortOrderAsc = false;
-                    this.sortOrderDesc = false;
-
-                    switch (type) {
-                        case Const.sortType.name:
-                            this.sortModeByName = true;
-                            break;
-                        case Const.sortType.size:
-                            this.sortModeBySize = true;
-                            break;
-                        case Const.sortType.time:
-                            this.sortModeByTime = true;
-                            break;
-                        default:
-                            this.sortModeByName = true;
+                    if (!checkSortType(type) || !checkSortOrder(order)) {
+                        // Reject the update if type or order is invalid
+                        return;
                     }
 
-                    switch (order) {
-                        case Const.sortOrder.asc:
-                            this.sortOrderAsc = true;
-                            break;
-                        case Const.sortOrder.desc:
-                            this.sortOrderDesc = true;
-                            break;
-                        default:
-                            this.sortOrderAsc = true;
-                    }
+                    this.sortType = type;
+                    this.lastSortType = this.sortType;
 
-                    EventBus.$emit(Events.Search.Advanced, { type: type, order: order });
+                    this.sortOrder = order;
+
+                    EventBus.$emit(Events.Search.Advanced, { type: this.sortType, order: this.sortOrder });
                 },
                 byName: () => {
                     if (this.lastSortType === Const.sortType.name) {
-                        // Just invert order
-                        this.sortOrderAsc = !this.sortOrderAsc;
-                        this.sortOrderDesc = !this.sortOrderDesc;
+                        // Just invert sort order
+                        this.sortOrder =
+                            this.sortOrder === Const.sortOrder.asc ? Const.sortOrder.desc : Const.sortOrder.asc;
                     } else {
-                        this.sortOrderAsc = true;
-                        this.sortOrderDesc = false;
+                        this.sortType = Const.sortType.name;
+                        this.lastSortType = this.sortType;
+
+                        this.sortOrder = Const.sortOrder.asc;
                     }
-                    this.sortModeByName = true;
-                    this.sortModeBySize = false;
-                    this.sortModeByTime = false;
-                    this.lastSortType = Const.sortType.name;
 
-                    let type = this.lastSortType,
-                        order = this.sortOrderAsc ? Const.sortOrder.asc : Const.sortOrder.desc;
-
-                    EventBus.$emit(Events.Search.Advanced, { type: type, order: order });
+                    EventBus.$emit(Events.Search.Advanced, { type: this.sortType, order: this.sortOrder });
                 },
                 bySize: () => {
                     if (this.lastSortType === Const.sortType.size) {
-                        // Just invert order
-                        this.sortOrderAsc = !this.sortOrderAsc;
-                        this.sortOrderDesc = !this.sortOrderDesc;
+                        // Just invert sort order
+                        this.sortOrder =
+                            this.sortOrder === Const.sortOrder.asc ? Const.sortOrder.desc : Const.sortOrder.asc;
                     } else {
-                        this.sortOrderAsc = true;
-                        this.sortOrderDesc = false;
+                        this.sortType = Const.sortType.size;
+                        this.lastSortType = this.sortType;
+
+                        this.sortOrder = Const.sortOrder.asc;
                     }
-                    this.sortModeByName = false;
-                    this.sortModeBySize = true;
-                    this.sortModeByTime = false;
 
-                    this.lastSortType = Const.sortType.size;
-
-                    let type = this.lastSortType,
-                        order = this.sortOrderAsc ? Const.sortOrder.asc : Const.sortOrder.desc;
-
-                    EventBus.$emit(Events.Search.Advanced, { type: type, order: order });
+                    EventBus.$emit(Events.Search.Advanced, { type: this.sortType, order: this.sortOrder });
                 },
                 byTime: () => {
                     if (this.lastSortType === Const.sortType.time) {
-                        // Just invert order
-                        this.sortOrderAsc = !this.sortOrderAsc;
-                        this.sortOrderDesc = !this.sortOrderDesc;
+                        // Just invert sort order
+                        this.sortOrder =
+                            this.sortOrder === Const.sortOrder.asc ? Const.sortOrder.desc : Const.sortOrder.asc;
                     } else {
-                        this.sortOrderAsc = true;
-                        this.sortOrderDesc = false;
+                        this.sortType = Const.sortType.time;
+                        this.lastSortType = this.sortType;
+
+                        this.sortOrder = Const.sortOrder.asc;
                     }
-                    this.sortModeByName = false;
-                    this.sortModeBySize = false;
-                    this.sortModeByTime = true;
-                    this.lastSortType = Const.sortType.time;
 
-                    let type = this.lastSortType,
-                        order = this.sortOrderAsc ? Const.sortOrder.asc : Const.sortOrder.desc;
-
-                    EventBus.$emit(Events.Search.Advanced, { type: type, order: order });
+                    EventBus.$emit(Events.Search.Advanced, { type: this.sortType, order: this.sortOrder });
                 },
                 restoreDefault: () => {
-                    this.sortModeByName = true;
-                    this.sortModeBySize = false;
-                    this.sortModeByTime = false;
-                    //
-                    this.sortOrderAsc = true;
-                    this.sortOrderDesc = false;
+                    this.sortType = Const.sortType.name;
+                    this.lastSortType = this.sortType;
+
+                    this.sortOrder = Const.sortOrder.asc;
                 }
             };
         },
