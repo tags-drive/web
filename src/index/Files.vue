@@ -12,8 +12,6 @@
 			v-else-if="State.settings.viewMode === viewModes.list"
 
 			:allFiles="allFiles"
-			:allSelected="allSelected"
-			:selectedFilesCounter="selectedFilesCounter"
 			:sortModeByName="sortModeByName"
 			:sortModeBySize="sortModeBySize"
 			:sortModeByTime="sortModeByTime"
@@ -25,8 +23,6 @@
 			v-else-if="State.settings.viewMode === viewModes.cards"
 
 			:allFiles="allFiles"
-			:allSelected="allSelected"
-			:selectedFilesCounter="selectedFilesCounter"
 			:sortModeByName="sortModeByName"
 			:sortModeBySize="sortModeBySize"
 			:sortModeByTime="sortModeByTime"
@@ -71,28 +67,6 @@ import { State, ViewModes } from "@app/index/state/types";
 // Other
 import { Const } from "@app/global/const";
 import { Events, EventBus } from "@app/index/eventBus";
-
-export class TableFile extends File {
-    selected: boolean;
-
-    constructor(f: File) {
-        super();
-
-        this.id = f.id;
-        this.type = f.type;
-        this.filename = f.filename;
-        this.description = f.description;
-        this.size = f.size;
-        this.tags = f.tags;
-        this.origin = f.origin;
-        this.preview = f.preview;
-        this.addTime = f.addTime;
-        this.deleted = f.deleted;
-        this.timeToDelete = f.timeToDelete;
-        //
-        this.selected = false;
-    }
-}
 
 export const InternalEvents = {
     Sort: {
@@ -139,6 +113,44 @@ export const InternalEvents = {
     UnselectAllFiles: "files-block-unselect-all-files"
 };
 
+// Internal class. Only singleton must be exported
+class _selectedFilesIDs {
+    // Properties
+    private ids: Set<number> = new Set();
+    private _changeCounter: number = 0;
+    //
+    public get size(): number {
+        return this.ids.size;
+    }
+    public get changeCounter(): number {
+        return this._changeCounter;
+    }
+
+    // Methods
+    private registerChange() {
+        this._changeCounter++;
+    }
+    //
+    check(id: number): boolean {
+        // console.log(this.ids);
+        return this.ids.has(id);
+    }
+    add(id: number) {
+        this.ids.add(id);
+        this.registerChange();
+    }
+    delete(id: number) {
+        this.ids.delete(id);
+        this.registerChange();
+    }
+    clear() {
+        this.ids.clear();
+        this.registerChange();
+    }
+}
+
+export const SelectedFilesIDs = new _selectedFilesIDs();
+
 export default Vue.extend({
     components: {
         "files-list": FilesListComponent,
@@ -147,10 +159,6 @@ export default Vue.extend({
     //
     data: function() {
         return {
-            // For select mode
-            allSelected: false,
-            selectedFilesCounter: 0,
-            //
             // Sort modes
             sortModeByName: true,
             sortModeBySize: false,
@@ -170,18 +178,11 @@ export default Vue.extend({
         };
     },
     computed: {
-        allFiles: function(): TableFile[] {
+        allFiles: function(): File[] {
             // For reactive updating (see @app/index/store/types.ts for more information)
             let reactive = this.Store.allFilesChangesCounter;
 
-            let allFiles: TableFile[] = [];
-            this.Store.allFiles.forEach((f, i) => {
-                if (!f.deleted || this.State.settings.showDeletedFiles) {
-                    allFiles.push(new TableFile(f));
-                }
-            });
-
-            return allFiles;
+            return this.Store.allFiles;
         }
     },
     //
@@ -351,36 +352,30 @@ export default Vue.extend({
 
         // Select mode
         toggleAllFiles: function() {
-            if (!this.allSelected) {
-                this.selectedFilesCounter = this.allFiles.length;
-                this.allSelected = true;
-                SharedState.commit("setSelectMode");
-
-                this.allFiles.forEach((f, i) => {
-                    this.allFiles[i].selected = true;
-                });
-            } else {
+            if (this.allFiles.length === SelectedFilesIDs.size) {
+                // All files are selected
                 this.unselectAllFiles();
+            } else {
+                this.selectAllFiles();
             }
         },
-        unselectAllFiles: function() {
-            this.selectedFilesCounter = 0;
-            this.allFiles.forEach((f, i) => {
-                this.allFiles[i].selected = false;
-            });
+        selectAllFiles: function() {
+            const allFiles = this.allFiles;
+            for (let i = 0; i < allFiles.length; i++) {
+                SelectedFilesIDs.add(allFiles[i].id);
+            }
 
-            this.allSelected = false;
+            SharedState.commit("setSelectMode");
+        },
+        unselectAllFiles: function() {
+            SelectedFilesIDs.clear();
             SharedState.commit("unsetSelectMode");
         },
 
         // updateSelectedFiles updates list of selectedFiles in Store
         updateSelectedFiles: function() {
-            let selectedFiles: File[] = [];
-
-            this.allFiles.forEach((f, i) => {
-                if (this.allFiles[i].selected) {
-                    selectedFiles.push(f);
-                }
+            let selectedFiles = this.allFiles.filter(f => {
+                return SelectedFilesIDs.check(f.id);
             });
 
             SharedStore.commit("setSelectedFiles", selectedFiles);
@@ -388,29 +383,12 @@ export default Vue.extend({
 
         // For children
         selectFile: function(id: number) {
-            this.selectedFilesCounter++;
+            SelectedFilesIDs.add(id);
             SharedState.commit("setSelectMode");
-
-            for (let i = 0; i < this.allFiles.length; i++) {
-                if (this.allFiles[i].id === id) {
-                    this.allFiles[i].selected = true;
-                }
-            }
-
-            if (this.selectedFilesCounter === this.allFiles.length) {
-                this.allSelected = true;
-            }
         },
         unselectFile: function(id: number) {
-            this.selectedFilesCounter--;
-            this.allSelected = false;
-            for (let i = 0; i < this.allFiles.length; i++) {
-                if (this.allFiles[i].id === id) {
-                    this.allFiles[i].selected = false;
-                }
-            }
-
-            if (this.selectedFilesCounter === 0) {
+            SelectedFilesIDs.delete(id);
+            if (SelectedFilesIDs.size === 0) {
                 SharedState.commit("unsetSelectMode");
             }
         }
