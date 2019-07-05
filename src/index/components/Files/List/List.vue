@@ -32,7 +32,7 @@
 					class="material-icons noselect"
 					style="font-size: 20px; cursor: pointer;"
 					@click="sort().byName()"
-					:style="[!sortModeByName || sortOrderAsc || !sortOrderDesc ? {'transform': 'scale(1, -1)'} : {'transform': 'scale(1, 1)'}]"
+					:style="[!sortTypeByName || sortOrderAsc || !sortOrderDesc ? {'transform': 'scale(1, -1)'} : {'transform': 'scale(1, 1)'}]"
 				>sort</i>
 			</div>
 
@@ -47,7 +47,7 @@
 					class="material-icons noselect"
 					style="transform: scale(1, 1); font-size: 20px; cursor: pointer;"
 					@click="sort().bySize()"
-					:style="[!sortModeBySize || sortOrderAsc || !sortOrderDesc ? {'transform': 'scale(1, -1)'} : {'transform': 'scale(1, 1)'}]"
+					:style="[!sortTypeBySize || sortOrderAsc || !sortOrderDesc ? {'transform': 'scale(1, -1)'} : {'transform': 'scale(1, 1)'}]"
 				>sort</i>
 			</div>
 
@@ -58,7 +58,7 @@
 					class="material-icons noselect"
 					style="transform: scale(1, 1); font-size: 20px; cursor: pointer;"
 					@click="sort().byTime()"
-					:style="[!sortModeByTime || sortOrderAsc || !sortOrderDesc ? {'transform': 'scale(1, -1)'} : {'transform': 'scale(1, 1)'}]"
+					:style="[!sortTypeByTime || sortOrderAsc || !sortOrderDesc ? {'transform': 'scale(1, -1)'} : {'transform': 'scale(1, 1)'}]"
 				>sort</i>
 			</div>
 		</div>
@@ -142,25 +142,12 @@ export default Vue.extend({
             required: true
         },
         //
-        sortModeByName: {
-            type: Boolean,
+        sortType: {
+            type: String,
             required: true
         },
-        sortModeBySize: {
-            type: Boolean,
-            required: true
-        },
-        sortModeByTime: {
-            type: Boolean,
-            required: true
-        },
-        //
-        sortOrderAsc: {
-            type: Boolean,
-            required: true
-        },
-        sortOrderDesc: {
-            type: Boolean,
+        sortOrder: {
+            type: String,
             required: true
         }
     },
@@ -171,6 +158,22 @@ export default Vue.extend({
         };
     },
     computed: {
+        sortTypeByName: function(): boolean {
+            return this.sortType === Const.sortType.name;
+        },
+        sortTypeBySize: function(): boolean {
+            return this.sortType === Const.sortType.size;
+        },
+        sortTypeByTime: function(): boolean {
+            return this.sortType === Const.sortType.time;
+        },
+        sortOrderAsc: function(): boolean {
+            return this.sortOrder === Const.sortOrder.asc;
+        },
+        sortOrderDesc: function(): boolean {
+            return this.sortOrder === Const.sortOrder.desc;
+        },
+        //
         selectedFilesCounter: function(): number {
             const reactive = this.selectedFilesIDs.changeCounter;
 
@@ -182,7 +185,6 @@ export default Vue.extend({
         toggleAllFiles: function() {
             ParentEventBus.$emit(ParentEvents.ToggleAllFiles);
         },
-
         sort: function() {
             return {
                 byName: () => {

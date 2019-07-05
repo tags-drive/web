@@ -19,7 +19,7 @@
 
 				<select
 					id="sort-type-selector"
-					v-model="sortType"
+					v-model="newSortType"
 					@change="changeSortOptions"
 				>
 					<option
@@ -31,7 +31,7 @@
 
 				<select
 					id="sort-order-selector"
-					v-model="sortOrder"
+					v-model="newSortOrder"
 					@change="changeSortOptions"
 				>
 					<option
@@ -168,25 +168,12 @@ export default Vue.extend({
             required: true
         },
         //
-        sortModeByName: {
-            type: Boolean,
+        sortType: {
+            type: String,
             required: true
         },
-        sortModeBySize: {
-            type: Boolean,
-            required: true
-        },
-        sortModeByTime: {
-            type: Boolean,
-            required: true
-        },
-        //
-        sortOrderAsc: {
-            type: Boolean,
-            required: true
-        },
-        sortOrderDesc: {
-            type: Boolean,
+        sortOrder: {
+            type: String,
             required: true
         }
     },
@@ -201,9 +188,9 @@ export default Vue.extend({
                 { text: "asc", value: Const.sortOrder.asc },
                 { text: "desc", value: Const.sortOrder.desc }
             ],
+            newSortType: "",
+            newSortOrder: "",
             //
-            sortType: Const.sortType.name,
-            sortOrder: Const.sortOrder.asc,
             isSortOptionsChanged: false,
             //
             infoBlockHovered: false,
@@ -241,19 +228,8 @@ export default Vue.extend({
     },
     //
     created: function() {
-        if (this.sortModeByName) {
-            this.sortType = Const.sortType.name;
-        } else if (this.sortModeBySize) {
-            this.sortType = Const.sortType.size;
-        } else if (this.sortModeByTime) {
-            this.sortType = Const.sortType.time;
-        }
-
-        if (this.sortOrderAsc) {
-            this.sortOrder = Const.sortOrder.asc;
-        } else if (this.sortOrderDesc) {
-            this.sortOrder = Const.sortOrder.desc;
-        }
+        this.newSortType = this.sortType;
+        this.newSortOrder = this.sortOrder;
 
         window.addEventListener("resize", () => {
             this.windowWidth = window.innerWidth;
@@ -288,19 +264,14 @@ export default Vue.extend({
     },
     watch: {
         // Reset scroll only when order of files is changed
-        sortModeByName: function() {
+        sortType: function(newValue) {
+            this.newSortType = newValue as string;
+            this.isSortOptionsChanged = false;
             this.resetScroll();
         },
-        sortModeBySize: function() {
-            this.resetScroll();
-        },
-        sortModeByTime: function() {
-            this.resetScroll();
-        },
-        sortOrderAsc: function() {
-            this.resetScroll();
-        },
-        sortOrderDesc: function() {
+        sortOrder: function(newValue) {
+            this.newSortOrder = newValue as string;
+            this.isSortOptionsChanged = false;
             this.resetScroll();
         }
     },
@@ -317,32 +288,14 @@ export default Vue.extend({
         },
         changeSortOptions: function() {
             let changed = false;
-
-            switch (this.sortType) {
-                case Const.sortType.name:
-                    if (!this.sortModeByName) changed = true;
-                    break;
-                case Const.sortType.size:
-                    if (!this.sortModeBySize) changed = true;
-                    break;
-                case Const.sortType.time:
-                    if (!this.sortModeByTime) changed = true;
-                    break;
-            }
-
-            switch (this.sortOrder) {
-                case Const.sortOrder.asc:
-                    if (!this.sortOrderAsc) changed = true;
-                    break;
-                case Const.sortOrder.desc:
-                    if (!this.sortOrderDesc) changed = true;
-                    break;
+            if (this.newSortType !== this.sortType || this.newSortOrder !== this.sortOrder) {
+                changed = true;
             }
 
             this.isSortOptionsChanged = changed;
         },
         applySortOptions: function() {
-            ParentEventBus.$emit(ParentEvents.Sort.Manually, { type: this.sortType, order: this.sortOrder });
+            ParentEventBus.$emit(ParentEvents.Sort.Manually, { type: this.newSortType, order: this.newSortOrder });
             this.isSortOptionsChanged = false;
         },
         resetScroll: function() {
