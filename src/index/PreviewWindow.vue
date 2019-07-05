@@ -247,220 +247,222 @@
     top: 0;
     width: 100%;
     z-index: 5;
-}
 
-#preview-window {
-    background-color: #00000080;
-    border-radius: 5px;
-    display: flex;
-    height: 80%;
-    justify-content: space-between;
-    margin: auto;
-    max-width: 1100px;
-    padding: 5px;
-    position: relative;
-    top: 70px;
-    width: 90%;
-}
-
-#preview {
-    height: 100%;
-    position: relative;
-    width: 75%;
-}
-
-// Preview controls
-
-$switch-button-width: 80px;
-
-.switch-button {
-    border-radius: 5px;
-    cursor: pointer;
-    height: 70%;
-    opacity: 0.3;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: $switch-button-width;
-
-    i.arrow {
-        font-size: 50px;
-        left: 50%;
-        opacity: inherit;
-        position: absolute;
-        top: 50%;
-        transform: translate(-50%, -50%);
-    }
-}
-
-.fullscreen-button-wrapper {
-    position: absolute;
-    right: 0;
-    width: $switch-button-width;
-}
-
-.fullscreen-button {
-    border-radius: 5px;
-    cursor: pointer;
-    margin: auto;
-    opacity: 0.3;
-    text-align: center;
-    width: fit-content;
-}
-
-.fullscreen-button > i {
-    font-size: 50px;
-    opacity: inherit;
-}
-
-.hover-button:hover {
-    background-color: #00000020;
-    opacity: 0.8;
-}
-
-#fullscreen-filename {
-    background-color: #00000040;
-    border-radius: 3px;
-    color: #ffffffd0;
-    height: auto;
-    margin: auto;
-    margin-top: 5px;
-    padding: 3px;
-    width: fit-content;
-}
-
-// Previews
-
-@mixin preview-block-common-styles {
-    box-sizing: border-box;
-    height: 100%;
-    margin: auto;
-    padding: 5px 0;
-    width: 80%;
-}
-
-#text-preview {
-    @include preview-block-common-styles();
-
-    background-color: white;
-    border-radius: 5px;
-    height: 100%;
-    margin: auto;
-    overflow: auto;
-    /* If width == 100%, buttons cover text */
-    width: 70%;
-
-    pre {
-        margin: 0;
-        padding: 10px;
-    }
-}
-
-#image-preview {
-    @include preview-block-common-styles();
-
-    text-align: center;
-
-    /* Help to center an image vertically */
-    span.helper {
-        display: inline-block;
-        height: 100%;
-        vertical-align: middle;
-    }
-
-    img {
-        background-color: rgb(255, 255, 255);
-        display: inline-block;
-        height: auto;
-        max-height: 100%;
-        max-width: 100%;
-        vertical-align: middle;
-        width: auto;
-    }
-}
-
-#audio-preview {
-    @include preview-block-common-styles();
-
-    position: relative;
-
-    audio {
-        left: 50%;
-        position: absolute;
-        top: 50%;
-        transform: translate(-50%, -50%);
-    }
-}
-
-#video-preview {
-    @include preview-block-common-styles();
-
-    video {
-        max-height: 100%;
-        position: relative;
-        top: 50%;
-        transform: translateY(-50%);
-    }
-}
-
-#unsupported-format {
-    background-color: white;
-    border-radius: 5px;
-    font-size: 25px;
-    height: 100%;
-    margin: auto;
-    text-align: center;
-    /* If width == 100%, buttons cover text */
-    width: 70%;
-}
-
-#info {
-    background-color: #f7f7f7;
-    border-radius: 5px;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    overflow-y: auto;
-    width: 24%;
-}
-
-// Info blocks
-
-.card {
-    background-color: white;
-    border: 1px solid #00000012;
-    border-bottom: 1px solid #00000060;
-    border-radius: 3px;
-    margin: 5px;
-    margin-bottom: 7px;
-    padding: 3px;
-
-    &:last-child {
-        margin-bottom: 30px;
-    }
-
-    div.header {
-        border-bottom: 1px solid #00000060;
-        border-radius: 3px;
-        font-size: 18px;
+    > #preview-window {
+        background-color: #00000080;
+        border-radius: 5px;
+        display: flex;
+        height: 80%;
+        justify-content: space-between;
         margin: auto;
-        position: relative;
-        text-align: center;
-
-        i {
-            cursor: pointer;
-            font-size: 20px;
-            position: absolute;
-            right: 0;
-            top: 0;
-        }
-    }
-
-    div.data {
-        font-size: 14px;
+        max-width: 1100px;
         padding: 5px;
-        word-wrap: break-word;
+        position: relative;
+        top: 70px;
+        width: 90%;
 
-        i.in-trash-mark {
-            font-size: 16px;
+        > #preview {
+            height: 100%;
+            position: relative;
+            width: 75%;
+
+            // Preview controls
+
+            $switch-button-width: 80px;
+
+            .hover-button:hover {
+                background-color: #00000020;
+                opacity: 0.8 !important;
+            }
+
+            > .switch-button {
+                border-radius: 5px;
+                cursor: pointer;
+                height: 70%;
+                opacity: 0.3;
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                width: $switch-button-width;
+
+                > i.arrow {
+                    font-size: 50px;
+                    left: 50%;
+                    opacity: inherit;
+                    position: absolute;
+                    top: 50%;
+                    transform: translate(-50%, -50%);
+                }
+            }
+
+            > .fullscreen-button-wrapper {
+                position: absolute;
+                right: 0;
+                width: $switch-button-width;
+
+                > .fullscreen-button {
+                    border-radius: 5px;
+                    cursor: pointer;
+                    margin: auto;
+                    opacity: 0.3;
+                    text-align: center;
+                    width: fit-content;
+
+                    > i {
+                        font-size: 50px;
+                        opacity: inherit;
+                    }
+                }
+            }
+
+            // Previews
+
+            @mixin preview-block-common-styles {
+                box-sizing: border-box;
+                height: 100%;
+                margin: auto;
+                padding: 5px 0;
+                width: 80%;
+            }
+
+            > #text-preview {
+                @include preview-block-common-styles();
+
+                background-color: white;
+                border-radius: 5px;
+                height: 100%;
+                margin: auto;
+                overflow: auto;
+                /* If width == 100%, buttons cover text */
+                width: 70%;
+
+                > pre {
+                    margin: 0;
+                    padding: 10px;
+                }
+            }
+
+            > #image-preview {
+                @include preview-block-common-styles();
+
+                text-align: center;
+
+                /* Help to center an image vertically */
+                > span.helper {
+                    display: inline-block;
+                    height: 100%;
+                    vertical-align: middle;
+                }
+
+                > img {
+                    background-color: rgb(255, 255, 255);
+                    display: inline-block;
+                    height: auto;
+                    max-height: 100%;
+                    max-width: 100%;
+                    vertical-align: middle;
+                    width: auto;
+                }
+            }
+
+            > #audio-preview {
+                @include preview-block-common-styles();
+
+                position: relative;
+
+                > audio {
+                    left: 50%;
+                    position: absolute;
+                    top: 50%;
+                    transform: translate(-50%, -50%);
+                }
+            }
+
+            > #video-preview {
+                @include preview-block-common-styles();
+
+                > video {
+                    max-height: 100%;
+                    position: relative;
+                    top: 50%;
+                    transform: translateY(-50%);
+                }
+            }
+
+            > #unsupported-format {
+                background-color: white;
+                border-radius: 5px;
+                font-size: 25px;
+                height: 100%;
+                margin: auto;
+                text-align: center;
+                /* If width == 100%, buttons cover text */
+                width: 70%;
+            }
+
+            //
+
+            > #fullscreen-filename {
+                background-color: #00000040;
+                border-radius: 3px;
+                color: #ffffffd0;
+                height: auto;
+                margin: auto;
+                margin-top: 5px;
+                padding: 3px;
+                width: fit-content;
+            }
+        }
+
+        > #info {
+            background-color: #f7f7f7;
+            border-radius: 5px;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            overflow-y: auto;
+            width: 24%;
+
+            // Info blocks
+
+            > div.card {
+                background-color: white;
+                border: 1px solid #00000012;
+                border-bottom: 1px solid #00000060;
+                border-radius: 3px;
+                margin: 5px;
+                margin-bottom: 7px;
+                padding: 3px;
+
+                &:last-child {
+                    margin-bottom: 30px;
+                }
+
+                > div.header {
+                    border-bottom: 1px solid #00000060;
+                    border-radius: 3px;
+                    font-size: 18px;
+                    margin: auto;
+                    position: relative;
+                    text-align: center;
+
+                    > i {
+                        cursor: pointer;
+                        font-size: 20px;
+                        position: absolute;
+                        right: 0;
+                        top: 0;
+                    }
+                }
+
+                > div.data {
+                    font-size: 14px;
+                    padding: 5px;
+                    word-wrap: break-word;
+
+                    > i.in-trash-mark {
+                        font-size: 16px;
+                    }
+                }
+            }
         }
     }
 }
