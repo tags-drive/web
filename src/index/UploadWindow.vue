@@ -99,8 +99,17 @@
 					id="progress"
 					:style="{'width': uploadPercentage + '%'}">
 				</div>
-				<p></p>
-				<span>{{uploadPercentage}}%</span>
+			</div>
+
+			<div id="info">
+				<div id="percentages">{{uploadPercentage}}%</div>
+				<div id="delimiter"></div>
+				<div id="speed">{{
+					// uploadSpeed is in KB/s by default
+					(uploadSpeed >= 512) ?
+					(uploadSpeed / 1024).toFixed(1) + " MB/s" :
+					uploadSpeed.toFixed(1) + " KB/s"
+				}}</div>
 			</div>
 		</div>
 	</div>
@@ -118,122 +127,141 @@
     top: 0;
     width: 100vw;
     z-index: 3;
-}
 
-#upload-layer {
-    height: 100%;
-    left: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
-
-    #upload-text {
-        background-color: rgba(0, 0, 0, 0.15);
-        border: 1px black solid;
-        border-radius: 15px;
-        font-size: 50px;
-        left: 50%;
-        padding: 15px;
+    > #upload-layer {
+        height: 100%;
+        left: 0;
         position: absolute;
-        top: 50%;
-        transform: translate(-50%, -100%);
-    }
-}
+        top: 0;
+        width: 100%;
 
-#working-area {
-    background-color: white;
-    border-radius: 5px;
-    height: auto;
-    left: 50%;
-    margin: auto;
-    position: absolute;
-    text-align: center;
-    top: 10%;
-    transform: translateX(-50%);
-    width: 700px;
-
-    > #files-list {
-        height: auto;
-        overflow-x: auto;
-        display: flex;
-
-        > .file-preview {
-            margin: 0 10px;
-            overflow-wrap: break-word;
-            text-align: center;
-
-            > img {
-                display: inline-block;
-                height: auto;
-                max-height: 100px;
-                max-width: 100px;
-                width: auto;
-            }
+        #upload-text {
+            background-color: rgba(0, 0, 0, 0.15);
+            border: 1px black solid;
+            border-radius: 15px;
+            font-size: 50px;
+            left: 50%;
+            padding: 15px;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -100%);
         }
     }
 
-    > #groups-list {
-        display: inline-block;
-        margin: 10px auto 0;
-        width: 280px;
+    > #working-area {
+        background-color: white;
+        border-radius: 5px;
+        height: auto;
+        left: 50%;
+        margin: auto;
+        position: absolute;
+        text-align: center;
+        top: 10%;
+        transform: translateX(-50%);
+        width: 700px;
 
-        > .group {
-            > .group-name {
-                display: flex;
-                height: 24px;
-                line-height: 24px;
-                margin-bottom: 5px;
-                text-align: left;
+        > #files-list {
+            height: auto;
+            overflow-x: auto;
+            display: flex;
+
+            > .file-preview {
+                margin: 0 10px;
+                overflow-wrap: break-word;
+                text-align: center;
+
+                > img {
+                    display: inline-block;
+                    height: auto;
+                    max-height: 100px;
+                    max-width: 100px;
+                    width: auto;
+                }
             }
+        }
 
-            > .tag-wrapper {
-                display: flex;
-                margin: 0 auto 5px;
-                width: fit-content;
+        > #groups-list {
+            display: inline-block;
+            margin: 10px auto 0;
+            width: 280px;
 
-                > .tag {
+            > .group {
+                > .group-name {
                     display: flex;
-                    width: 200px;
+                    height: 24px;
+                    line-height: 24px;
+                    margin-bottom: 5px;
+                    text-align: left;
                 }
 
-                > .checkbox {
-                    font-size: 20px;
+                > .tag-wrapper {
+                    display: flex;
+                    margin: 0 auto 5px;
+                    width: fit-content;
 
-                    > input[type="checkbox"] {
-                        transform: scale(1.2);
-                        vertical-align: middle;
+                    > .tag {
+                        display: flex;
+                        width: 200px;
+                    }
+
+                    > .checkbox {
+                        font-size: 20px;
+
+                        > input[type="checkbox"] {
+                            transform: scale(1.2);
+                            vertical-align: middle;
+                        }
                     }
                 }
             }
         }
     }
-}
 
-#progress-bar {
-    background-color: white;
-    border-radius: 5px;
-    height: 150px;
-    left: 50%;
-    margin: auto;
-    position: absolute;
-    text-align: center;
-    top: 10%;
-    transform: translateX(-50%);
-    width: 700px;
+    > #progress-bar {
+        background-color: white;
+        border-radius: 5px;
+        margin: 10% auto;
+        max-width: 600px;
+        padding: 40px 0;
+        position: relative;
+        text-align: center;
+        width: 80%;
 
-    > #bar {
-        border: 1px solid black;
-        box-sizing: border-box;
-        height: 20px;
-        left: 50%;
-        position: absolute;
-        top: 30%;
-        transform: translateX(-50%);
-        width: 400px;
+        > #bar {
+            border: 1px solid #888888;
+            border-radius: 5px;
+            box-sizing: border-box;
+            height: 20px;
+            margin: 0 auto;
+            max-width: 400px;
+            width: 80%;
 
-        > #progress {
-            background-color: red;
-            height: 100%;
+            > #progress {
+                background-color: red;
+                border-radius: 4px;
+                height: 100%;
+            }
+        }
+
+        > #info {
+            display: grid;
+            grid-template-columns: 150px 2px 150px;
+            grid-gap: 20px;
+            margin-top: 15px;
+            justify-content: center;
+
+            > #percentages {
+                text-align: right;
+            }
+
+            > #delimiter {
+                border-right: 1px solid black;
+                height: 100%;
+            }
+
+            > #speed {
+                text-align: left;
+            }
         }
     }
 }
@@ -251,7 +279,7 @@ import SharedStore from "@app/index/store";
 import { Store } from "@app/index/store/types";
 import SharedState from "@app/index/state";
 // Other
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";
 import { logError, logInfo } from "@app/index/utils";
@@ -269,6 +297,7 @@ export default Vue.extend({
             showChosenFiles: false,
             uploading: false,
             uploadPercentage: 0,
+            uploadSpeed: 0, /// in KB/s
             //
             files: [] as Array<File>,
             selectedTags: new Set() as Set<Number>,
@@ -333,10 +362,27 @@ export default Vue.extend({
             this.files = [];
             this.showChosenFiles = false;
 
-            var config = {
-                onUploadProgress: (ev: ProgressEvent) => {
-                    this.uploadPercentage = Math.round((ev.loaded / ev.total) * 100);
-                }
+            let config: AxiosRequestConfig = {
+                onUploadProgress: (() => {
+                    let lastNow = new Date().getTime(),
+                        uploaded = 0;
+
+                    return (ev: ProgressEvent) => {
+                        let now = new Date().getTime();
+
+                        // Percentages
+                        this.uploadPercentage = Math.round((ev.loaded / ev.total) * 100);
+
+                        // Speed
+                        let loaded = (ev.loaded - uploaded) / 1024; // KB
+                        let delta = now - lastNow; // ms
+                        this.uploadSpeed = (loaded * 1000) / delta; // KB/s
+
+                        // Update
+                        lastNow = now;
+                        uploaded = ev.loaded;
+                    };
+                })()
             };
 
             // We use axios for upload bar
