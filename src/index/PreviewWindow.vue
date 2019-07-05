@@ -332,8 +332,10 @@ $switch-button-width: 80px;
 // Previews
 
 @mixin preview-block-common-styles {
+    box-sizing: border-box;
     height: 100%;
     margin: auto;
+    padding: 5px 0;
     width: 80%;
 }
 
@@ -393,10 +395,9 @@ $switch-button-width: 80px;
 #video-preview {
     @include preview-block-common-styles();
 
-    position: relative;
-
     video {
-        position: absolute;
+        max-height: 100%;
+        position: relative;
         top: 50%;
         transform: translateY(-50%);
     }
