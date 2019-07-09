@@ -67,6 +67,7 @@
 			:items="allFiles"
 			:item-height="50"
 			id="recycle-scroller"
+			ref="recycle-scroller"
 		>
 			<div slot-scope="{ item }">
 				<file :file="item"></file>
@@ -137,11 +138,6 @@ export default Vue.extend({
     },
     //
     props: {
-        allFiles: {
-            type: Array as () => Array<File>,
-            required: true
-        },
-        //
         sortType: {
             type: String,
             required: true
@@ -158,6 +154,13 @@ export default Vue.extend({
         };
     },
     computed: {
+        allFiles: function(): File[] {
+            // For reactive updating (see @app/index/store/types.ts for more information)
+            let reactive = this.Store.allFilesChangesCounter;
+
+            return this.Store.allFiles;
+        },
+        //
         sortTypeByName: function(): boolean {
             return this.sortType === Const.sortType.name;
         },
@@ -181,6 +184,17 @@ export default Vue.extend({
         }
     },
     //
+    watch: {
+        allFiles: function() {
+            // Hack for fixing a bug with tags rendering. When we change tags of a file, the list of tags
+            // remains the same because vue-virtual-scroller doesn't rerender items for best performance.
+            // We use setTimeout to be sure that items of vue-virtual-scroller were updated.
+            setTimeout(() => {
+                this.rerender();
+            }, 50);
+        }
+    },
+    //
     methods: {
         toggleAllFiles: function() {
             ParentEventBus.$emit(ParentEvents.ToggleAllFiles);
@@ -197,6 +211,20 @@ export default Vue.extend({
                     ParentEventBus.$emit(ParentEvents.Sort.ByTime);
                 }
             };
+        },
+        rerender: function() {
+            let recycleScroller = this.$refs["recycle-scroller"] as Vue;
+            if (recycleScroller === undefined) {
+                return;
+            }
+
+            // We can rerender vue-virtual-scroller by changing scrollTop
+            const height = recycleScroller.$el.scrollTop;
+
+            recycleScroller.$el.scrollTop = height + 1;
+            this.$nextTick(() => {
+                recycleScroller.$el.scrollTop = height;
+            });
         }
     }
 });

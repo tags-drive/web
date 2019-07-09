@@ -11,7 +11,6 @@
 		<files-list
 			v-else-if="State.settings.viewMode === viewModes.list"
 
-			:allFiles="allFiles"
 			:sortType="sortType"
 			:sortOrder="sortOrder"
 		></files-list>
@@ -19,7 +18,6 @@
 		<cards
 			v-else-if="State.settings.viewMode === viewModes.cards"
 
-			:allFiles="allFiles"
 			:sortType="sortType"
 			:sortOrder="sortOrder"
 		></cards>
