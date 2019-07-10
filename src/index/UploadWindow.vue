@@ -1,11 +1,6 @@
 <template>
-	<!--
-		counter != 0 - dragover
-		showChosenFiles - show files previews and tags list
-		uploading - show progress bar
-	-->
 	<div
-		v-if="counter !== 0 || showChosenFiles || uploading"
+		v-if="shouldShow"
 		id="background"
 		@click.self="hideWindow"
 	>
@@ -302,10 +297,21 @@ export default Vue.extend({
             files: [] as Array<File>,
             selectedTags: new Set() as Set<Number>,
             //
-            Store: SharedStore.state
+            Store: SharedStore.state,
+            State: SharedState.state
         };
     },
     computed: {
+        shouldShow: function(): boolean {
+            if (!this.State.user.authorized) {
+                return false;
+            }
+
+            // counter != 0 - dragover
+            // showChosenFiles - show files previews and tags list
+            // uploading - show progress bar
+            return this.counter !== 0 || this.showChosenFiles || this.uploading;
+        },
         groups: function(): Array<Group> {
             let reactive = this.Store.allTagsChangesCounter;
             const allTags = this.Store.allTags;
