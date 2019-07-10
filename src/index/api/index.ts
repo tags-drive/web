@@ -94,10 +94,10 @@ function fetchFiles(expression: string, text: string, isRegexp: boolean, sType?:
     if (isRegexp) {
         params.append("regexp", "true");
     }
-    if (sType !== undefined) {
+    if (sType !== undefined && sType !== "") {
         params.append("sort", sType);
     }
-    if (sOrder !== undefined) {
+    if (sOrder !== undefined && sOrder !== "") {
         params.append("order", sOrder);
     }
 
