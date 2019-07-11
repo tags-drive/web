@@ -195,13 +195,13 @@ export default Vue.extend({
     //
     methods: {
         // UI
-        showWindow: function() {
+        showWindow() {
             SharedState.commit("hideDropLayer");
             SharedState.commit("showModalWindow");
             this.addListener();
             this.show = true;
         },
-        hideWindow: function() {
+        hideWindow() {
             this.settingsMode = false;
             this.globalTagsMode = false;
             this.regularRenameMode = false;
@@ -220,13 +220,13 @@ export default Vue.extend({
             SharedState.commit("hideModalWindow");
         },
         // Listener
-        addListener: function() {
+        addListener() {
             document.addEventListener("keydown", this.onkeydownListener);
         },
-        removeListener: function() {
+        removeListener() {
             document.removeEventListener("keydown", this.onkeydownListener);
         },
-        onkeydownListener: function(event: KeyboardEvent) {
+        onkeydownListener(event: KeyboardEvent) {
             if (event.key === "Escape") {
                 this.hideWindow();
             }

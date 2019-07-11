@@ -164,7 +164,7 @@ export default Vue.extend({
     },
     //
     methods: {
-        processSelectedFiles: function() {
+        processSelectedFiles() {
             let tagIDs: number[] = [];
 
             this.groups.forEach(gr => {
@@ -181,7 +181,7 @@ export default Vue.extend({
             API.files.changeFilesTags(fileIDs, tagIDs, this.mode);
             this.hideWindow();
         },
-        hideWindow: function() {
+        hideWindow() {
             EventBus.$emit(Events.ModalWindow.HideWindow);
         }
     }

@@ -623,7 +623,7 @@ export default Vue.extend({
     },
     //
     methods: {
-        search: function() {
+        search() {
             return {
                 usual: () => {
                     EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
@@ -636,7 +636,7 @@ export default Vue.extend({
                 }
             };
         },
-        management: function() {
+        management() {
             return {
                 globalTags: () => {
                     EventBus.$emit(Events.ModalWindow.ShowTagsChangingWindow);
@@ -650,7 +650,7 @@ export default Vue.extend({
             };
         },
         // Grouped tags
-        toggleGroupVisibility: function(groupName: string) {
+        toggleGroupVisibility(groupName: string) {
             if (this.hiddenGroups.has(groupName)) {
                 this.hiddenGroups.delete(groupName);
             } else {
@@ -660,7 +660,7 @@ export default Vue.extend({
             this.hiddenGroupsChangesCounter++;
         },
         // insertTagID is used to insert tag id into expression
-        insertTextIntoExpression: function(arg: any) {
+        insertTextIntoExpression(arg: any) {
             let text = String(arg);
             let elem = this.$refs["expression-input"] as HTMLInputElement;
             if (!(this.$refs["expression-input"] instanceof HTMLInputElement)) {
@@ -678,7 +678,7 @@ export default Vue.extend({
             });
         },
         // For AdvancedOptions
-        toggleAdvancedOptions: function() {
+        toggleAdvancedOptions() {
             if (this.showAdvancedOptions) {
                 // Hide
                 this.showAdvancedOptions = false;
@@ -693,25 +693,25 @@ export default Vue.extend({
                 });
             }
         },
-        advancedOptionsListener: function(event: MouseEvent) {
+        advancedOptionsListener(event: MouseEvent) {
             if (this.showAdvancedOptions && !IsElementInPath(event, "advanced-options")) {
                 this.toggleAdvancedOptions();
             }
         },
         // Secondary function
-        resetExpression: function() {
+        resetExpression() {
             this.expression = "";
             this.text = "";
             this.isRegexp = false;
         },
-        focusInput: function() {
+        focusInput() {
             this.focused = true;
             this.$nextTick(() => {
                 let elem = this.$refs["expression-input"];
                 if (elem instanceof HTMLElement) elem.focus();
             });
         },
-        validateInput: function(ev: KeyboardEvent) {
+        validateInput(ev: KeyboardEvent) {
             if (!validCharacters.includes(ev.key)) {
                 ev.preventDefault();
             }

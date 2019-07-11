@@ -173,14 +173,14 @@ export default Vue.extend({
     },
     //
     methods: {
-        fail: function(error: string) {
+        fail(error: string) {
             setTimeout(() => {
                 this.errorMsg = error;
                 this.isError = true;
                 this.password = "";
             }, 300);
         },
-        auth: function() {
+        auth() {
             this.isError = false;
 
             // 11 times

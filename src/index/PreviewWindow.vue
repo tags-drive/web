@@ -674,7 +674,7 @@ export default Vue.extend({
     },
     //
     methods: {
-        window: function() {
+        window() {
             return {
                 show: () => {
                     SharedState.commit("hideDropLayer");
@@ -689,7 +689,7 @@ export default Vue.extend({
                 }
             };
         },
-        edit: function() {
+        edit() {
             return {
                 filename: () => {
                     EventBus.$emit(Events.ModalWindow.RegularMode.ShowFileRenamingWindow, { file: this.file });
@@ -704,7 +704,7 @@ export default Vue.extend({
                 }
             };
         },
-        nextPreview: function() {
+        nextPreview() {
             if (this.fileIndex < this.Store.allFiles.length - 1) {
                 this.file = this.Store.allFiles[++this.fileIndex];
                 if (this.fileIndex < this.Store.allFiles.length - 1) {
@@ -719,7 +719,7 @@ export default Vue.extend({
                 }
             }
         },
-        previousPreview: function() {
+        previousPreview() {
             if (this.fileIndex > 0) {
                 this.file = this.Store.allFiles[--this.fileIndex];
                 if (this.fileIndex > 0) {
@@ -734,7 +734,7 @@ export default Vue.extend({
                 }
             }
         },
-        setPreviewText: function() {
+        setPreviewText() {
             if (this.file === null) return;
 
             this.textFileContent = "";
@@ -752,11 +752,11 @@ export default Vue.extend({
                 .then(text => (this.textFileContent = text))
                 .catch(err => logError(err));
         },
-        openAsTextFile: function() {
+        openAsTextFile() {
             this.showAsText = true;
             this.setPreviewText();
         },
-        updatePreview: function() {
+        updatePreview() {
             if (this.file === null) {
                 return;
             }
@@ -770,7 +770,7 @@ export default Vue.extend({
                 }
             }
         },
-        onkeydownListener: function(event: KeyboardEvent) {
+        onkeydownListener(event: KeyboardEvent) {
             if (this.State.showModalWindow) {
                 return;
             }

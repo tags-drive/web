@@ -66,11 +66,11 @@ export default Vue.extend({
     },
     //
     methods: {
-        updateDescription: function() {
+        updateDescription() {
             API.files.changeDescription(this.file.id, this.newDescription);
             this.hideWindow();
         },
-        hideWindow: function() {
+        hideWindow() {
             EventBus.$emit(Events.ModalWindow.HideWindow);
         }
     }

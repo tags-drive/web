@@ -157,7 +157,7 @@ export default Vue.extend({
     },
     //
     methods: {
-        updateTags: function() {
+        updateTags() {
             let tagsIDs: number[] = [];
 
             this.groups.forEach(gr => {
@@ -167,7 +167,7 @@ export default Vue.extend({
             API.files.changeTags(this.file.id, tagsIDs);
             this.hideWindow();
         },
-        hideWindow: function() {
+        hideWindow() {
             EventBus.$emit(Events.ModalWindow.HideWindow);
         }
     }

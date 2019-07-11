@@ -242,7 +242,7 @@ export default Vue.extend({
     },
     methods: {
         // UI
-        window: function() {
+        window() {
             return {
                 show: () => {
                     this.hideAfter = hideTimeout;
@@ -276,7 +276,7 @@ export default Vue.extend({
             };
         },
         // Data
-        add: function(ev: logEvent) {
+        add(ev: logEvent) {
             this.events.push(ev);
 
             // Remove old events

@@ -78,26 +78,26 @@ export default Vue.extend({
     },
     //
     methods: {
-        deleteFile: function() {
+        deleteFile() {
             let ids = [this.file.id];
             API.files.delete(ids, false);
 
             this.hideWindow();
         },
         // deleteFileForever is a wrapper over deleteFile
-        deleteFileForever: function() {
+        deleteFileForever() {
             let ids = [this.file.id];
             API.files.delete(ids, true);
 
             this.hideWindow();
         },
-        recoverFile: function() {
+        recoverFile() {
             let ids = [this.file.id];
             API.files.recover(ids);
 
             this.hideWindow();
         },
-        hideWindow: function() {
+        hideWindow() {
             EventBus.$emit(Events.ModalWindow.HideWindow);
         }
     }

@@ -251,7 +251,7 @@ export default Vue.extend({
     //
     methods: {
         // Sorts
-        sort: function() {
+        sort() {
             let checkSortType = (type: string): boolean => {
                 return type === Const.sortType.name || type === Const.sortType.size || type === Const.sortType.time;
             };
@@ -326,7 +326,7 @@ export default Vue.extend({
         },
 
         // Select mode
-        toggleAllFiles: function() {
+        toggleAllFiles() {
             if (this.allFiles.length === SelectedFilesIDs.size) {
                 // All files are selected
                 this.unselectAllFiles();
@@ -334,7 +334,7 @@ export default Vue.extend({
                 this.selectAllFiles();
             }
         },
-        selectAllFiles: function() {
+        selectAllFiles() {
             if (this.allFiles.length === SelectedFilesIDs.size) {
                 return;
             }
@@ -346,13 +346,13 @@ export default Vue.extend({
 
             SharedState.commit("setSelectMode");
         },
-        unselectAllFiles: function() {
+        unselectAllFiles() {
             SelectedFilesIDs.clear();
             SharedState.commit("unsetSelectMode");
         },
 
         // updateSelectedFiles updates list of selectedFiles in Store
-        updateSelectedFiles: function() {
+        updateSelectedFiles() {
             let selectedFiles = this.allFiles.filter(f => {
                 return SelectedFilesIDs.check(f.id);
             });
@@ -361,11 +361,11 @@ export default Vue.extend({
         },
 
         // For children
-        selectFile: function(id: number) {
+        selectFile(id: number) {
             SelectedFilesIDs.add(id);
             SharedState.commit("setSelectMode");
         },
-        unselectFile: function(id: number) {
+        unselectFile(id: number) {
             SelectedFilesIDs.delete(id);
             if (SelectedFilesIDs.size === 0) {
                 SharedState.commit("unsetSelectMode");

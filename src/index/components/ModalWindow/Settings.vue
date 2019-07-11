@@ -167,7 +167,7 @@ export default Vue.extend({
         });
     },
     methods: {
-        switchSection: function(section: string) {
+        switchSection(section: string) {
             this.currentSection = section;
         }
     }

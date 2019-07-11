@@ -340,7 +340,7 @@ export default Vue.extend({
     },
     //
     methods: {
-        showFilesMenu: function(event: DragEvent) {
+        showFilesMenu(event: DragEvent) {
             if (event.dataTransfer === null || event.dataTransfer.files === null) {
                 return;
             }
@@ -353,7 +353,7 @@ export default Vue.extend({
                 this.files.push(event.dataTransfer.files[i]);
             }
         },
-        upload: function() {
+        upload() {
             this.uploading = true;
             this.uploadPercentage = 0;
 
@@ -440,7 +440,7 @@ export default Vue.extend({
                     logError(err);
                 });
         },
-        addFileSource: function(file: File) {
+        addFileSource(file: File) {
             let id = "preview-for-file-" + file.name;
 
             if (file.type === "image/jpeg" || file.type === "image/png" || file.type === "image/gif") {
@@ -470,14 +470,14 @@ export default Vue.extend({
                 f();
             }
         },
-        updateTags: function(id: number) {
+        updateTags(id: number) {
             if (!this.selectedTags.has(id)) {
                 this.selectedTags.add(id);
             } else {
                 this.selectedTags.delete(id);
             }
         },
-        hideWindow: function() {
+        hideWindow() {
             // Shouldn't close window during file uploading
             if (!this.uploading) {
                 this.showChosenFiles = false;

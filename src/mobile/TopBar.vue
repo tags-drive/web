@@ -184,21 +184,21 @@ export default Vue.extend({
     },
     //
     methods: {
-        logout: function() {
+        logout() {
             if (confirm("Are you sure you want to log out?")) {
                 API.logout();
             }
         },
         //
-        showSearchWindow: function() {
+        showSearchWindow() {
             this.expandBar();
             this.searchMode = true;
         },
-        showUploadWindow: function() {
+        showUploadWindow() {
             this.expandBar();
             this.uploadMode = true;
         },
-        closeWindow: function() {
+        closeWindow() {
             let bar = this.$refs["top-bar"] as HTMLElement;
             if (bar !== undefined) {
                 bar.classList.remove("top-bar-expand-animation");
@@ -209,7 +209,7 @@ export default Vue.extend({
             this.searchMode = false;
         },
         // Internal functions
-        expandBar: function() {
+        expandBar() {
             let bar = this.$refs["top-bar"] as HTMLElement;
             if (bar !== undefined) {
                 bar.classList.add("top-bar-expand-animation");

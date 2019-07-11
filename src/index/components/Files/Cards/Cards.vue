@@ -291,7 +291,7 @@ export default Vue.extend({
 
             return res;
         },
-        changeSortOptions: function() {
+        changeSortOptions() {
             let changed = false;
             if (this.newSortType !== this.sortType || this.newSortOrder !== this.sortOrder) {
                 changed = true;
@@ -299,11 +299,11 @@ export default Vue.extend({
 
             this.isSortOptionsChanged = changed;
         },
-        applySortOptions: function() {
+        applySortOptions() {
             ParentEventBus.$emit(ParentEvents.Sort.Manually, { type: this.newSortType, order: this.newSortOrder });
             this.isSortOptionsChanged = false;
         },
-        resetScroll: function() {
+        resetScroll() {
             // Scroll to top
             let container = this.$refs["container"] as HTMLElement;
             if (container === undefined) {

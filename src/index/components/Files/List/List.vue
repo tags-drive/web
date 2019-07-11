@@ -196,10 +196,10 @@ export default Vue.extend({
     },
     //
     methods: {
-        toggleAllFiles: function() {
+        toggleAllFiles() {
             ParentEventBus.$emit(ParentEvents.ToggleAllFiles);
         },
-        sort: function() {
+        sort() {
             return {
                 byName: () => {
                     ParentEventBus.$emit(ParentEvents.Sort.ByName);
@@ -212,7 +212,7 @@ export default Vue.extend({
                 }
             };
         },
-        rerender: function() {
+        rerender() {
             let recycleScroller = this.$refs["recycle-scroller"] as Vue;
             if (recycleScroller === undefined) {
                 return;

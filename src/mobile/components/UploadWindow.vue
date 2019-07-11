@@ -231,7 +231,7 @@ export default Vue.extend({
     },
     //
     methods: {
-        updateFiles: function() {
+        updateFiles() {
             let input = this.$refs["files-input"] as HTMLInputElement;
             if (input === undefined) {
                 return;
@@ -276,14 +276,14 @@ export default Vue.extend({
                 });
             }
         },
-        updateTagsList: function(id: number) {
+        updateTagsList(id: number) {
             if (!this.tags.has(id)) {
                 this.tags.add(id);
             } else {
                 this.tags.delete(id);
             }
         },
-        upload: function() {
+        upload() {
             this.uploading = true;
             this.uploadPercentage = 0;
 
@@ -353,7 +353,7 @@ export default Vue.extend({
                     this.closeWindow();
                 });
         },
-        closeWindow: function() {
+        closeWindow() {
             this.$parent.$emit("close-bar");
         }
     }

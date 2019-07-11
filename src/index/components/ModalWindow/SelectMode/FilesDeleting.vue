@@ -86,7 +86,7 @@ export default Vue.extend({
     },
     //
     methods: {
-        deleteSelectedFiles: function() {
+        deleteSelectedFiles() {
             let ids = new Array<number>(this.selectedFiles.length);
             this.selectedFiles.forEach((elem, i) => (ids[i] = elem.id));
             API.files.delete(ids, false);
@@ -96,7 +96,7 @@ export default Vue.extend({
             EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
         },
         // deleteSelectedFilesForever is a wrapper over deleteFile
-        deleteSelectedFilesForever: function() {
+        deleteSelectedFilesForever() {
             let ids = new Array<number>(this.selectedFiles.length);
             this.selectedFiles.forEach((elem, i) => (ids[i] = elem.id));
             API.files.delete(ids, true);
@@ -105,7 +105,7 @@ export default Vue.extend({
             // If we don't call this function, next files will become selected.
             EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
         },
-        recoverSelectedFiles: function() {
+        recoverSelectedFiles() {
             let ids: number[] = new Array<number>(this.selectedFiles.length);
             this.selectedFiles.forEach((elem, i) => (ids[i] = elem.id));
             API.files.recover(ids);
@@ -113,7 +113,7 @@ export default Vue.extend({
 
             EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
         },
-        hideWindow: function() {
+        hideWindow() {
             EventBus.$emit(Events.ModalWindow.HideWindow);
         }
     }

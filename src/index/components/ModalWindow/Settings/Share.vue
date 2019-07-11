@@ -103,13 +103,13 @@ export default Vue.extend({
     },
     //
     methods: {
-        removeToken: function(token: string) {
+        removeToken(token: string) {
             API.share.removeToken(token);
 
             this.tokens.delete(token);
             this.tokensChangesCounter++;
         },
-        copyToClipboard: function(token: string) {
+        copyToClipboard(token: string) {
             const link = this.originLocation + "/share?shareToken=" + token;
 
             const elem = document.createElement("textarea");

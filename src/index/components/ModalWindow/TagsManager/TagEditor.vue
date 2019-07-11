@@ -230,7 +230,7 @@ export default Vue.extend({
     },
     //
     methods: {
-        check: function() {
+        check() {
             if (
                 !this.isNewTag &&
                 this.tag.name === this.newName &&
@@ -255,7 +255,7 @@ export default Vue.extend({
 
             this.isError = false;
         },
-        generateRandomColor: function() {
+        generateRandomColor() {
             if (this.isDeleted) {
                 return;
             }
@@ -273,7 +273,7 @@ export default Vue.extend({
             this.isError = false; // we can't generate an invalid color
             this.newColor = "#" + getHexRandom(256) + getHexRandom(256) + getHexRandom(256);
         },
-        reset: function() {
+        reset() {
             if (this.isDeleted || this.isNewTag) {
                 return;
             }
@@ -286,7 +286,7 @@ export default Vue.extend({
             this.isChanged = false;
         },
         // API
-        save: function() {
+        save() {
             if (this.isError || !this.isChanged) {
                 return;
             }
@@ -307,12 +307,12 @@ export default Vue.extend({
                 this.isChanged = false;
             }
         },
-        del: function() {
+        del() {
             if (!this.isNewTag) {
                 this.isDeleted = true;
             }
         },
-        recover: function() {
+        recover() {
             if (!this.isNewTag) {
                 this.isDeleted = false;
             }

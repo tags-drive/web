@@ -215,10 +215,10 @@ export default Vue.extend({
     },
     //
     methods: {
-        setFile: function(file: File) {
+        setFile(file: File) {
             this.file = file;
         },
-        showMenu: function(x: number, y: number) {
+        showMenu(x: number, y: number) {
             const offset = 10;
             x += offset;
             y += offset;
@@ -236,14 +236,14 @@ export default Vue.extend({
 
             document.addEventListener("wheel", this.scrollHandler);
         },
-        hideMenu: function() {
+        hideMenu() {
             document.removeEventListener("wheel", this.scrollHandler);
 
             this.show = false;
             EventBus.$emit(Events.FilesBlock.UnfocusFile);
         },
         // Options of context menu
-        regularMode: function() {
+        regularMode() {
             return {
                 changeName: () => {
                     this.hideMenu();
@@ -280,7 +280,7 @@ export default Vue.extend({
             };
         },
         // Options of context menu (select mode)
-        selectMode: function() {
+        selectMode() {
             return {
                 addTags: () => {
                     this.hideMenu();
@@ -334,7 +334,7 @@ export default Vue.extend({
             };
         },
         // scrollHandler prevents scrolling when Context Menu is displayed
-        scrollHandler: function(ev: WheelEvent) {
+        scrollHandler(ev: WheelEvent) {
             if (this.show) {
                 ev.preventDefault();
             }

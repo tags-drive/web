@@ -129,10 +129,10 @@ export default Vue.extend({
     },
     //
     methods: {
-        apply: function() {
+        apply() {
             SharedState.commit("applySettings", this.settings);
         },
-        saveSettings: function() {
+        saveSettings() {
             // Update global settings from local ones
             // We will save current settings because we call apply() on every change
             SharedState.commit("saveSettings");

@@ -57,11 +57,11 @@ export default Vue.extend({
     },
     //
     methods: {
-        rename: function() {
+        rename() {
             API.files.changeName(this.file.id, this.newFilename);
             this.hideWindow();
         },
-        hideWindow: function() {
+        hideWindow() {
             EventBus.$emit(Events.ModalWindow.HideWindow);
         }
     }

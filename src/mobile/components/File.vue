@@ -99,7 +99,7 @@ export default Vue.extend({
     },
     //
     methods: {
-        showPreview: function() {
+        showPreview() {
             EventBus.$emit(Events.showPreview, { file: this.file });
         }
     }

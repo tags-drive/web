@@ -62,13 +62,13 @@ export default Vue.extend({
         });
     },
     methods: {
-        addTag: function(name: string, color: string, newGroup?: string) {
+        addTag(name: string, color: string, newGroup?: string) {
             API.tags.add(name, color, newGroup);
         },
-        changeTag: function(tagID: number, newName: string, newColor: string, newGroup?: string) {
+        changeTag(tagID: number, newName: string, newColor: string, newGroup?: string) {
             API.tags.change(tagID, newName, newColor, newGroup);
         },
-        deleteTag: function(tagID: number) {
+        deleteTag(tagID: number) {
             API.tags.delete(tagID);
         }
     }
