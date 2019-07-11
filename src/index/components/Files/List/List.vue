@@ -65,7 +65,7 @@
 
 		<RecycleScroller
 			:items="allFiles"
-			:item-height="50"
+			:item-size="50"
 			id="recycle-scroller"
 			ref="recycle-scroller"
 		>
