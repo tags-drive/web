@@ -114,9 +114,7 @@ import {
 } from "@app/index/Files.vue";
 // Shared data
 import SharedStore from "@app/index/store";
-import { Store } from "@app/index/store/types";
 import SharedState from "@app/index/state";
-import { State } from "@app/index/state/types";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";

@@ -1,6 +1,5 @@
 <template>
 	<div
-		v-show="!file.deleted || State.settings.showDeletedFiles"
 		class="file-info hover-class"
 		:style="stylesObject"
 		:title="titleMessage"
@@ -123,9 +122,7 @@ import {
 } from "@app/index/Files.vue";
 // Shared data
 import SharedStore from "@app/index/store";
-import { Store } from "@app/index/store/types";
 import SharedState from "@app/index/state";
-import { State } from "@app/index/state/types";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
 import { Params } from "@app/global";

@@ -130,6 +130,7 @@ import {
 } from "@app/index/Files.vue";
 import { Const } from "@app/global/const";
 import SharedStore from "@app/index/store";
+import SharedState from "@app/index/state";
 
 export default Vue.extend({
     components: {
@@ -157,6 +158,12 @@ export default Vue.extend({
         allFiles: function(): File[] {
             // For reactive updating (see @app/index/store/types.ts for more information)
             let reactive = this.Store.allFilesChangesCounter;
+
+            if (!SharedState.state.settings.showDeletedFiles) {
+                return this.Store.allFiles.filter(f => {
+                    return !f.deleted;
+                });
+            }
 
             return this.Store.allFiles;
         },
