@@ -26,7 +26,7 @@ export default Vue.extend({
         };
     },
     computed: {
-        source: function() {
+        source: function(): string {
             if (!(this.isLoaded || this.isError)) {
                 return LoaderGIF;
             }

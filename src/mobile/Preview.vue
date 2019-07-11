@@ -172,12 +172,12 @@ export default Vue.extend({
         };
     },
     computed: {
-        previewClasses: function() {
+        previewClasses: function(): any {
             return {
                 "preview--animation-close": this.shouldClose
             };
         },
-        containerClasses: function() {
+        containerClasses: function(): any {
             return {
                 "container--idle": !this.shouldSwitchRight && !this.shouldSwitchLeft,
                 "container--animation-switch-right": this.shouldSwitchRight,

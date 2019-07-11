@@ -189,7 +189,7 @@ export default Vue.extend({
         };
     },
     computed: {
-        logWindowStyles: function() {
+        logWindowStyles: function(): any {
             if (this.show) {
                 if (this.isMouseInside || this.hideAfter > 1000) {
                     return {};

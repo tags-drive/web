@@ -505,9 +505,10 @@ export default Vue.extend({
         };
     },
     computed: {
-        allFiles: function() {
+        allFiles: function(): Array<File> {
             // For reactive updating (see @app/index/store/types.ts for more information)
-            return this.Store.allFilesChangesCounter && this.Store.allFiles;
+            const reactive = this.Store.allFilesChangesCounter;
+            return this.Store.allFiles;
         },
         originLink: function(): string {
             let params = "";
@@ -517,7 +518,7 @@ export default Vue.extend({
 
             return Params.Host + "/" + this.file!.origin + params;
         },
-        previewWindowStyle: function() {
+        previewWindowStyle: function(): any {
             if (!this.fullscreenMode) {
                 return {};
             }
@@ -532,7 +533,7 @@ export default Vue.extend({
                 width: "100%"
             };
         },
-        previewStyle: function() {
+        previewStyle: function(): any {
             if (!this.fullscreenMode) {
                 return {};
             }

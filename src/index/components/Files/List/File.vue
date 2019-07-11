@@ -160,7 +160,7 @@ export default Vue.extend({
 
             return this.selectedFilesIDs.check(this.file.id);
         },
-        stylesObject: function() {
+        stylesObject: function(): any {
             let style = {
                 opacity: this.file.deleted && !this.fileSelected ? 0.4 : 1
             } as any;
@@ -205,7 +205,7 @@ export default Vue.extend({
 
             return Params.Host + "/ext/" + this.file.filename.split(".").pop();
         },
-        tagsStyle: function() {
+        tagsStyle: function(): any {
             if (!this.tagsListHover && this.overflow) {
                 return { "border-left-color": "black" };
             }

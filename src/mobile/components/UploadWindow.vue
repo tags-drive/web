@@ -215,12 +215,14 @@ export default Vue.extend({
         };
     },
     computed: {
-        canUploadSomething: function() {
+        canUploadSomething: function(): boolean {
             return this.files.length > 0;
         },
-        allTagsIDs: function() {
+        allTagsIDs: function(): Array<number> {
             // For reactive updating (see @app/index/store/types.ts for more information)
-            return this.Store.allTagsChangesCounter && Array.from(this.Store.allTags.keys());
+            const reactive = this.Store.allTagsChangesCounter;
+
+            return Array.from(this.Store.allTags.keys());
         }
     },
     //

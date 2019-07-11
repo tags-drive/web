@@ -449,8 +449,7 @@ export default Vue.extend({
         };
     },
     computed: {
-        allTagsIDs: function() {
-            // For reactive updating (see @app/index/store/types.ts for more information)
+        allTagsIDs: function(): Array<number> {
             return Array.from(this.Store.allTags.keys());
         }
     },

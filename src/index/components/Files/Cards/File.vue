@@ -144,12 +144,12 @@ export default Vue.extend({
         };
     },
     computed: {
-        fileSelected: function() {
+        fileSelected: function(): boolean {
             const reactive = this.selectedFilesIDs.changeCounter;
 
             return this.selectedFilesIDs.check(this.file.id);
         },
-        cardStyles: function() {
+        cardStyles: function(): any {
             if (this.fileSelected || this.rightClicked) {
                 return {
                     "background-color": "#dcdcdcc0"

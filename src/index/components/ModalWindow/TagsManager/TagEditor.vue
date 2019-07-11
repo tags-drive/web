@@ -180,7 +180,7 @@ export default Vue.extend({
         };
     },
     computed: {
-        indicatorBorderColor: function() {
+        indicatorBorderColor: function(): string {
             if (this.isDeleted) {
                 return "white";
             }
@@ -193,13 +193,13 @@ export default Vue.extend({
 
             return "white";
         },
-        saveButtonStyle: function() {
+        saveButtonStyle: function(): any {
             if (this.isError || this.isDeleted || !this.isChanged) {
                 return { opacity: "0.3", "background-color": "white", cursor: "default" };
             }
             return { opacity: "1" };
         },
-        resetButtonStyle: function() {
+        resetButtonStyle: function(): any {
             if ((!this.isChanged && !this.isDeleted) || this.isNewTag) {
                 return { opacity: "0.3", "background-color": "white", cursor: "default" };
             }

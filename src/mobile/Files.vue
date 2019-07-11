@@ -50,9 +50,9 @@ export default Vue.extend({
         };
     },
     computed: {
-        allFiles: function() {
-            // reactive
+        allFiles: function(): Array<File> {
             let reactive = this.Store.allFilesChangesCounter;
+
             return this.Store.allFiles;
         }
     },

@@ -569,7 +569,7 @@ export default Vue.extend({
         };
     },
     computed: {
-        groupedTags: function(): TopBarGroup[] {
+        groupedTags: function(): Array<TopBarGroup> {
             // Name for group with ungrouped tags
             const ungroupedTags = "Ungrouped tags";
 

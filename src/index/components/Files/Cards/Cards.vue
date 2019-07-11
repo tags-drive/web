@@ -227,7 +227,7 @@ export default Vue.extend({
 
             return 3;
         },
-        containerGridTemplateColumns: function() {
+        containerGridTemplateColumns: function(): string {
             return `repeat(${this.columnsNumber}, 1fr)`;
         }
     },

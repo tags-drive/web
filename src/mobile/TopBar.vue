@@ -163,7 +163,7 @@ export default Vue.extend({
         };
     },
     computed: {
-        shouldShowCloseButton: function() {
+        shouldShowCloseButton: function(): boolean {
             return this.searchMode || this.uploadMode;
         }
     },
