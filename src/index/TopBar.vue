@@ -14,7 +14,7 @@
 			<div>
 				<i
 					class="material-icons noselect"
-					@click="search().usual()"
+					@click="search()"
 				>search</i>
 			</div>
 		</div>
@@ -35,7 +35,7 @@
 						ref="expression-input"
 						v-model="expression"
 						@keypress="validateInput"
-						@keyup.enter="search().usual()"
+						@keyup.enter="search()"
 						@keyup.esc="focused = false">
 				</div>
 				<!-- Render -->
@@ -147,7 +147,7 @@
 						type="text"
 						:placeholder="isRegexp ? 'Enter regexp' : 'Enter text'"
 						v-model="text"
-						@keyup.enter="search().usual()">
+						@keyup.enter="search()">
 				</div>
 			</div>
 
@@ -512,6 +512,7 @@ import { logError, logInfo } from "@app/index/utils";
 import { IsElementInPath } from "@app/global/utils";
 import { Params } from "@app/global";
 import API from "@app/index/api";
+import { Const } from "@app/global/const";
 
 class Operator {
     operator: string;
@@ -552,17 +553,18 @@ export default Vue.extend({
         return {
             // Const members
             operators: availableOperators,
-            // Expression
+            // Search
             expression: "",
-            //
-            focused: false,
-            showAdvancedOptions: false,
-            // Text search
             text: "",
             isRegexp: false,
+            sortType: Const.sortType.name,
+            sortOrder: Const.sortOrder.asc,
             //
             hiddenGroups: new Set() as Set<string>,
             hiddenGroupsChangesCounter: 0,
+            //
+            focused: false,
+            showAdvancedOptions: false,
             //
             Store: SharedStore.state,
             State: SharedState.state
@@ -603,7 +605,7 @@ export default Vue.extend({
     //
     created: function() {
         EventBus.$on(Events.Search.Usual, () => {
-            this.search().usual();
+            this.search();
         });
         EventBus.$on(Events.Search.Advanced, (payload: any) => {
             if (payload.type === undefined || payload.order === undefined) {
@@ -612,7 +614,11 @@ export default Vue.extend({
                 /* eslint-enable no-console */
                 return;
             }
-            this.search().advanced(payload.type, payload.order);
+
+            this.sortType = payload.type as string;
+            this.sortOrder = payload.order as string;
+
+            this.search();
         });
 
         document.addEventListener("click", event => {
@@ -624,17 +630,8 @@ export default Vue.extend({
     //
     methods: {
         search() {
-            return {
-                usual: () => {
-                    EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
-                    API.files.fetch(this.expression, this.text, this.isRegexp);
-                    EventBus.$emit(Events.FilesBlock.RestoreSortParams);
-                },
-                advanced: (sType: string, sOrder: string) => {
-                    EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
-                    API.files.fetch(this.expression, this.text, this.isRegexp, sType, sOrder);
-                }
-            };
+            EventBus.$emit(Events.FilesBlock.UnselectAllFiles);
+            API.files.fetch(this.expression, this.text, this.isRegexp, this.sortType, this.sortOrder);
         },
         management() {
             return {
