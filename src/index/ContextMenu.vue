@@ -183,7 +183,7 @@ function getSelectedFiles(): Promise<File[]> {
 export default Vue.extend({
     data: function() {
         return {
-            file: <File | null>null,
+            file: null as File | null,
             // Style
             top: 0,
             left: 0,

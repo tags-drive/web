@@ -134,7 +134,7 @@ export default Vue.extend({
     },
     data: function() {
         return {
-            groups: <CustomGroup[]>[]
+            groups: [] as Array<CustomGroup>
         };
     },
     //

@@ -59,7 +59,7 @@ export default Vue.extend({
     },
     data: function() {
         return {
-            elements: <(TagElement | TextElement)[]>[]
+            elements: [] as Array<TagElement | TextElement>
         };
     },
     //

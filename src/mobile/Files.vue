@@ -96,7 +96,7 @@ export default Vue.extend({
         });
 
         EventBus.$on(Events.resetFilesBlockScroll, () => {
-            let elem = <HTMLElement>this.$refs["all-files"];
+            let elem = this.$refs["all-files"] as HTMLElement;
             if (elem !== undefined) {
                 elem.scrollTo(0, 0);
             }

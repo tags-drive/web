@@ -263,7 +263,7 @@ export default Vue.extend({
                     this.isMouseInside = false;
                 },
                 scrollToEnd: () => {
-                    let elem = <HTMLElement>this.$refs["events"];
+                    let elem = this.$refs["events"] as HTMLElement;
                     if (elem === undefined) {
                         return;
                     }

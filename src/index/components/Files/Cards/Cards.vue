@@ -241,7 +241,7 @@ export default Vue.extend({
         });
 
         this.$nextTick(() => {
-            let container = <HTMLElement>this.$refs["container"];
+            let container = this.$refs["container"] as HTMLElement;
             if (container === undefined) {
                 return;
             }
@@ -305,7 +305,7 @@ export default Vue.extend({
         },
         resetScroll: function() {
             // Scroll to top
-            let container = <HTMLElement>this.$refs["container"];
+            let container = this.$refs["container"] as HTMLElement;
             if (container === undefined) {
                 return;
             }

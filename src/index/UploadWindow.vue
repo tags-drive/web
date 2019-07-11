@@ -450,8 +450,8 @@ export default Vue.extend({
 
                 reader.onloadend = () => {
                     // An element already exists, when file is loaded
-                    let elem = <HTMLImageElement>document.getElementById(id);
-                    elem.src = <string>reader.result;
+                    let elem = document.getElementById(id) as HTMLImageElement;
+                    elem.src = reader.result as string;
                 };
             } else {
                 // Load extension
@@ -459,8 +459,8 @@ export default Vue.extend({
 
                 // Need to wait for element creation
                 let f = () => {
-                    let elem = <HTMLImageElement>document.getElementById(id)!;
-                    if (elem === null) {
+                    let elem = document.getElementById(id)! as HTMLImageElement;
+                    if (elem === null || elem === undefined) {
                         setTimeout(f, 20);
                         return;
                     }

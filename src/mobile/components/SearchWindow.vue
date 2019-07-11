@@ -388,7 +388,8 @@ import { EventBus, Events } from "@app/mobile/eventBus";
 function isElementInPath(event: Event, ...ids: string[]): boolean {
     // We need to use type any because Event hasn't property path, composedPath and composedPath().
     // Nevertheless, it's a cross browser way to get path.
-    let path = (<any>event).path || ((<any>event).composedPath && (<any>event).composedPath());
+    let ev = event as any;
+    let path = ev.path || (ev.composedPath && ev.composedPath());
     if (path === undefined || path.length === undefined) {
         return false;
     }
@@ -535,7 +536,7 @@ export default Vue.extend({
         //
         insertTextIntoExpression(arg: any) {
             let text = String(arg);
-            let elem: HTMLInputElement = <HTMLInputElement>this.$refs["expression-input"];
+            let elem = this.$refs["expression-input"] as HTMLInputElement;
             if (!(this.$refs["expression-input"] instanceof HTMLInputElement)) {
                 return;
             }
@@ -552,7 +553,7 @@ export default Vue.extend({
             });
         },
         backspace() {
-            let elem: HTMLInputElement = <HTMLInputElement>this.$refs["expression-input"];
+            let elem: HTMLInputElement = this.$refs["expression-input"] as HTMLInputElement;
             if (!(this.$refs["expression-input"] instanceof HTMLInputElement)) {
                 return;
             }

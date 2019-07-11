@@ -219,13 +219,13 @@ export default Vue.extend({
             if (payload.id === undefined) {
                 return;
             }
-            this.selectFile(<number>payload.id);
+            this.selectFile(payload.id as number);
         });
         InternalEventBus.$on(InternalEvents.UnselectFile, (payload: any) => {
             if (payload.id === undefined) {
                 return;
             }
-            this.unselectFile(<number>payload.id);
+            this.unselectFile(payload.id as number);
         });
         // Sorts
         InternalEventBus.$on(InternalEvents.Sort.Manually, (payload: any) => {

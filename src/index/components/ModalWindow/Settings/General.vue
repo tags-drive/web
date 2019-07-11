@@ -114,7 +114,7 @@ export default Vue.extend({
     data: function() {
         return {
             viewModesOptions: ViewModes,
-            settings: <Settings>{ showDeletedFiles: false, viewMode: ViewModes.cards.value }
+            settings: { showDeletedFiles: false, viewMode: ViewModes.cards.value } as Settings
         };
     },
     //

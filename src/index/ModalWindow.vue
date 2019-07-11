@@ -108,7 +108,7 @@ import { Events, EventBus } from "@app/index/eventBus";
 export default Vue.extend({
     data: function() {
         return {
-            file: <File | null>null,
+            file: null as File | null,
             show: false,
             selectedFiles: [] as Array<File>,
             // Modes

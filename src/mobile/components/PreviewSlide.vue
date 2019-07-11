@@ -302,7 +302,7 @@ export default Vue.extend({
         isAudio(): boolean {
             let res = this.file !== null && this.file.type.previewType.includes(Const.previewTypes.audio);
             if (res) {
-                let audio = <HTMLAudioElement>this.$refs["audio-block"];
+                let audio = this.$refs["audio-block"] as HTMLAudioElement;
                 if (audio !== undefined) {
                     // We have to reload video with new src
                     this.$nextTick(() => {
@@ -316,7 +316,7 @@ export default Vue.extend({
         isVideo(): boolean {
             let res = this.file !== null && this.file.type.previewType.includes(Const.previewTypes.video);
             if (res) {
-                let video = <HTMLVideoElement>this.$refs["video-block"];
+                let video = this.$refs["video-block"] as HTMLVideoElement;
                 if (video !== undefined) {
                     // We have to reload video with new src
                     this.$nextTick(() => {

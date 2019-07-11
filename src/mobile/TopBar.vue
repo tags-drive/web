@@ -199,7 +199,7 @@ export default Vue.extend({
             this.uploadMode = true;
         },
         closeWindow: function() {
-            let bar = <HTMLAudioElement>this.$refs["top-bar"];
+            let bar = this.$refs["top-bar"] as HTMLElement;
             if (bar !== undefined) {
                 bar.classList.remove("top-bar-expand-animation");
             }
@@ -210,7 +210,7 @@ export default Vue.extend({
         },
         // Internal functions
         expandBar: function() {
-            let bar = <HTMLAudioElement>this.$refs["top-bar"];
+            let bar = this.$refs["top-bar"] as HTMLElement;
             if (bar !== undefined) {
                 bar.classList.add("top-bar-expand-animation");
             }

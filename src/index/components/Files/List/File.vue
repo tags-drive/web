@@ -161,9 +161,9 @@ export default Vue.extend({
             return this.selectedFilesIDs.check(this.file.id);
         },
         stylesObject: function() {
-            let style = <any>{
+            let style = {
                 opacity: this.file.deleted && !this.fileSelected ? 0.4 : 1
-            };
+            } as any;
 
             if (this.fileSelected || this.rightClicked) {
                 style["background-color"] = "#dcdcdcc0";
@@ -210,12 +210,12 @@ export default Vue.extend({
                 return { "border-left-color": "black" };
             }
 
-            let list = <HTMLElement>this.$refs["tags-list"];
+            let list = this.$refs["tags-list"] as HTMLElement;
             if (list === undefined || list.clientHeight >= list.scrollHeight) {
                 return;
             }
 
-            let wrapper = <HTMLElement>this.$refs["tags-list-wrapper"];
+            let wrapper = this.$refs["tags-list-wrapper"] as HTMLElement;
             if (wrapper === undefined) {
                 return;
             }
@@ -238,7 +238,7 @@ export default Vue.extend({
                 }
 
                 if (shouldChange) {
-                    let nextNode = <HTMLElement>RecycleScroller.childNodes[i];
+                    let nextNode = RecycleScroller.childNodes[i] as HTMLElement;
                     if (nextNode !== undefined) {
                         nextNode.style.zIndex = "0";
                     }
@@ -274,7 +274,7 @@ export default Vue.extend({
     //
     created: function() {
         this.overflowChecker = window.setInterval(() => {
-            let list = <HTMLElement>this.$refs["tags-list"];
+            let list = this.$refs["tags-list"] as HTMLElement;
             if (list === undefined) {
                 this.overflow = false;
                 return;

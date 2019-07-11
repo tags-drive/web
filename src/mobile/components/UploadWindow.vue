@@ -230,7 +230,7 @@ export default Vue.extend({
     //
     methods: {
         updateFiles: function() {
-            let input = <HTMLInputElement>this.$refs["files-input"];
+            let input = this.$refs["files-input"] as HTMLInputElement;
             if (input === undefined) {
                 return;
             }
@@ -258,16 +258,16 @@ export default Vue.extend({
                 this.$nextTick(() => {
                     reader.onloadend = () => {
                         // An element already exists, when file is loaded
-                        let elem = <HTMLImageElement>document.getElementById("preview-" + file.name);
+                        let elem = document.getElementById("preview-" + file.name) as HTMLImageElement;
                         if (elem !== undefined) {
-                            elem.src = <string>reader.result;
+                            elem.src = reader.result as string;
                         }
                     };
                 });
             } else {
                 // Load extension preview
                 this.$nextTick(() => {
-                    let elem = <HTMLImageElement>document.getElementById("preview-" + file.name);
+                    let elem = document.getElementById("preview-" + file.name) as HTMLImageElement;
                     if (elem !== undefined) {
                         elem.src = Params.Host + "/ext/" + file.name.split(".").pop();
                     }

@@ -149,7 +149,7 @@ export default Vue.extend({
     data: function() {
         return {
             SharedModes: Const.tagsChanging,
-            groups: <CustomGroup[]>[]
+            groups: [] as Array<CustomGroup>
         };
     },
     //

@@ -551,7 +551,7 @@ export default Vue.extend({
     data: function() {
         return {
             // Const members
-            operators: <Operator[]>availableOperators,
+            operators: availableOperators,
             // Expression
             expression: "",
             //
@@ -662,7 +662,7 @@ export default Vue.extend({
         // insertTagID is used to insert tag id into expression
         insertTextIntoExpression: function(arg: any) {
             let text = String(arg);
-            let elem: HTMLInputElement = <HTMLInputElement>this.$refs["expression-input"];
+            let elem = this.$refs["expression-input"] as HTMLInputElement;
             if (!(this.$refs["expression-input"] instanceof HTMLInputElement)) {
                 return;
             }

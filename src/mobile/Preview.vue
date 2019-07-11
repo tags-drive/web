@@ -155,7 +155,7 @@ export default Vue.extend({
     data: function() {
         return {
             // current file
-            files: <File[]>[],
+            files: [] as Array<File>,
             currIndex: 0,
             // states
             show: false,
@@ -248,7 +248,7 @@ export default Vue.extend({
                     return false;
                 }
 
-                let element = <HTMLElement>ev.target;
+                let element = ev.target as HTMLElement;
                 if (tagsToSkip.includes(element.tagName) || idsToSkip.includes(element.id)) {
                     return false;
                 }
@@ -365,7 +365,7 @@ export default Vue.extend({
             }
         },
         scrollPreviewToTop() {
-            let preview = <Vue>this.$refs["current-preview"];
+            let preview = this.$refs["current-preview"] as Vue;
             if (preview === undefined) {
                 return;
             }
