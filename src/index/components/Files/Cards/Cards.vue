@@ -260,8 +260,9 @@ export default Vue.extend({
                     return;
                 }
 
-                let totalHeight = ev.srcElement.scrollTop + ev.srcElement.clientHeight;
-                if (totalHeight / ev.srcElement.scrollHeight > 0.9) {
+                const elem = ev.srcElement as Element;
+                let totalHeight = elem.scrollTop + elem.clientHeight;
+                if (totalHeight / elem.scrollHeight > 0.9) {
                     this.maxDisplayedFiles += deltaDisplayedFiles;
                 }
             });

@@ -63,9 +63,11 @@ export default Vue.extend({
                 return;
             }
 
-            let bottom = ev.srcElement.scrollHeight - (ev.srcElement.scrollTop + ev.srcElement.clientHeight);
+            const elem = ev.srcElement as Element;
 
-            if (!this.Store.allFilesFetched && !this.fetchingNextFiles && bottom <= ev.srcElement.scrollHeight / 10) {
+            let bottom = elem.scrollHeight - (elem.scrollTop + elem.clientHeight);
+
+            if (!this.Store.allFilesFetched && !this.fetchingNextFiles && bottom <= elem.scrollHeight / 10) {
                 this.fetchingNextFiles = true;
 
                 let oldCounter = this.Store.allFilesChangesCounter;
@@ -92,7 +94,7 @@ export default Vue.extend({
                 return;
             }
 
-            elem.addEventListener("scroll", scrollListener);
+            elem.addEventListener("scroll", scrollListener as any);
         });
 
         EventBus.$on(Events.resetFilesBlockScroll, () => {
