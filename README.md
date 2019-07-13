@@ -1,13 +1,15 @@
 # Tags Drive (Web)
 
-This repository contains web part of **Tags Drive**. Core part can be found [here](https://github.com/tags-drive/core)
+This repository contains the web part of **Tags Drive**.
+
+**The basic information** and **FAQ** can be found in the [tags-drive/tags-drive](https://github.com/tags-drive/tags-drive) repository.
 
 ##
 
-- [Project layout](#project-layout)
-- [Development](#development)
-  - [Commands](#commands)
-  - [Backend](#backend)
+- [Project layout](#Project-layout)
+- [Development](#Development)
+  - [Commands](#Commands)
+  - [Backend](#Backend)
 
 ## Project layout
 
