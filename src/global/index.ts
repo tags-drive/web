@@ -6,7 +6,7 @@ class params {
     }
 }
 
-const Version = "v0.8.1";
+const Version = "v0.9.0";
 const Params = new params();
 
 export { Params, Version };
