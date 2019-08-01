@@ -114,32 +114,21 @@ function fetchFiles(
 }
 
 function downloadFile(id: number, filename: string) {
-    fetch(Params.Host + "/data/" + id + "?" + getShareTokenIfNeeded(), {
-        method: "GET",
-        credentials: "same-origin"
-    })
-        .then(resp => {
-            if (IsErrorStatusCode(resp.status)) {
-                resp.text().then(text => {
-                    logError(text);
-                });
-                return;
-            }
+    // !WARNING!
+    // This function doesn't work properly in Development Mode. Browser doesn't download files
+    // when url points to a different domain (for example, "npm run serve" uses
+    // "localhost:8080", but backend uses "localhost:80").
 
-            resp.blob().then(file => {
-                let a = document.createElement("a"),
-                    url = URL.createObjectURL(file);
+    const link = Params.Host + "/data/" + id + "?" + getShareTokenIfNeeded();
 
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
+    let a = document.createElement("a");
+    a.href = link;
+    a.download = filename;
+    a.style.display = "none";
 
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-            });
-        })
-        .catch(err => logError(err));
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 }
 
 function fetchTags() {

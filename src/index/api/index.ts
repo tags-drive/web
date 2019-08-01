@@ -125,55 +125,44 @@ function fetchFiles(expression: string, text: string, isRegexp: boolean, sType?:
 }
 
 function downloadFile(id: number, filename: string) {
-    fetch(Params.Host + "/data/" + id + "?" + getShareTokenIfNeeded(), {
-        method: "GET",
-        credentials: "same-origin"
-    })
-        .then(resp => {
-            if (IsErrorStatusCode(resp.status)) {
-                resp.text().then(text => {
-                    logError(text);
-                });
-                return;
-            }
+    // !WARNING!
+    // This function doesn't work properly in Development Mode. Browser doesn't download files
+    // when url points to a different domain (for example, "npm run serve" uses
+    // "localhost:8080", but backend uses "localhost:80").
 
-            resp.blob().then(file => {
-                let a = document.createElement("a"),
-                    url = URL.createObjectURL(file);
+    const link = Params.Host + "/data/" + id + "?" + getShareTokenIfNeeded();
 
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
+    let a = document.createElement("a");
+    a.href = link;
+    a.download = filename;
+    a.style.display = "none";
 
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-            });
-        })
-        .catch(err => logError(err));
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 }
 
 function downloadFiles(ids: number[]) {
+    // !WARNING!
+    // This function doesn't work properly in Development Mode. Browser doesn't download files
+    // when url points to a different domain (for example, "npm run serve" uses
+    // "localhost:8080", but backend uses "localhost:80").
+    //
+    // Note: this function can work, but name of an archive can be "download.zip"
+
     let params = new URLSearchParams();
     params.append("ids", ids.join(","));
 
-    fetch(Params.Host + "/api/files/download?" + params + "&" + getShareTokenIfNeeded(), {
-        method: "GET",
-        credentials: "same-origin"
-    }).then(resp => {
-        resp.blob().then(file => {
-            let a = document.createElement("a"),
-                url = URL.createObjectURL(file);
+    const link = Params.Host + "/api/files/download?" + params + "&" + getShareTokenIfNeeded();
 
-            a.href = url;
-            a.download = "files.zip";
-            document.body.appendChild(a);
-            a.click();
+    let a = document.createElement("a");
+    a.href = link;
+    a.download = "files.zip";
+    a.style.display = "none";
 
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        });
-    });
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 }
 
 function changeFileName(id: number, newName: string) {
