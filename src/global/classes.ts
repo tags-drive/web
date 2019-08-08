@@ -1,7 +1,7 @@
 import { Const } from "./const";
 
-const fileOriginPrefix = "/data/";
-const filePreviewPrefix = "/data/resized/";
+const fileOriginPrefix = "data/";
+const filePreviewPrefix = "data/resized/";
 
 export class FileExt {
     ext: string = "";
