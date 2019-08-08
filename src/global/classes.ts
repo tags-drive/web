@@ -1,3 +1,8 @@
+import { Const } from "./const";
+
+const fileOriginPrefix = "/data/";
+const filePreviewPrefix = "/data/resized/";
+
 export class FileExt {
     ext: string = "";
     fileType: string = "";
@@ -28,12 +33,10 @@ export function ObjectToFile(obj: any, skipTimeParsing?: boolean): File | null {
         obj.id === undefined ||
         obj.type === undefined ||
         obj.filename === undefined ||
-        obj.origin === undefined ||
         obj.description === undefined ||
         obj.size === undefined ||
         obj.tags === undefined ||
         obj.addTime === undefined ||
-        // Preview can be omitted
         obj.deleted === undefined ||
         obj.timeToDelete === undefined
     ) {
@@ -59,10 +62,14 @@ export function ObjectToFile(obj: any, skipTimeParsing?: boolean): File | null {
     file.id = <number>obj.id;
     file.type = ext;
     file.filename = <string>obj.filename;
-    file.origin = <string>obj.origin;
     file.description = <string>obj.description;
     file.size = <number>obj.size;
     file.tags = <number[]>obj.tags;
+
+    file.origin = fileOriginPrefix + String(file.id);
+    if (file.type.fileType === Const.fileTypes.image) {
+        file.preview = filePreviewPrefix + String(file.id);
+    }
 
     if (!skipTimeParsing) {
         file.addTime = new Date(obj.addTime);
@@ -70,7 +77,6 @@ export function ObjectToFile(obj: any, skipTimeParsing?: boolean): File | null {
         file.addTime = obj.addTime || new Date();
     }
 
-    file.preview = obj.preview ? <string>obj.preview : "";
     file.deleted = <boolean>obj.deleted;
     file.timeToDelete = <number>obj.timeToDelete;
 
