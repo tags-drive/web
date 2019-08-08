@@ -33,12 +33,12 @@ export function ObjectToFile(obj: any, skipTimeParsing?: boolean): File | null {
         obj.id === undefined ||
         obj.type === undefined ||
         obj.filename === undefined ||
-        obj.description === undefined ||
+        // description can be omitted
         obj.size === undefined ||
         obj.tags === undefined ||
         obj.addTime === undefined ||
-        obj.deleted === undefined ||
-        obj.timeToDelete === undefined
+        obj.deleted === undefined
+        // timeToDelete can be omitted
     ) {
         return null;
     }
@@ -62,7 +62,7 @@ export function ObjectToFile(obj: any, skipTimeParsing?: boolean): File | null {
     file.id = <number>obj.id;
     file.type = ext;
     file.filename = <string>obj.filename;
-    file.description = <string>obj.description;
+    file.description = obj.description === undefined ? "" : <string>obj.description;
     file.size = <number>obj.size;
     file.tags = <number[]>obj.tags;
 
@@ -78,7 +78,10 @@ export function ObjectToFile(obj: any, skipTimeParsing?: boolean): File | null {
     }
 
     file.deleted = <boolean>obj.deleted;
-    file.timeToDelete = <number>obj.timeToDelete;
+    if (obj.timeToDelete !== undefined) {
+        // Have to multiply by 1000 to get correct date by "new Date()"
+        file.timeToDelete = (obj.timeToDelete as number) * 1000;
+    }
 
     return file;
 }
