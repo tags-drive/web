@@ -128,7 +128,7 @@ import ShareSettings from "./Settings/Share.vue";
 // Share data
 import SharedState from "@app/index/state";
 // Other
-import { Version, Params } from "@app/global";
+import { Params } from "@app/global";
 import { IsErrorStatusCode } from "@app/global/utils";
 
 export default Vue.extend({
@@ -145,7 +145,7 @@ export default Vue.extend({
             ],
             currentSection: "general",
             //
-            frontendVersion: Version,
+            frontendVersion: Params.Version,
             backendVersion: "undefined",
             //
             State: SharedState.state

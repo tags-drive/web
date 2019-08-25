@@ -1,12 +1,23 @@
 class params {
     Host: string;
 
+    Version: string;
+
     constructor() {
-        this.Host = process.env.VUE_APP_HOST === undefined ? "" : process.env.VUE_APP_HOST; // It is "" when project is built
+        let host = process.env.VUE_APP_HOST;
+        if (host === undefined) {
+            host = "";
+        }
+        this.Host = host;
+
+        let version = process.env.VUE_APP_VERSION;
+        if (version === undefined) {
+            version = "unknown";
+        }
+        this.Version = version;
     }
 }
 
-const Version = "v0.9.0";
 const Params = new params();
 
-export { Params, Version };
+export { Params };

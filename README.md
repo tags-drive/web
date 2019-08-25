@@ -6,10 +6,11 @@ This repository contains the web part of **Tags Drive**.
 
 ##
 
-- [Project layout](#Project-layout)
-- [Development](#Development)
-  - [Commands](#Commands)
-  - [Backend](#Backend)
+- [Project layout](#project-layout)
+- [Development](#development)
+  - [Commands](#commands)
+  - [Env variables](#env-variables)
+  - [Backend](#backend)
 
 ## Project layout
 
@@ -26,6 +27,13 @@ This repository contains the web part of **Tags Drive**.
 - `npm run build` – build for production
 - `npm run serve` – run local version with auto rebuild on code change
 - `npm run lint` – lint code
+
+### Env variables
+
+| Var               | Description  |
+| ----------------- | ------------ |
+| `VUE_APP_HOST`    | Backend host |
+| `VUE_APP_VERSION` | Version      |
 
 ### Backend
 
