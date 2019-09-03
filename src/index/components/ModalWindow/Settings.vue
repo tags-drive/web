@@ -29,11 +29,17 @@
 			<span class="noselect">Tags Drive – <a href="https://github.com/tags-drive" target="_blank">github.com/tags-drive</a></span>
 
 			<div id="versions">
-				<span class="noselect version">Frontend version - {{ frontendVersion }}</span>
+				<span
+					class="noselect version"
+					style="text-align: right;"
+				>Frontend version - {{ frontendVersion }}</span>
 
 				<div id="separator"></div>
 
-				<span class="noselect version">Backend version - {{ backendVersion }}</span>
+				<span
+					class="noselect version"
+					style="text-align: left;"
+				>Backend version - {{ backendVersion }}</span>
 			</div>
 		</div>
 	</div>
@@ -99,10 +105,11 @@
 
         #versions {
             display: grid;
-            grid-template-columns: 180px auto 180px;
+            grid-template-columns: 45% 20px 45%;
             margin: 5px auto 0;
             text-align: center;
-            width: 180px + 180px + 5px;
+            justify-content: center;
+            width: 100%;
 
             .version {
                 line-height: $height;
