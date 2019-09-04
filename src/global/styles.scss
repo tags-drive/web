@@ -39,10 +39,6 @@ input[type="text"] {
     cursor: pointer;
 }
 
-.btn:hover {
-    background-color: #ebebeb;
-}
-
 /* Use this class when user isn't authorized */
 .auth-only-element {
     opacity: 0.5;

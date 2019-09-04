@@ -347,12 +347,7 @@
                         display: inline-flex;
                         min-height: 25px;
                         line-height: 25px;
-                        width: 100%;
                         word-break: break-all;
-
-                        &:hover {
-                            background-color: #88888810;
-                        }
                     }
 
                     > div.tags-list {
@@ -467,10 +462,6 @@
     position: relative;
     text-align: center;
     width: 40px;
-
-    &:hover {
-        background-color: #88888830;
-    }
 
     &:last-child {
         margin-right: 0;

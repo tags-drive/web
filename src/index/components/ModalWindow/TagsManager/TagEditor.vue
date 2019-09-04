@@ -146,6 +146,11 @@
         }
     }
 }
+
+.btn {
+    // Overwrite border property
+    border: none;
+}
 </style>
 
 
