@@ -166,7 +166,7 @@
 
 		<!-- Show advanced options -->
 		<div
-			id="search-button"
+			id="advanced-options-toggle-button"
 			class="noselect vertically button buttons__search"
 		>
 			<div @click="toggleAdvancedOptions">
@@ -691,7 +691,10 @@ export default Vue.extend({
             }
         },
         advancedOptionsListener(event: MouseEvent) {
-            if (this.showAdvancedOptions && !IsElementInPath(event, "advanced-options")) {
+            if (
+                this.showAdvancedOptions &&
+                !IsElementInPath(event, "advanced-options", "advanced-options-toggle-button")
+            ) {
                 this.toggleAdvancedOptions();
             }
         },
