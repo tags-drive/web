@@ -7,12 +7,15 @@
 	>
 		<!-- Preview -->
 		<div id="preview" title="Show preview">
-			<div 
+			<div
 				class="image-wrapper noselect"
 				@click.left.exact="showPreview"
 			>
 				<span class="helper"></span>
-				<loader :src="previewLink"></loader>
+				<loader
+					:style="previewImageStyle"
+					:src="previewLink"
+				></loader>
 			</div>
 		</div>
 
@@ -36,12 +39,10 @@
 
 <style lang="scss" scoped>
 #card {
-    border: 1px solid #88888860;
     border-radius: 5px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
     box-sizing: border-box;
     margin: 20px 0;
-    padding: 5px;
-    padding-bottom: 0px; // tags in #tags-list have "margin-bottom: 5px"
     width: 100%;
 
     &:first-child {
@@ -57,10 +58,8 @@
 
         > .image-wrapper {
             cursor: pointer;
-            max-width: 80%;
             margin: auto;
             text-align: center;
-            width: 80%;
 
             /* Help to center an image vertically */
             > span.helper {
@@ -70,21 +69,19 @@
             }
 
             > img {
-                background-color: #ffffff;
                 border-radius: 3px;
                 display: inline-block;
                 height: auto;
-                max-height: 300px;
-                max-width: 100%;
                 vertical-align: middle;
-                width: auto;
+                width: 100%;
             }
         }
     }
 
     > #filename {
-        margin-bottom: 10px;
+        margin: 0 auto 10px;
         text-align: center;
+        width: 95%;
         word-break: break-all;
     }
 
@@ -92,6 +89,8 @@
         display: flex;
         justify-content: center;
         flex-wrap: wrap;
+        margin: auto;
+        width: 95%;
 
         > .tag {
             margin-bottom: 5px;
@@ -167,6 +166,21 @@ export default Vue.extend({
             }
 
             return Params.Host + "/ext/" + this.file.filename.split(".").pop();
+        },
+        previewImageStyle: function(): any {
+            if (this.file.type.previewType === Const.previewTypes.image) {
+                // Can display an image preview
+                return {
+                    "background-color": "#ffffff"
+                };
+            }
+
+            // Have to display an extension icon
+            return {
+                "max-width": "50px",
+                "max-height": "50px",
+                "margin-top": "5px"
+            };
         }
     },
     //
