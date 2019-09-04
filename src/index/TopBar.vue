@@ -259,8 +259,8 @@
 
 // Search
 #search-bar-wrapper {
+    border: 1px solid #eeeeee;
     border-radius: 5px;
-    box-shadow: 0px 0px 5px 0px #888888;
     column-gap: 5px;
     display: grid;
     grid-template-columns: 50px auto 50px;
