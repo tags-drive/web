@@ -69,7 +69,7 @@
 
 <style lang="scss" scoped>
 .hover-class:hover {
-    background-color: #dcdcdc70;
+    background-color: #dcdcdc30;
 }
 
 .filename,
@@ -163,7 +163,7 @@ export default Vue.extend({
             } as any;
 
             if (this.fileSelected || this.rightClicked) {
-                style["background-color"] = "#dcdcdcc0";
+                style["background-color"] = "#dcdcdc50";
             }
 
             return style;

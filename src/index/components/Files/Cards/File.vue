@@ -49,7 +49,7 @@
     }
 
     &:hover {
-        background-color: #dcdcdc50;
+        background-color: #dcdcdc30;
     }
 
     > #preview {
@@ -150,7 +150,7 @@ export default Vue.extend({
         cardStyles: function(): any {
             if (this.fileSelected || this.rightClicked) {
                 return {
-                    "background-color": "#dcdcdcc0"
+                    "background-color": "#dcdcdc50"
                 };
             }
 
