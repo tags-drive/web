@@ -184,8 +184,8 @@
 				<!-- Show when advanced options are used -->
 				<div
 					v-if="usedAdvancedOptions"
-					style="position: absolute; right: 3px; top: -10px; z-index: 0;"
-				>*</div>
+					style="position: absolute; right: 0px; top: -15px;"
+				>•</div>
 			</div>
 		</div>
 	</div>

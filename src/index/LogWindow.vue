@@ -62,7 +62,7 @@
     position: fixed;
     right: 25px;
     width: 30%;
-    z-index: 6;
+    z-index: 3;
 }
 
 #open-button {

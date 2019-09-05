@@ -111,7 +111,7 @@
     padding: 5px;
     position: fixed;
     text-align: center;
-    z-index: 4;
+    z-index: 2;
 
     > div.menu-button {
         $margin: 3px;

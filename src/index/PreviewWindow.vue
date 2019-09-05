@@ -246,7 +246,7 @@
     position: fixed;
     top: 0;
     width: 100%;
-    z-index: 5;
+    z-index: 4;
 
     > #preview-window {
         background-color: #00000080;
