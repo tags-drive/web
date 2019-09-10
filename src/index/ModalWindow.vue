@@ -62,7 +62,7 @@
     position: fixed;
     top: 0;
     width: 100vw;
-    z-index: 6;
+    z-index: 5;
 }
 
 #modal-window {

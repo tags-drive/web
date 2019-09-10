@@ -184,8 +184,8 @@
 				<!-- Show when advanced options are used -->
 				<div
 					v-if="usedAdvancedOptions"
-					style="position: absolute; right: 3px; top: -10px; z-index: 0;"
-				>*</div>
+					style="position: absolute; right: 0px; top: -15px;"
+				>•</div>
 			</div>
 		</div>
 	</div>
@@ -259,8 +259,8 @@
 
 // Search
 #search-bar-wrapper {
+    border: 1px solid #eeeeee;
     border-radius: 5px;
-    box-shadow: 0px 0px 5px 0px #888888;
     column-gap: 5px;
     display: grid;
     grid-template-columns: 50px auto 50px;
@@ -347,12 +347,7 @@
                         display: inline-flex;
                         min-height: 25px;
                         line-height: 25px;
-                        width: 100%;
                         word-break: break-all;
-
-                        &:hover {
-                            background-color: #88888810;
-                        }
                     }
 
                     > div.tags-list {
@@ -467,10 +462,6 @@
     position: relative;
     text-align: center;
     width: 40px;
-
-    &:hover {
-        background-color: #88888830;
-    }
 
     &:last-child {
         margin-right: 0;

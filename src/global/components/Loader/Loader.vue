@@ -34,14 +34,21 @@ export default Vue.extend({
             return this.src;
         },
         style: function(): any {
-            if (!this.isLoaded) {
+            if (this.isLoaded) {
+                return {};
+            }
+
+            if (this.isError) {
                 return {
-                    "max-width": "200px",
-                    "border-radius": "20px"
+                    "max-height": "50px",
+                    "max-width": "50px"
                 };
             }
 
-            return {};
+            return {
+                "border-radius": "20px",
+                "max-width": "200px"
+            };
         }
     },
     //

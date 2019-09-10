@@ -90,19 +90,18 @@
 
             background-color: white;
             border: 1px solid #88888850;
-            border-radius: 5px;
-            display: grid;
-            grid-template-columns: 20% 80%;
+            border-radius: 3px;
+            column-gap: 15px;
+            display: flex;
             font-size: 14px;
             height: $height;
             line-height: $height;
-            padding: 3px;
+            padding: 3px 10px;
             position: absolute;
             right: 5px;
             text-align: center;
             transition: opacity 0.2s;
             top: 5px;
-            width: 280px;
 
             > #sort-options {
                 > * {
@@ -118,8 +117,8 @@
                 }
 
                 select {
-                    border: 1px solid #888888;
-                    border-radius: 3px;
+                    border: 1px solid #88888880;
+                    border-radius: 2px;
                     height: 20px;
                     margin-top: auto;
                     margin-bottom: auto;

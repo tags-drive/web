@@ -113,7 +113,7 @@
 
 <style lang="scss" scoped>
 #background {
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.7);
     height: 100vh;
     left: 0;
     margin-bottom: 100px;
@@ -121,7 +121,7 @@
     position: fixed;
     top: 0;
     width: 100vw;
-    z-index: 3;
+    z-index: 5;
 
     > #upload-layer {
         height: 100%;
@@ -131,9 +131,11 @@
         width: 100%;
 
         #upload-text {
-            background-color: rgba(0, 0, 0, 0.15);
-            border: 1px black solid;
+            background-color: rgba(44, 44, 44, 0.5);
+            border: 2px rgb(155, 155, 155) dashed;
             border-radius: 15px;
+            box-sizing: border-box;
+            color: rgb(155, 155, 155);
             font-size: 50px;
             left: 50%;
             padding: 15px;

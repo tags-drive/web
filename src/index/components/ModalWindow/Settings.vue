@@ -64,6 +64,7 @@
         height: 250px;
 
         > #sections {
+            // Cover the left border of window with the list of settings
             z-index: 1;
 
             > .section {

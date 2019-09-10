@@ -111,7 +111,7 @@
     padding: 5px;
     position: fixed;
     text-align: center;
-    z-index: 4;
+    z-index: 2;
 
     > div.menu-button {
         $margin: 3px;
@@ -125,7 +125,7 @@
 
         > input.btn {
             border: 1px solid #b2b2b2;
-            border-radius: 2px;
+            border-radius: 1px;
             cursor: pointer;
             margin-bottom: $margin;
             outline: none;
@@ -136,7 +136,7 @@
             }
 
             &:hover {
-                background-color: #e5e5e5;
+                background-color: #f7f7f7 !important;
             }
         }
     }
