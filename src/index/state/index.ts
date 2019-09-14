@@ -24,6 +24,7 @@ const state: StoreOptions<State> = {
         showModalWindow: false
     },
     mutations: {
+        // setters
         setAuthorized(state, payload) {
             if (!checkValue(payload, "boolean")) {
                 return;
@@ -38,7 +39,6 @@ const state: StoreOptions<State> = {
 
             state.shareToken = payload.value as string;
         },
-        //
         setShareMode(state, payload) {
             if (!checkValue(payload, "boolean")) {
                 return;
@@ -46,7 +46,6 @@ const state: StoreOptions<State> = {
 
             state.shareMode = payload.value as boolean;
         },
-        //
         setShowDropLayer(state, payload) {
             if (!checkValue(payload, "boolean")) {
                 return;
@@ -119,6 +118,10 @@ export function setSelectMode(v: boolean) {
 
 export function setShowModalWindow(v: boolean) {
     Store.commit("setShowModalWindow", { value: v });
+}
+
+export function readSettings() {
+    Store.commit("readSettings");
 }
 
 // checkValue checks v.value

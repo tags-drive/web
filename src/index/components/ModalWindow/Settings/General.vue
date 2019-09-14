@@ -105,7 +105,7 @@ import Vue from "vue";
 // Classes and types
 import { Settings } from "@app/index/state/types";
 // Shared data
-import SharedState from "@app/index/state";
+import SharedState, { readSettings } from "@app/index/state";
 // Other
 import { ViewModes } from "@app/index/state/types.ts";
 import { Params } from "@app/global";
@@ -125,7 +125,7 @@ export default Vue.extend({
     destroyed: function() {
         // If user pressed Save button, readSettings will read same settings,
         // else readSettings will recover saved settings
-        SharedState.commit("readSettings");
+        readSettings();
     },
     //
     methods: {
