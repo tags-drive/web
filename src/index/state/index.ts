@@ -80,4 +80,19 @@ const state: StoreOptions<State> = {
     }
 };
 
-export default new Vuex.Store(state);
+const Store = new Vuex.Store(state);
+
+export default Store;
+
+// checkValue checks v.value
+function checkValue(v: any, type: string): boolean {
+    if (v === undefined || v.value === undefined) {
+        return false;
+    }
+
+    if (typeof v.value !== type) {
+        return false;
+    }
+
+    return true;
+}
