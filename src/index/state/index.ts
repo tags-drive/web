@@ -47,12 +47,14 @@ const state: StoreOptions<State> = {
             state.shareMode = payload.value as boolean;
         },
         //
-        showDropLayer(state) {
-            state.showDropLayer = true;
+        setShowDropLayer(state, payload) {
+            if (!checkValue(payload, "boolean")) {
+                return;
+            }
+
+            state.showDropLayer = payload.value as boolean;
         },
-        hideDropLayer(state) {
-            state.showDropLayer = false;
-        },
+        //
         setSelectMode(state) {
             state.selectMode = true;
         },
@@ -104,6 +106,10 @@ export function setShareToken(v: string) {
 
 export function setShareMode(v: boolean) {
     Store.commit("setShareMode", { value: v });
+}
+
+export function setShowDropLayer(v: boolean) {
+    Store.commit("setShowDropLayer", { value: v });
 }
 
 // checkValue checks v.value

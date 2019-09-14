@@ -477,7 +477,7 @@ import LoaderComponent from "@app/global/components/Loader/Loader.vue";
 // Classes and types
 import { File } from "@app/global/classes";
 // Shared data
-import SharedState from "@app/index/state";
+import SharedState, { setShowDropLayer } from "@app/index/state";
 import SharedStore from "@app/index/store";
 // Other
 import { Events, EventBus } from "@app/index/eventBus";
@@ -677,12 +677,12 @@ export default Vue.extend({
         window() {
             return {
                 show: () => {
-                    SharedState.commit("hideDropLayer");
+                    setShowDropLayer(false);
                     document.addEventListener("keydown", this.onkeydownListener);
                     this.show = true;
                 },
                 hide: () => {
-                    SharedState.commit("showDropLayer");
+                    setShowDropLayer(true);
                     document.removeEventListener("keydown", this.onkeydownListener);
                     this.fullscreenMode = false;
                     this.show = false;
