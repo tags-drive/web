@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex, { StoreOptions } from "vuex";
-import { State, ViewModes } from "./types";
+import { State, ViewModes, Settings } from "./types";
 
 Vue.use(Vuex);
 
@@ -80,7 +80,11 @@ const state: StoreOptions<State> = {
             Object.assign(state.settings, settings);
         },
         applySettings(state, payload) {
-            Object.assign(state.settings, payload);
+            if (payload === undefined || payload.value === undefined) {
+                return;
+            }
+
+            Object.assign(state.settings, payload.value);
         },
         saveSettings(state) {
             localStorage.setItem(settingsKey, JSON.stringify(state.settings));
@@ -122,6 +126,10 @@ export function setShowModalWindow(v: boolean) {
 
 export function readSettings() {
     Store.commit("readSettings");
+}
+
+export function applySettings(v: Settings) {
+    Store.commit("applySettings", { value: v });
 }
 
 // checkValue checks v.value
