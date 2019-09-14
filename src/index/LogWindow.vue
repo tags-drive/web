@@ -158,6 +158,8 @@
 
 <script lang="ts">
 import Vue from "vue";
+// Shared data
+import SharedState from "@app/index/state";
 // Other
 import dateformat from "dateformat";
 import { Events, EventBus } from "@app/index/eventBus";
@@ -190,21 +192,28 @@ export default Vue.extend({
     },
     computed: {
         logWindowStyles: function(): any {
-            if (this.show) {
-                if (this.isMouseInside || this.hideAfter > 1000) {
-                    return {};
-                }
+            let styles = {};
+
+            // Blur
+            if (SharedState.state.showPreviewWindow) {
+                styles["filter"] = "blur(3px)";
             }
 
-            let transform: number = 0;
+            if (this.show && (this.isMouseInside || this.hideAfter > 1000)) {
+                return styles;
+            }
+
+            // Animation
             if (0 <= this.hideAfter && this.hideAfter <= animationStart) {
-                transform = 100 - Math.ceil((this.hideAfter / animationStart) * 100);
+                let transform = 100 - Math.ceil((this.hideAfter / animationStart) * 100);
+
+                if (transform !== 0) {
+                    styles["right"] = "0";
+                }
+                styles["transform"] = `translateX(${transform}%)`;
             }
 
-            return {
-                right: transform === 0 ? "25px" : "0",
-                transform: `translateX(${transform}%)`
-            };
+            return styles;
         }
     },
     //
