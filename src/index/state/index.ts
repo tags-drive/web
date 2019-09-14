@@ -61,11 +61,12 @@ const state: StoreOptions<State> = {
 
             state.selectMode = payload.value as boolean;
         },
-        showModalWindow(state) {
-            state.showModalWindow = true;
-        },
-        hideModalWindow(state) {
-            state.showModalWindow = false;
+        setShowModalWindow(state, payload) {
+            if (!checkValue(payload, "boolean")) {
+                return;
+            }
+
+            state.showModalWindow = payload.value as boolean;
         },
         // settings
         readSettings(state) {
@@ -114,6 +115,10 @@ export function setShowDropLayer(v: boolean) {
 
 export function setSelectMode(v: boolean) {
     Store.commit("setSelectMode", { value: v });
+}
+
+export function setShowModalWindow(v: boolean) {
+    Store.commit("setShowModalWindow", { value: v });
 }
 
 // checkValue checks v.value

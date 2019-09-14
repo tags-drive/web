@@ -100,7 +100,7 @@ import SelectFilesDeleting from "@components/ModalWindow/SelectMode/FilesDeletin
 // Classes and types
 import { File } from "@app/global/classes";
 // Shared data
-import SharedState, { setShowDropLayer } from "@app/index/state";
+import SharedState, { setShowDropLayer, setShowModalWindow } from "@app/index/state";
 // Other
 import { Const } from "@app/global/const";
 import { Events, EventBus } from "@app/index/eventBus";
@@ -197,7 +197,7 @@ export default Vue.extend({
         // UI
         showWindow() {
             setShowDropLayer(false);
-            SharedState.commit("showModalWindow");
+            setShowModalWindow(true);
             this.addListener();
             this.show = true;
         },
@@ -217,7 +217,7 @@ export default Vue.extend({
             this.removeListener();
 
             setShowDropLayer(true);
-            SharedState.commit("hideModalWindow");
+            setShowModalWindow(false);
         },
         // Listener
         addListener() {
