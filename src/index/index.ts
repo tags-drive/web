@@ -9,13 +9,13 @@ import ModalWindow from "@app/index/ModalWindow.vue";
 import LogWindow from "@app/index/LogWindow.vue";
 import PreviewWindow from "@app/index/PreviewWindow.vue";
 //
-import ShareState from "@app/index/state";
+import ShareState, { setAuthorized } from "@app/index/state";
 import API from "@app/index/api";
 
 // Define if user is authorized
 API.isUserAuthorized().then(authorized => {
     if (authorized) {
-        ShareState.commit("setAuthorized");
+        setAuthorized(true);
     }
 });
 

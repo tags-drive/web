@@ -24,8 +24,12 @@ const state: StoreOptions<State> = {
         showModalWindow: false
     },
     mutations: {
-        setAuthorized(state) {
-            state.user.authorized = true;
+        setAuthorized(state, payload) {
+            if (!checkValue(payload, "boolean")) {
+                return;
+            }
+
+            state.user.authorized = payload.value as boolean;
         },
         enableShareMode(state) {
             state.shareMode = true;
@@ -83,6 +87,10 @@ const state: StoreOptions<State> = {
 const Store = new Vuex.Store(state);
 
 export default Store;
+
+export function setAuthorized(v: boolean) {
+    Store.commit("setAuthorized", { value: v });
+}
 
 // checkValue checks v.value
 function checkValue(v: any, type: string): boolean {
