@@ -31,14 +31,19 @@ const state: StoreOptions<State> = {
 
             state.user.authorized = payload.value as boolean;
         },
-        enableShareMode(state) {
-            state.shareMode = true;
-        },
         setShareToken(state, payload) {
             if (payload.token === undefined) {
                 return;
             }
             state.shareToken = <string>payload.token;
+        },
+        //
+        setShareMode(state, payload) {
+            if (!checkValue(payload, "boolean")) {
+                return;
+            }
+
+            state.shareMode = payload.value as boolean;
         },
         //
         showDropLayer(state) {
@@ -90,6 +95,10 @@ export default Store;
 
 export function setAuthorized(v: boolean) {
     Store.commit("setAuthorized", { value: v });
+}
+
+export function setShareMode(v: boolean) {
+    Store.commit("setShareMode", { value: v });
 }
 
 // checkValue checks v.value

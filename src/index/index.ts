@@ -9,7 +9,7 @@ import ModalWindow from "@app/index/ModalWindow.vue";
 import LogWindow from "@app/index/LogWindow.vue";
 import PreviewWindow from "@app/index/PreviewWindow.vue";
 //
-import ShareState, { setAuthorized } from "@app/index/state";
+import ShareState, { setAuthorized, setShareMode } from "@app/index/state";
 import API from "@app/index/api";
 
 // Define if user is authorized
@@ -22,7 +22,7 @@ API.isUserAuthorized().then(authorized => {
 // Detect share mode
 let res = /shareToken=([\w\d]+)/g.exec(location.search);
 if (res !== null && res[1] !== undefined) {
-    ShareState.commit("enableShareMode");
+    setShareMode(true);
     ShareState.commit("setShareToken", { token: res[1] });
 }
 
