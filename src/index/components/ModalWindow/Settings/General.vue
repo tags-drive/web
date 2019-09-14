@@ -105,7 +105,7 @@ import Vue from "vue";
 // Classes and types
 import { Settings } from "@app/index/state/types";
 // Shared data
-import SharedState, { readSettings, applySettings } from "@app/index/state";
+import SharedState, { readSettings, applySettings, saveSettings } from "@app/index/state";
 // Other
 import { ViewModes } from "@app/index/state/types.ts";
 import { Params } from "@app/global";
@@ -135,7 +135,7 @@ export default Vue.extend({
         saveSettings() {
             // Update global settings from local ones
             // We will save current settings because we call apply() on every change
-            SharedState.commit("saveSettings");
+            saveSettings();
         }
     }
 });

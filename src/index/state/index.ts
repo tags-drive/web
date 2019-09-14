@@ -132,6 +132,10 @@ export function applySettings(v: Settings) {
     Store.commit("applySettings", { value: v });
 }
 
+export function saveSettings() {
+    Store.commit("saveSettings");
+}
+
 // checkValue checks v.value
 function checkValue(v: any, type: string): boolean {
     if (v === undefined || v.value === undefined) {
