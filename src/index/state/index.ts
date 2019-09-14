@@ -54,12 +54,12 @@ const state: StoreOptions<State> = {
 
             state.showDropLayer = payload.value as boolean;
         },
-        //
-        setSelectMode(state) {
-            state.selectMode = true;
-        },
-        unsetSelectMode(state) {
-            state.selectMode = false;
+        setSelectMode(state, payload) {
+            if (!checkValue(payload, "boolean")) {
+                return;
+            }
+
+            state.selectMode = payload.value as boolean;
         },
         showModalWindow(state) {
             state.showModalWindow = true;
@@ -110,6 +110,10 @@ export function setShareMode(v: boolean) {
 
 export function setShowDropLayer(v: boolean) {
     Store.commit("setShowDropLayer", { value: v });
+}
+
+export function setSelectMode(v: boolean) {
+    Store.commit("setSelectMode", { value: v });
 }
 
 // checkValue checks v.value
