@@ -32,10 +32,11 @@ const state: StoreOptions<State> = {
             state.user.authorized = payload.value as boolean;
         },
         setShareToken(state, payload) {
-            if (payload.token === undefined) {
+            if (!checkValue(payload, "string")) {
                 return;
             }
-            state.shareToken = <string>payload.token;
+
+            state.shareToken = payload.value as string;
         },
         //
         setShareMode(state, payload) {
@@ -95,6 +96,10 @@ export default Store;
 
 export function setAuthorized(v: boolean) {
     Store.commit("setAuthorized", { value: v });
+}
+
+export function setShareToken(v: string) {
+    Store.commit("setShareToken", { value: v });
 }
 
 export function setShareMode(v: boolean) {

@@ -9,7 +9,7 @@ import ModalWindow from "@app/index/ModalWindow.vue";
 import LogWindow from "@app/index/LogWindow.vue";
 import PreviewWindow from "@app/index/PreviewWindow.vue";
 //
-import ShareState, { setAuthorized, setShareMode } from "@app/index/state";
+import { setAuthorized, setShareMode, setShareToken } from "@app/index/state";
 import API from "@app/index/api";
 
 // Define if user is authorized
@@ -23,7 +23,7 @@ API.isUserAuthorized().then(authorized => {
 let res = /shareToken=([\w\d]+)/g.exec(location.search);
 if (res !== null && res[1] !== undefined) {
     setShareMode(true);
-    ShareState.commit("setShareToken", { token: res[1] });
+    setShareToken(res[1]);
 }
 
 // Tags Drive (main instance)
