@@ -55,7 +55,7 @@ import CardsComponent from "@components/Files/Cards/Cards.vue";
 import { File } from "@app/global/classes";
 // Shared data
 import SharedStore from "@app/index/store";
-import SharedState from "@app/index/state";
+import SharedState, { setSelectMode } from "@app/index/state";
 import { State, ViewModes } from "@app/index/state/types";
 // Other
 import { Const } from "@app/global/const";
@@ -343,12 +343,11 @@ export default Vue.extend({
             for (let i = 0; i < allFiles.length; i++) {
                 SelectedFilesIDs.add(allFiles[i].id);
             }
-
-            SharedState.commit("setSelectMode");
+            setSelectMode(true);
         },
         unselectAllFiles() {
             SelectedFilesIDs.clear();
-            SharedState.commit("unsetSelectMode");
+            setSelectMode(false);
         },
 
         // updateSelectedFiles updates list of selectedFiles in Store
@@ -363,12 +362,12 @@ export default Vue.extend({
         // For children
         selectFile(id: number) {
             SelectedFilesIDs.add(id);
-            SharedState.commit("setSelectMode");
+            setSelectMode(true);
         },
         unselectFile(id: number) {
             SelectedFilesIDs.delete(id);
             if (SelectedFilesIDs.size === 0) {
-                SharedState.commit("unsetSelectMode");
+                setSelectMode(false);
             }
         }
     }

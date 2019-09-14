@@ -26,12 +26,12 @@
 import Vue from "vue";
 // Shared data
 import SharedStore from "@app/index/store";
-import SharedState from "@app/index/state";
+import { readSettings } from "@app/index/state";
 import API from "@app/index/api";
 
 export default Vue.extend({
     created: function() {
-        SharedState.commit("readSettings");
+        readSettings();
         API.tags.fetch();
 
         // If we fetch files immediately, some tags can be undefined.

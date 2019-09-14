@@ -4,7 +4,7 @@ import { EventBus, Events } from "@app/index/eventBus";
 import { logError, logInfo } from "@app/index/utils";
 import { IsErrorStatusCode } from "@app/global/utils";
 import SharedStore from "@app/index/store";
-import SharedState from "@app/index/state";
+import SharedState, { resetSettings } from "@app/index/state";
 
 /**
  * returns share token if needed. Response is `"shareToken={token}"` or an empty string
@@ -565,7 +565,7 @@ function logout() {
             }
 
             // clear settings
-            SharedState.commit("resetSettings");
+            resetSettings();
             window.location.reload();
         })
         .catch(err => logError(err));

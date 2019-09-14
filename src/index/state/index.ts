@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex, { StoreOptions } from "vuex";
-import { State, ViewModes } from "./types";
+import { State, ViewModes, Settings } from "./types";
 
 Vue.use(Vuex);
 
@@ -24,36 +24,48 @@ const state: StoreOptions<State> = {
         showModalWindow: false
     },
     mutations: {
-        setAuthorized(state) {
-            state.user.authorized = true;
-        },
-        enableShareMode(state) {
-            state.shareMode = true;
-        },
-        setShareToken(state, payload) {
-            if (payload.token === undefined) {
+        // setters
+        setAuthorized(state, payload) {
+            if (!checkValue(payload, "boolean")) {
                 return;
             }
-            state.shareToken = <string>payload.token;
+
+            state.user.authorized = payload.value as boolean;
         },
-        //
-        showDropLayer(state) {
-            state.showDropLayer = true;
+        setShareToken(state, payload) {
+            if (!checkValue(payload, "string")) {
+                return;
+            }
+
+            state.shareToken = payload.value as string;
         },
-        hideDropLayer(state) {
-            state.showDropLayer = false;
+        setShareMode(state, payload) {
+            if (!checkValue(payload, "boolean")) {
+                return;
+            }
+
+            state.shareMode = payload.value as boolean;
         },
-        setSelectMode(state) {
-            state.selectMode = true;
+        setShowDropLayer(state, payload) {
+            if (!checkValue(payload, "boolean")) {
+                return;
+            }
+
+            state.showDropLayer = payload.value as boolean;
         },
-        unsetSelectMode(state) {
-            state.selectMode = false;
+        setSelectMode(state, payload) {
+            if (!checkValue(payload, "boolean")) {
+                return;
+            }
+
+            state.selectMode = payload.value as boolean;
         },
-        showModalWindow(state) {
-            state.showModalWindow = true;
-        },
-        hideModalWindow(state) {
-            state.showModalWindow = false;
+        setShowModalWindow(state, payload) {
+            if (!checkValue(payload, "boolean")) {
+                return;
+            }
+
+            state.showModalWindow = payload.value as boolean;
         },
         // settings
         readSettings(state) {
@@ -68,7 +80,11 @@ const state: StoreOptions<State> = {
             Object.assign(state.settings, settings);
         },
         applySettings(state, payload) {
-            Object.assign(state.settings, payload);
+            if (payload === undefined || payload.value === undefined) {
+                return;
+            }
+
+            Object.assign(state.settings, payload.value);
         },
         saveSettings(state) {
             localStorage.setItem(settingsKey, JSON.stringify(state.settings));
@@ -80,4 +96,59 @@ const state: StoreOptions<State> = {
     }
 };
 
-export default new Vuex.Store(state);
+const Store = new Vuex.Store(state);
+
+export default Store;
+
+export function setAuthorized(v: boolean) {
+    Store.commit("setAuthorized", { value: v });
+}
+
+export function setShareToken(v: string) {
+    Store.commit("setShareToken", { value: v });
+}
+
+export function setShareMode(v: boolean) {
+    Store.commit("setShareMode", { value: v });
+}
+
+export function setShowDropLayer(v: boolean) {
+    Store.commit("setShowDropLayer", { value: v });
+}
+
+export function setSelectMode(v: boolean) {
+    Store.commit("setSelectMode", { value: v });
+}
+
+export function setShowModalWindow(v: boolean) {
+    Store.commit("setShowModalWindow", { value: v });
+}
+
+export function readSettings() {
+    Store.commit("readSettings");
+}
+
+export function applySettings(v: Settings) {
+    Store.commit("applySettings", { value: v });
+}
+
+export function saveSettings() {
+    Store.commit("saveSettings");
+}
+
+export function resetSettings() {
+    Store.commit("resetSettings");
+}
+
+// checkValue checks v.value
+function checkValue(v: any, type: string): boolean {
+    if (v === undefined || v.value === undefined) {
+        return false;
+    }
+
+    if (typeof v.value !== type) {
+        return false;
+    }
+
+    return true;
+}
