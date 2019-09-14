@@ -1,5 +1,8 @@
 <template>
-	<div id="files-block-wrapper">
+	<div
+		id="files-block-wrapper"
+		:style="filesWrapperStyle"
+	>
 
 		<div
 			v-if="allFiles.length === 0"
@@ -172,6 +175,15 @@ export default Vue.extend({
             let reactive = this.Store.allFilesChangesCounter;
 
             return this.Store.allFiles;
+        },
+        filesWrapperStyle: function(): any {
+            let styles = {};
+
+            if (this.State.showPreviewWindow) {
+                styles["filter"] = "blur(3px)";
+            }
+
+            return styles;
         }
     },
     //
