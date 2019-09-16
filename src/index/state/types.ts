@@ -8,6 +8,7 @@ export interface State {
     showDropLayer: boolean;
     selectMode: boolean;
     showModalWindow: boolean;
+    showPreviewWindow: boolean;
 }
 
 export interface User {

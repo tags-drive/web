@@ -1,5 +1,8 @@
 <template>
-<div id="top-bar">
+<div
+	id="top-bar"
+	:style="topBarStyle"
+>
 	<!-- Logo -->
 	<div id="logo" class="noselect">
 		<img src="/static/icons/logo.svg" alt="Tags Drive" draggable="false">
@@ -591,6 +594,15 @@ export default Vue.extend({
         },
         showAuthOnlyElement: function(): boolean {
             return this.State.user.authorized;
+        },
+        topBarStyle: function(): any {
+            let styles = {};
+
+            if (this.State.showPreviewWindow) {
+                styles["filter"] = "blur(3px)";
+            }
+
+            return styles;
         }
     },
     //

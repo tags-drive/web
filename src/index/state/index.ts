@@ -21,7 +21,8 @@ const state: StoreOptions<State> = {
         //
         showDropLayer: true, // when we show modal-window with tags showDropLayer is false
         selectMode: false,
-        showModalWindow: false
+        showModalWindow: false,
+        showPreviewWindow: false
     },
     mutations: {
         // setters
@@ -66,6 +67,13 @@ const state: StoreOptions<State> = {
             }
 
             state.showModalWindow = payload.value as boolean;
+        },
+        setShowPreviewWindow(state, payload) {
+            if (!checkValue(payload, "boolean")) {
+                return;
+            }
+
+            state.showPreviewWindow = payload.value as boolean;
         },
         // settings
         readSettings(state) {
@@ -122,6 +130,10 @@ export function setSelectMode(v: boolean) {
 
 export function setShowModalWindow(v: boolean) {
     Store.commit("setShowModalWindow", { value: v });
+}
+
+export function setShowPreviewWindow(v: boolean) {
+    Store.commit("setShowPreviewWindow", { value: v });
 }
 
 export function readSettings() {
