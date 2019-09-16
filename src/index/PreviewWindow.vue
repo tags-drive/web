@@ -403,13 +403,10 @@
             //
 
             > #fullscreen-filename {
-                background-color: #00000040;
                 border-radius: 3px;
-                color: #ffffffd0;
-                height: auto;
+                color: #ffffffa0;
                 margin: auto;
                 margin-top: 5px;
-                padding: 3px;
                 width: fit-content;
             }
         }
@@ -524,7 +521,7 @@ export default Vue.extend({
 
             return {
                 display: "block",
-                "background-color": "gray",
+                "background-color": "#000000ee",
                 "border-radius": "0px",
                 height: "100%",
                 "max-width": "none",
