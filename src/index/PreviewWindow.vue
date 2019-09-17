@@ -242,7 +242,7 @@
 
 <style lang="scss" scoped>
 #preview-background {
-    background-color: #00000070;
+    background-color: #00000090;
     height: 100%;
     left: 0;
     position: fixed;
