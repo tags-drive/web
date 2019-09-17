@@ -18,6 +18,7 @@
 					v-if="fileIndex > 0"
 					class="switch-button preview-control"
 					style="left: 0;"
+					:style="switchButtonStyle"
 					@click="previousPreview"
 				>
 					<i class="material-icons noselect arrow" style="left: 0;">keyboard_arrow_left</i>
@@ -27,6 +28,7 @@
 					v-if="fileIndex < allFiles.length - 1"
 					class="switch-button preview-control"
 					style="right: 0;"
+					:style="switchButtonStyle"
 					@click="nextPreview"
 				>
 					<i class="material-icons noselect arrow" style="right: 0;">keyboard_arrow_right</i>
@@ -333,7 +335,6 @@
                 height: 100%;
                 margin: auto;
                 overflow: auto;
-                /* If width == 100%, buttons cover text */
                 width: 70%;
 
                 > pre {
@@ -514,6 +515,7 @@ export default Vue.extend({
 
             return Params.Host + "/" + this.file!.origin + params;
         },
+        // Styles
         previewWindowStyle: function(): any {
             if (!this.fullscreenMode) {
                 return {};
@@ -540,6 +542,16 @@ export default Vue.extend({
                 width: "96%"
             };
         },
+        switchButtonStyle: function(): any {
+            if (!this.isTextFile) {
+                return {};
+            }
+
+            return {
+                width: "14%"
+            };
+        },
+        //
         showAuthOnlyElement: function(): boolean {
             return this.State.user.authorized;
         },
