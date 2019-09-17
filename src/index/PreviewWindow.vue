@@ -16,20 +16,22 @@
 				<!-- Previous button -->
 				<div
 					v-if="fileIndex > 0"
-					class="switch-button hover-button"
+					class="switch-button preview-control"
 					style="left: 0;"
+					:style="switchButtonStyle"
 					@click="previousPreview"
 				>
-					<i class="material-icons noselect arrow">keyboard_arrow_left</i>
+					<i class="material-icons noselect arrow" style="left: 0;">keyboard_arrow_left</i>
 				</div>
 				<!-- Next button -->
 				<div
 					v-if="fileIndex < allFiles.length - 1"
-					class="switch-button hover-button"
+					class="switch-button preview-control"
 					style="right: 0;"
+					:style="switchButtonStyle"
 					@click="nextPreview"
 				>
-					<i class="material-icons noselect arrow">keyboard_arrow_right</i>
+					<i class="material-icons noselect arrow" style="right: 0;">keyboard_arrow_right</i>
 				</div>
 
 				<!-- Turn on fullscreen button -->
@@ -39,7 +41,7 @@
 					style="bottom: 10px;"
 				>
 					<div
-						class="fullscreen-button hover-button"
+						class="fullscreen-button preview-control"
 						title="Fullscreen mode"
 						@click="fullscreenMode = true;"
 					>
@@ -53,7 +55,7 @@
 					style="top: 0;"
 				>
 					<div
-						class="fullscreen-button hover-button"
+						class="fullscreen-button preview-control"
 						title="Close fullscreen window"
 						@click="fullscreenMode = false;"
 					>
@@ -240,7 +242,7 @@
 
 <style lang="scss" scoped>
 #preview-background {
-    background-color: #00000070;
+    background-color: #00000090;
     height: 100%;
     left: 0;
     position: fixed;
@@ -251,66 +253,66 @@
     > #preview-window {
         background-color: #00000080;
         border-radius: 5px;
-        display: flex;
+        display: grid;
+        grid-column-gap: 1%;
+        grid-template-columns: 75% 24%;
+        grid-template-rows: 100%;
         height: 80%;
-        justify-content: space-between;
         margin: auto;
         max-width: 1100px;
         padding: 5px;
         position: relative;
-        top: 70px;
+        top: 50%;
+        transform: translateY(-50%);
         width: 90%;
 
         > #preview {
             height: 100%;
             position: relative;
-            width: 75%;
 
             // Preview controls
 
-            $switch-button-width: 80px;
+            .preview-control {
+                color: #ffffff;
+                opacity: 0.1;
+                text-shadow: 0 0 2px #000000;
 
-            .hover-button:hover {
-                background-color: #00000020;
-                opacity: 0.8 !important;
+                &:hover {
+                    opacity: 0.5;
+                }
             }
 
             > .switch-button {
                 border-radius: 5px;
                 cursor: pointer;
-                height: 70%;
-                opacity: 0.3;
+                height: 80%;
                 position: absolute;
                 top: 50%;
                 transform: translateY(-50%);
-                width: $switch-button-width;
+                width: 45%;
 
                 > i.arrow {
                     font-size: 50px;
-                    left: 50%;
-                    opacity: inherit;
                     position: absolute;
                     top: 50%;
-                    transform: translate(-50%, -50%);
+                    transform: translateY(-50%);
                 }
             }
 
             > .fullscreen-button-wrapper {
                 position: absolute;
                 right: 0;
-                width: $switch-button-width;
+                width: 50px;
 
                 > .fullscreen-button {
                     border-radius: 5px;
                     cursor: pointer;
                     margin: auto;
-                    opacity: 0.3;
                     text-align: center;
                     width: fit-content;
 
                     > i {
                         font-size: 50px;
-                        opacity: inherit;
                     }
                 }
             }
@@ -322,7 +324,7 @@
                 height: 100%;
                 margin: auto;
                 padding: 5px 0;
-                width: 80%;
+                width: 100%;
             }
 
             > #text-preview {
@@ -333,7 +335,6 @@
                 height: 100%;
                 margin: auto;
                 overflow: auto;
-                /* If width == 100%, buttons cover text */
                 width: 70%;
 
                 > pre {
@@ -403,13 +404,10 @@
             //
 
             > #fullscreen-filename {
-                background-color: #00000040;
                 border-radius: 3px;
-                color: #ffffffd0;
-                height: auto;
+                color: #ffffffa0;
                 margin: auto;
                 margin-top: 5px;
-                padding: 3px;
                 width: fit-content;
             }
         }
@@ -419,7 +417,6 @@
             border-radius: 5px;
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
             overflow-y: auto;
-            width: 24%;
 
             // Info blocks
 
@@ -518,18 +515,18 @@ export default Vue.extend({
 
             return Params.Host + "/" + this.file!.origin + params;
         },
+        // Styles
         previewWindowStyle: function(): any {
             if (!this.fullscreenMode) {
                 return {};
             }
 
             return {
-                "background-color": "gray",
+                display: "block",
+                "background-color": "#000000ee",
                 "border-radius": "0px",
                 height: "100%",
                 "max-width": "none",
-                padding: "0px",
-                top: "0",
                 width: "100%"
             };
         },
@@ -545,6 +542,16 @@ export default Vue.extend({
                 width: "96%"
             };
         },
+        switchButtonStyle: function(): any {
+            if (!this.isTextFile) {
+                return {};
+            }
+
+            return {
+                width: "14%"
+            };
+        },
+        //
         showAuthOnlyElement: function(): boolean {
             return this.State.user.authorized;
         },
