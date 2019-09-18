@@ -260,9 +260,11 @@
     }
 }
 
+$border-color: #eeeeee;
+
 // Search
 #search-bar-wrapper {
-    border: 1px solid #eeeeee;
+    border: 1px solid $border-color;
     border-radius: 5px;
     column-gap: 5px;
     display: grid;
@@ -319,7 +321,7 @@
 
             @mixin suggestion-blocks {
                 background-color: white;
-                border: 1px solid #88888880;
+                border: 1px solid $border-color;
                 border-radius: 0px 0px 5px 5px;
                 border-top: none;
                 height: auto;
@@ -398,9 +400,9 @@
 
     > #advanced-options {
         background-color: white;
-        border: 1px solid #88888880;
+        border: 1px solid $border-color;
         border-radius: 0px 0px 5px 5px;
-        border-top: 1px solid #88888820;
+        border-top: none;
         height: auto;
         padding: 10px 5px 0px 5px;
         position: absolute;
