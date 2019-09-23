@@ -162,7 +162,7 @@ export default Vue.extend({
     //
     created: function() {
         // Fetch backend version
-        fetch(Params.Host + "/version", {
+        fetch(Params.Host + "/api/version", {
             method: "GET",
             credentials: "same-origin"
         }).then(resp => {
