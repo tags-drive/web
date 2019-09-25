@@ -165,7 +165,10 @@ export default Vue.extend({
                 return Params.Host + "/" + this.file.preview + params;
             }
 
-            return Params.Host + "/ext/" + this.file.filename.split(".").pop();
+            let ext = this.file.filename.split(".").pop(),
+                filename = this.file.filename;
+
+            return Params.Host + `/file-icons?ext=${ext}&filename=${filename}`;
         },
         previewImageStyle: function(): any {
             if (this.file.type.previewType === Const.previewTypes.image) {
