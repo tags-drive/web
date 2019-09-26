@@ -178,10 +178,10 @@ export default Vue.extend({
                 };
             }
 
-            // Have to display an extension icon
+            // Have to display an file icon
             return {
-                "max-width": "50px",
-                "max-height": "50px",
+                "max-width": "100px",
+                "max-height": "60px",
                 "margin-top": "5px"
             };
         }
