@@ -271,7 +271,10 @@ export default Vue.extend({
                 this.$nextTick(() => {
                     let elem = document.getElementById("preview-" + file.name) as HTMLImageElement;
                     if (elem !== undefined) {
-                        elem.src = Params.Host + "/ext/" + file.name.split(".").pop();
+                        let ext = file.name.split(".").pop(),
+                            filename = file.name;
+
+                        elem.src = Params.Host + `/file-icons?ext=${ext}&filename=${filename}`;
                     }
                 });
             }

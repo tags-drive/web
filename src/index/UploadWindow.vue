@@ -457,7 +457,10 @@ export default Vue.extend({
                 };
             } else {
                 // Load extension
-                let path = Params.Host + "/ext/" + file.name.split(".").pop();
+                let ext = file.name.split(".").pop(),
+                    filename = file.name;
+
+                let path = Params.Host + `/file-icons?ext=${ext}&filename=${filename}`;
 
                 // Need to wait for element creation
                 let f = () => {
